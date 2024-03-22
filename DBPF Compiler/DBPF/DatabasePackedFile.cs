@@ -7,6 +7,27 @@ namespace DBPF_Compiler.DBPF
 {
     public class DatabasePackedFile : IDisposable
     {
+        public delegate void PackingHandler(object? message);
+
+        private PackingHandler? _onHeaderWriting;
+        public event PackingHandler OnHeaderWriting
+        {
+            add => _onHeaderWriting += value;
+            remove => _onHeaderWriting -= value;
+        }
+        private PackingHandler? _onDataWriting;
+        public event PackingHandler OnDataWriting
+        {
+            add => _onDataWriting += value;
+            remove => _onDataWriting -= value;
+        }
+        private PackingHandler? _onIndexWriting;
+        public event PackingHandler OnIndexWriting
+        {
+            add => _onIndexWriting += value;
+            remove => _onIndexWriting -= value;
+        }
+
         private readonly FileStream _stream;
         private bool _disposed = false;
         private bool _headerWrited = false;
@@ -75,6 +96,7 @@ namespace DBPF_Compiler.DBPF
                 return;
 
             _stream.Position = HeaderOffset;
+            _onHeaderWriting?.Invoke(null);
 
             _stream.WriteUInt32(Magic);
             _stream.WriteInt32(MajorVersion);
@@ -98,9 +120,9 @@ namespace DBPF_Compiler.DBPF
         {
             _headerWrited = _indexWrited = false;
 
+
             uint size = (uint)data.LongLength;
-            _stream.Write(data);
-            _index.Entries.Add(new IndexEntry
+            var entry = new IndexEntry
             {
                 TypeID = typeID,
                 InstanceID = instanceID,
@@ -108,7 +130,10 @@ namespace DBPF_Compiler.DBPF
                 Offset = IndexOffset,
                 CompressedSize = size,
                 UncompressedSize = size,
-            });
+            };
+            _index.Entries.Add(entry);
+            _onDataWriting?.Invoke(entry);
+            _stream.Write(data);
 
             IndexSize += IndexEntry.EntrySize;
             IndexOffset += size;
@@ -121,6 +146,7 @@ namespace DBPF_Compiler.DBPF
             if (_indexWrited)
                 return;
 
+            _onIndexWriting?.Invoke(IndexCount);
             _stream.WriteUInt32(_index.ValuesFlag);
             _stream.WriteUInt32(_index.TypeID);
             _stream.WriteUInt32(_index.GroupID);

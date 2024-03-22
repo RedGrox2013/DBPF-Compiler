@@ -1,6 +1,6 @@
 ﻿namespace DBPF_Compiler.DBPF
 {
-    internal struct IndexEntry
+    public class IndexEntry
     {
         public uint TypeID { get; set; }
         public uint GroupID { get; set; }
@@ -13,7 +13,5 @@
         public bool IsSaved { get; private set; } = true;
 
         public const int EntrySize = 4 + 4 + 4 + 4 + 2 + 2 + sizeof(uint) + sizeof(uint);
-
-        public IndexEntry() { }
     }
 }
