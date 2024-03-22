@@ -144,10 +144,8 @@ namespace DBPF_Compiler.DBPF
         {
             if (_disposed) return;
 
-            if (!_indexWrited)
-                WriteIndex();
-            if (!_headerWrited)
-                WriteHeader();
+            WriteIndex();
+            WriteHeader();
 
             if (disposing)
                 _stream.Dispose();
