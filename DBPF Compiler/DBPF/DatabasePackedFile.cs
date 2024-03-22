@@ -44,11 +44,11 @@ namespace DBPF_Compiler.DBPF
         /// <summary>
         /// Number of index entries in the package.
         /// </summary>
-        public int IndexCount => _entries.Count;
+        public int IndexCount => _index.Entries.Count;
         /// <summary>
         /// The total size in bytes of index entries.
         /// </summary>
-        public int IndexSize { get; private set; }
+        public int IndexSize { get; private set; } = 8;
         /// <summary>
         /// Observed as always being 3.
         /// </summary>
@@ -59,7 +59,6 @@ namespace DBPF_Compiler.DBPF
         public uint IndexOffset { get; private set; }
         #endregion
 
-        private readonly List<IndexEntry> _entries = [];
         private readonly DBPFIndex _index = new();
 
         public DatabasePackedFile(FileStream stream)
@@ -75,7 +74,6 @@ namespace DBPF_Compiler.DBPF
             if (_headerWrited)
                 return;
 
-            var oldPosition = _stream.Position;
             _stream.Position = HeaderOffset;
 
             _stream.WriteUInt32(Magic);
@@ -90,7 +88,7 @@ namespace DBPF_Compiler.DBPF
             _stream.WriteUInt32(IndexOffset);
             //_stream.Seek(sizeof(int) + 24, SeekOrigin.Current); // Unknown value + unknown byte array
 
-            _stream.Position = oldPosition;
+            _stream.Position = IndexOffset;
             _headerWrited = true;
         }
         public async Task WriteHeaderAsync()
@@ -100,8 +98,20 @@ namespace DBPF_Compiler.DBPF
         {
             _headerWrited = _indexWrited = false;
 
-            // переделать
-            throw new NotImplementedException();
+            uint size = (uint)data.LongLength;
+            _stream.Write(data);
+            _index.Entries.Add(new IndexEntry
+            {
+                TypeID = typeID,
+                InstanceID = instanceID,
+                GroupID = groupID,
+                Offset = IndexOffset,
+                CompressedSize = size,
+                UncompressedSize = size,
+            });
+
+            IndexSize += IndexEntry.EntrySize;
+            IndexOffset += size;
         }
         public async Task WriteDataAsync(byte[] data, uint instanceID, uint typeID, uint groupID)
             => await Task.Run(() => WriteData(data, instanceID, typeID, groupID));
@@ -111,8 +121,15 @@ namespace DBPF_Compiler.DBPF
             if (_indexWrited)
                 return;
 
+            _stream.WriteUInt32(_index.ValuesFlag);
+            _stream.WriteUInt32(_index.TypeID);
+            _stream.WriteUInt32(_index.GroupID);
+            _stream.WriteUInt32(DBPFIndex.UnknownID);
+
+            foreach (var entry in _index.Entries)
+                _stream.WriteIndexEntry(entry);
+
             _indexWrited = true;
-            throw new NotImplementedException();
         }
         public void WriteIndexAsync()
             => Task.Run(WriteIndex);

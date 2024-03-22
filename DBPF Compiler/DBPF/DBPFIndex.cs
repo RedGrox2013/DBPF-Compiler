@@ -2,10 +2,12 @@
 {
     internal struct DBPFIndex
     {
-        public const uint ValuesFlag = 4;
+        public readonly uint ValuesFlag = 4;
         public readonly uint? TypeID = null;
         public readonly uint? GroupID = null;
         public const uint UnknownID = 0;
+
+        public List<IndexEntry> Entries { get; private set; }
 
         /*/// <summary>
         /// A bitmask representing what values are in the index header that will apply to all index entries.
@@ -46,6 +48,6 @@
         }
         private uint _groupID;*/
 
-        public DBPFIndex() { }
+        public DBPFIndex() => Entries = [];
     }
 }
