@@ -75,7 +75,6 @@ namespace DBPF_Compiler.DBPF
             if (_headerWrited)
                 return;
 
-            _headerWrited = true;
             var oldPosition = _stream.Position;
             _stream.Position = HeaderOffset;
 
@@ -89,9 +88,10 @@ namespace DBPF_Compiler.DBPF
             _stream.Seek(12, SeekOrigin.Current);               // Unknown byte array
             _stream.WriteInt32(Unknown3C);
             _stream.WriteUInt32(IndexOffset);
-            _stream.Seek(sizeof(int) + 24, SeekOrigin.Current); // Unknown value + unknown byte array
+            //_stream.Seek(sizeof(int) + 24, SeekOrigin.Current); // Unknown value + unknown byte array
 
             _stream.Position = oldPosition;
+            _headerWrited = true;
         }
         public async Task WriteHeaderAsync()
             => await Task.Run(WriteHeader);
@@ -101,19 +101,7 @@ namespace DBPF_Compiler.DBPF
             _headerWrited = _indexWrited = false;
 
             // переделать
-            //_stream.Position = IndexOffset;
-            //_stream.Write(data);
-            //_entries.Add(new IndexEntry
-            //{
-            //    TypeId = typeID,
-            //    GroupId = groupID,
-            //    InstanceId = instanceID,
-            //    Offset = IndexOffset,
-            //    CompressedSize = (uint)data.LongLength,
-            //    UncompressedSize = (uint)data.LongLength
-            //});
-            //IndexOffset += (uint)data.LongLength;
-            //IndexSize += IndexEntry.EntrySize;
+            throw new NotImplementedException();
         }
         public async Task WriteDataAsync(byte[] data, uint instanceID, uint typeID, uint groupID)
             => await Task.Run(() => WriteData(data, instanceID, typeID, groupID));
