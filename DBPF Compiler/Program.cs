@@ -30,7 +30,7 @@ const string STR_DATA = "Я люблю кринжовник";
 byte[] data = Encoding.Default.GetBytes(STR_DATA);
 uint dataID = FNVHash.Compute(STR_DATA);
 
-using FileStream fs = File.Create("data.package");
+using FileStream fs = File.Create("output.package");
 using DatabasePackedFile dbpf = new(fs);
 dbpf.OnHeaderWriting += msg => Console.WriteLine("Writing header");
 dbpf.OnDataWriting += DisplayDataWritingMessage;
