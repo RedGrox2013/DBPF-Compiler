@@ -37,7 +37,7 @@ namespace DBPF_Compiler
             stream.WriteUInt32(entry.UnknownID);
             stream.WriteUInt32(entry.InstanceID);
             stream.WriteUInt32(entry.Offset);
-            stream.WriteUInt32(entry.CompressedSize);
+            stream.WriteUInt32(entry.CompressedSize | 0x80000000);
             stream.WriteUInt32(entry.UncompressedSize);
             stream.WriteUInt16(entry.IsCompressed ? (ushort)0xFFFF : (ushort)0);
             stream.WriteBoolean(entry.IsSaved);
