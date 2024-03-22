@@ -3,6 +3,8 @@
  * https://web.archive.org/web/20090130111849/http://blog.spore.vg/file-formats/package/
  */
 
+using System.Drawing;
+
 namespace DBPF_Compiler.DBPF
 {
     public class DatabasePackedFile : IDisposable
@@ -120,7 +122,6 @@ namespace DBPF_Compiler.DBPF
         {
             _headerWrited = _indexWrited = false;
 
-
             uint size = (uint)data.LongLength;
             var entry = new IndexEntry
             {
@@ -140,6 +141,29 @@ namespace DBPF_Compiler.DBPF
         }
         public async Task WriteDataAsync(byte[] data, uint instanceID, uint typeID, uint groupID)
             => await Task.Run(() => WriteData(data, instanceID, typeID, groupID));
+
+        public void CopyFromStream(Stream stream, uint instanceID, uint typeID, uint groupID)
+        {
+            _headerWrited = _indexWrited = false;
+
+            var entry = new IndexEntry
+            {
+                TypeID = typeID,
+                InstanceID = instanceID,
+                GroupID = groupID,
+                Offset = IndexOffset,
+                CompressedSize = (uint)stream.Length,
+                UncompressedSize = (uint)stream.Length,
+            };
+            _index.Entries.Add(entry);
+            _onDataWriting?.Invoke(entry);
+            stream.CopyTo(_stream);
+
+            IndexSize += IndexEntry.EntrySize;
+            IndexOffset += (uint)stream.Length;
+        }
+        public async Task CopyFromStreamAsync(Stream stream, uint instanceID, uint typeID, uint groupID)
+            => await Task.Run(() => CopyFromStream(stream, instanceID, typeID, groupID));
 
         public void WriteIndex()
         {

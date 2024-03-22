@@ -17,5 +17,29 @@
 
             return hash;
         }
+
+        public static bool TryParse(string? input, out uint hash)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                hash = 0;
+                return false;
+            }
+
+            if (!input.StartsWith("0x") && !input.StartsWith('#'))
+                return uint.TryParse(input.Replace("0x", null).Replace("#", null), out hash);
+
+            try
+            {
+                hash = Convert.ToUInt32(input, 16);
+            }
+            catch
+            {
+                hash = 0;
+                return false;
+            }
+
+            return true;
+        }
     }
 }

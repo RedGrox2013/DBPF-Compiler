@@ -1,5 +1,6 @@
 ﻿using DBPF_Compiler;
 using DBPF_Compiler.DBPF;
+using System.Diagnostics;
 using System.Text;
 
 static void DisplayDataWritingMessage(object? message)
@@ -13,16 +14,19 @@ static void DisplayDataWritingMessage(object? message)
 
 Console.WriteLine("Database Packed File Compiler");
 
-//string path;
-//if (args.Length == 0)
-//{
-//    Console.Write("Enter data path: ");
-//    path = Console.ReadLine() ?? string.Empty;
-//}
-//else
-//    path = args[0];
+string path;
+if (args.Length == 0)
+{
+    Console.Write("Enter data path: ");
+    path = Console.ReadLine() ?? string.Empty;
+}
+else
+    path = args[0];
 
-const string STR_DATA = "Кто прочитал, тот лох";
+DBPFPacker packer = new(path);
+Stopwatch stopwatch = Stopwatch.StartNew();
+
+const string STR_DATA = "Я люблю кринжовник";
 byte[] data = Encoding.Default.GetBytes(STR_DATA);
 uint dataID = FNVHash.Compute(STR_DATA);
 
@@ -32,3 +36,9 @@ dbpf.OnHeaderWriting += msg => Console.WriteLine("Writing header");
 dbpf.OnDataWriting += DisplayDataWritingMessage;
 dbpf.OnIndexWriting += msg => Console.WriteLine("Writing index");
 dbpf.WriteData(data, dataID, dataID, dataID);
+
+packer.Pack(dbpf);
+
+stopwatch.Stop();
+var ts = stopwatch.Elapsed;
+Console.WriteLine($"The file was packed in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
