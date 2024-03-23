@@ -69,7 +69,7 @@ namespace DBPF_Compiler.DBPF
         /// <summary>
         /// The total size in bytes of index entries.
         /// </summary>
-        public int IndexSize { get; private set; } = 8;
+        public int IndexSize { get; private set; }
         /// <summary>
         /// Observed as always being 3.
         /// </summary>
@@ -80,13 +80,14 @@ namespace DBPF_Compiler.DBPF
         public uint IndexOffset { get; private set; }
         #endregion
 
-        private readonly DBPFIndex _index = new();
+        private DBPFIndex _index = new();
 
         public DatabasePackedFile(FileStream stream)
         {
             HeaderOffset = (uint)stream.Position;
             stream.Seek(HeaderSize, SeekOrigin.Current);
             IndexOffset = HeaderOffset + HeaderSize;
+            IndexSize = _index.SizeWithoutEntries;
             _stream = stream;
         }
 
@@ -134,7 +135,7 @@ namespace DBPF_Compiler.DBPF
             _onDataWriting?.Invoke(entry);
             _stream.Write(data);
 
-            IndexSize += IndexEntry.EntrySize;
+            IndexSize += entry.EntrySize;
             IndexOffset += size;
         }
         public async Task WriteDataAsync(byte[] data, uint instanceID, uint typeID, uint groupID)
@@ -157,7 +158,7 @@ namespace DBPF_Compiler.DBPF
             _onDataWriting?.Invoke(entry);
             stream.CopyTo(_stream);
 
-            IndexSize += IndexEntry.EntrySize;
+            IndexSize += entry.EntrySize;
             IndexOffset += (uint)stream.Length;
         }
         public async Task CopyFromStreamAsync(Stream stream, uint instanceID, uint typeID, uint groupID)
@@ -172,7 +173,7 @@ namespace DBPF_Compiler.DBPF
             _stream.WriteUInt32(_index.ValuesFlag);
             _stream.WriteUInt32(_index.TypeID);
             _stream.WriteUInt32(_index.GroupID);
-            _stream.WriteUInt32(DBPFIndex.UnknownID);
+            _stream.WriteUInt32(_index.UnknownID);
 
             foreach (var entry in _index.Entries)
                 _stream.WriteIndexEntry(entry);
@@ -200,7 +201,56 @@ namespace DBPF_Compiler.DBPF
             _stream.Read(buffer);
             _stream.Position = IndexOffset = BitConverter.ToUInt32(buffer);
 
-            // TODO: reading index
+            _index.Entries.Clear();
+            _stream.Read(buffer);
+            _index.ValuesFlag = BitConverter.ToUInt32(buffer);
+            if (_index.GetFlagAt(0))
+            {
+                _stream.Read(buffer);
+                _index.TypeID = BitConverter.ToUInt32(buffer);
+            }
+            if (_index.GetFlagAt(1))
+            {
+                _stream.Read(buffer);
+                _index.GroupID = BitConverter.ToUInt32(buffer);
+            }
+            if (_index.GetFlagAt(2))
+            {
+                _stream.Read(buffer);
+                _index.UnknownID = BitConverter.ToUInt32(buffer);
+            }
+
+            long endPosition = IndexOffset + IndexSize;
+            while (_stream.Position < endPosition)
+            {
+                var entry = new IndexEntry();
+                if (!_index.GetFlagAt(0))
+                {
+                    _stream.Read(buffer);
+                    entry.TypeID = BitConverter.ToUInt32(buffer);
+                }
+                if (!_index.GetFlagAt(1))
+                {
+                    _stream.Read(buffer);
+                    entry.GroupID = BitConverter.ToUInt32(buffer);
+                }
+                if (!_index.GetFlagAt(2))
+                    _stream.Seek(sizeof(uint), SeekOrigin.Begin);
+                _stream.Read(buffer);
+                entry.InstanceID = BitConverter.ToUInt32(buffer);
+                _stream.Read(buffer);
+                entry.Offset = BitConverter.ToUInt32(buffer);
+                _stream.Read(buffer);
+                entry.CompressedSize = BitConverter.ToUInt32(buffer);
+                _stream.Read(buffer);
+                entry.UncompressedSize = BitConverter.ToUInt32(buffer);
+                _stream.Read(buffer, 0, sizeof(ushort));
+                entry.IsCompressed = BitConverter.ToUInt16(buffer) == 0xFFFF;
+                entry.IsSaved = _stream.ReadByte() == 1;
+                _stream.Seek(1, SeekOrigin.Current);
+                _index.Entries.Add(entry);
+            }
+            _stream.Position = IndexOffset;
         }
 
         #region IDisposable realization
