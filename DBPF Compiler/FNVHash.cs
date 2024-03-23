@@ -27,7 +27,7 @@
             }
 
             if (!input.StartsWith("0x") && !input.StartsWith('#'))
-                return uint.TryParse(input.Replace("0x", null).Replace("#", null), out hash);
+                return uint.TryParse(input, out hash);
 
             try
             {
