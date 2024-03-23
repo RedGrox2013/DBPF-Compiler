@@ -150,7 +150,7 @@ namespace DBPF_Compiler.DBPF
                 InstanceID = instanceID,
                 GroupID = groupID,
                 Offset = IndexOffset,
-                CompressedSize = (uint)stream.Length,
+                CompressedSize = (uint)stream.Length | 0x80000000,
                 UncompressedSize = (uint)stream.Length,
             };
             _index.Entries.Add(entry);
