@@ -18,13 +18,9 @@ namespace DBPF_Compiler
                 foreach (var file in dir.GetFiles())
                 {
                     string fileName = file.Name.Split('.')[0];
-                    if (!FNVHash.TryParse(fileName, out var instanceID))
-                        instanceID = FNVHash.Compute(fileName);
-                    var extension = file.Extension.Remove(0, 1);
-                    if (!FNVHash.TryParse(extension, out var typeID))
-                        typeID = FNVHash.Compute(extension);
-                    if (!FNVHash.TryParse(dir.Name, out var groupID))
-                        groupID = FNVHash.Compute(dir.Name);
+                    var instanceID = ParseHashOrCompute(fileName);
+                    var typeID = ParseHashOrCompute(file.Extension.Remove(0, 1));
+                    var groupID = ParseHashOrCompute(dir.Name);
 
                     using FileStream f = file.OpenRead();
                     output.CopyFromStream(f, instanceID, typeID, groupID);
@@ -32,6 +28,13 @@ namespace DBPF_Compiler
             }
             output.WriteIndex();
             output.WriteHeader();
+        }
+
+        private static uint ParseHashOrCompute(string input)
+        {
+            if (FNVHash.TryParse(input, out uint hash))
+                return hash;
+            return FNVHash.Compute(input);
         }
     }
 }
