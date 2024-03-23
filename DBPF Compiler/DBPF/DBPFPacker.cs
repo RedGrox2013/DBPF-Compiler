@@ -1,6 +1,4 @@
-﻿using DBPF_Compiler.DBPF;
-
-namespace DBPF_Compiler
+﻿namespace DBPF_Compiler.DBPF
 {
     public class DBPFPacker
     {
