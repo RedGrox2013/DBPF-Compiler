@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DBPF Compiler": {
+      "commandName": "Project",
+      "commandLineArgs": "..\\..\\..\\..\\TestData"
+    }
+  }
+}
