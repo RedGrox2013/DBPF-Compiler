@@ -3,8 +3,6 @@
  * https://web.archive.org/web/20090130111849/http://blog.spore.vg/file-formats/package/
  */
 
-using System.Drawing;
-
 namespace DBPF_Compiler.DBPF
 {
     public class DatabasePackedFile : IDisposable
