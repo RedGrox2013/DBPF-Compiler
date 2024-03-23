@@ -3,15 +3,6 @@ using DBPF_Compiler.DBPF;
 using System.Diagnostics;
 using System.Text;
 
-static void DisplayDataWritingMessage(object? message)
-{
-    if (message is IndexEntry entry)
-        Console.WriteLine("Writing data: 0x{0}!0x{1}.0x{2}",
-            Convert.ToString(entry.GroupID, 16),
-            Convert.ToString(entry.InstanceID, 16),
-            Convert.ToString(entry.TypeID, 16));
-}
-
 Console.WriteLine("Database Packed File Compiler");
 
 string path;
@@ -46,3 +37,21 @@ Console.WriteLine($"\nIndex size: {dbpf.IndexSize}, index offset {dbpf.IndexOffs
 dbpf.ReadDBPFInfo();
 Console.WriteLine(@$"Index size: {dbpf.IndexSize}, index offset {dbpf.IndexOffset}
 The file was packed in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
+
+
+static void DisplayDataWritingMessage(object? message)
+{
+    if (message is not IndexEntry entry)
+        return;
+    string instance = Convert.ToString(entry.InstanceID, 16);
+    if (entry.GroupID == null || entry.TypeID == null)
+    {
+        Console.WriteLine("Writing data: " + instance);
+        return;
+    }
+
+    Console.WriteLine("Writing data: 0x{0}!0x{1}.0x{2}",
+        Convert.ToString((uint)entry.GroupID, 16),
+        instance,
+        Convert.ToString((uint)entry.TypeID, 16));
+}
