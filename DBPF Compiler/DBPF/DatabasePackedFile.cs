@@ -28,7 +28,7 @@ namespace DBPF_Compiler.DBPF
             remove => _onIndexWriting -= value;
         }
 
-        private readonly FileStream _stream;
+        private readonly Stream _stream;
         private bool _disposed = false;
         private bool _headerWrited = false;
         private bool _indexWrited = false;
@@ -181,6 +181,27 @@ namespace DBPF_Compiler.DBPF
         }
         public void WriteIndexAsync()
             => Task.Run(WriteIndex);
+
+        public void ReadDBPFInfo()
+        {
+            _stream.Position = HeaderOffset;
+            byte[] buffer = new byte[sizeof(uint)];
+             _stream.Read(buffer);
+            if (BitConverter.ToUInt32(buffer) != Magic)
+                throw new NotSupportedException(BitConverter.ToString(buffer) +
+                    " is not supported.");
+
+            _stream.Read(buffer);
+            MajorVersion = BitConverter.ToInt32(buffer);
+            _stream.Seek(9 * sizeof(int), SeekOrigin.Current);
+            _stream.Read(buffer);
+            IndexSize = BitConverter.ToInt32(buffer);
+            _stream.Seek(12 + sizeof(int), SeekOrigin.Current);
+            _stream.Read(buffer);
+            _stream.Position = IndexOffset = BitConverter.ToUInt32(buffer);
+
+            // TODO: reading index
+        }
 
         #region IDisposable realization
         public void Dispose()

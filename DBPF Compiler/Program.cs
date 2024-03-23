@@ -41,4 +41,8 @@ packer.Pack(dbpf);
 
 stopwatch.Stop();
 var ts = stopwatch.Elapsed;
-Console.WriteLine($"The file was packed in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
+
+Console.WriteLine($"\nIndex size: {dbpf.IndexSize}, index offset {dbpf.IndexOffset}\nReading header");
+dbpf.ReadDBPFInfo();
+Console.WriteLine(@$"Index size: {dbpf.IndexSize}, index offset {dbpf.IndexOffset}
+The file was packed in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
