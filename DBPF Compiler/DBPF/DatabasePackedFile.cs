@@ -130,7 +130,7 @@ namespace DBPF_Compiler.DBPF
                 InstanceID = instanceID,
                 GroupID = groupID,
                 Offset = IndexOffset,
-                CompressedSize = size,
+                CompressedSize = size | 0x80000000,
                 UncompressedSize = size,
             };
             _index.Entries.Add(entry);
@@ -185,7 +185,7 @@ namespace DBPF_Compiler.DBPF
         public async Task WriteIndexAsync()
             => await Task.Run(WriteIndex);
 
-        public List<IndexEntry> ReadDBPFInfo()
+        public ResourceKey[] ReadDBPFInfo()
         {
             _stream.Position = HeaderOffset;
             byte[] buffer = new byte[sizeof(uint)];
@@ -196,7 +196,10 @@ namespace DBPF_Compiler.DBPF
 
             _stream.Read(buffer);
             MajorVersion = BitConverter.ToInt32(buffer);
-            _stream.Seek(9 * sizeof(int), SeekOrigin.Current);
+            _stream.Seek(7 * sizeof(int), SeekOrigin.Current);
+            _stream.Read(buffer);
+            var indexCount = BitConverter.ToInt32(buffer);
+            _stream.Seek(sizeof(int), SeekOrigin.Current);
             _stream.Read(buffer);
             IndexSize = BitConverter.ToInt32(buffer);
             _stream.Seek(12 + sizeof(int), SeekOrigin.Current);
@@ -204,6 +207,7 @@ namespace DBPF_Compiler.DBPF
             _stream.Position = IndexOffset = BitConverter.ToUInt32(buffer);
 
             _index.Entries.Clear();
+            ResourceKey[] keys = new ResourceKey[indexCount];
             _stream.Read(buffer);
             _index.ValuesFlag = BitConverter.ToUInt32(buffer);
             if (_index.GetFlagAt(0))
@@ -222,8 +226,7 @@ namespace DBPF_Compiler.DBPF
                 _index.UnknownID = BitConverter.ToUInt32(buffer);
             }
 
-            long endPosition = IndexOffset + IndexSize;
-            while (_stream.Position < endPosition)
+           for (int i = 0; i < indexCount; i++)
             {
                 var entry = new IndexEntry();
                 if (!_index.GetFlagAt(0))
@@ -251,23 +254,36 @@ namespace DBPF_Compiler.DBPF
                 entry.IsSaved = _stream.ReadByte() == 1;
                 _stream.Seek(1, SeekOrigin.Current);
                 _index.Entries.Add(entry);
+                keys[i] = new ResourceKey(entry.InstanceID, entry.TypeID ?? 0, entry.GroupID ?? 0);
             }
             _stream.Position = IndexOffset;
 
-            return _index.Entries;
+            return keys;
         }
-        public async Task<List<IndexEntry>> ReadDBPFInfoAsync()
+        public async Task<ResourceKey[]> ReadDBPFInfoAsync()
             => await Task.Run(ReadDBPFInfo);
 
-        public bool CopyDataTo(Stream stream, ResourceKey key)
+        public bool CopyResourceTo(Stream destination, ResourceKey key)
         {
-            //foreach (var entry in _index.Entries)
-            //{
-                
-            //}
+            foreach (var entry in _index.Entries)
+            {
+                if (key.Equals(entry))
+                {
+                    var oldPosition = _stream.Position;
+                    _stream.Position = entry.Offset;
+                    var buffer = new byte[entry.UncompressedSize];
+                    _stream.Read(buffer);
+                    destination.Write(buffer);
+                    _stream.Position = oldPosition;
 
-            throw new NotImplementedException();
+                    return true;
+                }
+            }
+
+            return false;
         }
+        public async Task<bool> CopyResourceToAsync(Stream destination, ResourceKey key)
+            => await Task.Run(() => CopyResourceTo(destination, key));
 
         #region IDisposable realization
         public void Dispose()
@@ -279,8 +295,11 @@ namespace DBPF_Compiler.DBPF
         {
             if (_disposed) return;
 
-            WriteIndex();
-            WriteHeader();
+            if (_stream.CanWrite)
+            {
+                WriteIndex();
+                WriteHeader();
+            }
 
             if (disposing)
                 _stream.Dispose();

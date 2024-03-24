@@ -44,9 +44,25 @@ static void Pack(string inputPath, string outputPath)
 
 static void Unpack(string inputPath, string outputPath)
 {
-    //using FileStream fs = new(inputPath, FileMode.Open, FileAccess.Read);
-    //using DatabasePackedFile dbpf = new(fs);
-    //var entries = dbpf.ReadDBPFInfo();
+    DirectoryInfo dir = new(outputPath);
+    using FileStream fs = new(inputPath, FileMode.Open, FileAccess.Read);
+    using DatabasePackedFile dbpf = new(fs);
+    Stopwatch stopwatch = Stopwatch.StartNew();
+
+    foreach (var resource in dbpf.ReadDBPFInfo())
+    {
+        var path = outputPath + "\\0x" + Convert.ToString(resource.GroupID, 16);
+        if (!Directory.Exists(path))
+            Directory.CreateDirectory(path);
+        using FileStream file = File.Create(path + "\\0x" +
+            Convert.ToString(resource.InstanceID, 16) + ".0x" +
+            Convert.ToString(resource.TypeID, 16));
+        dbpf.CopyResourceTo(file, resource);
+    }
+
+    stopwatch.Stop();
+    var ts = stopwatch.Elapsed;
+    Console.WriteLine($"The file was unpacked in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
 }
 
 static void DisplayDataWritingMessage(object? message)

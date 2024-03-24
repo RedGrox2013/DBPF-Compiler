@@ -1,8 +1,16 @@
 {
   "profiles": {
-    "DBPF Compiler": {
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "pack": {
       "commandName": "Project",
-      "commandLineArgs": "..\\..\\..\\..\\TestData"
+      "commandLineArgs": "--pack ..\\..\\..\\..\\TestData test.package"
+    },
+    "unpack": {
+      "commandName": "Project",
+      "commandLineArgs": "--unpack test.package test_unpacked"
     }
   }
 }
