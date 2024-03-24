@@ -8,6 +8,7 @@
     <Nullable>enable</Nullable>
     <AssemblyVersion>1.0.0.1</AssemblyVersion>
     <FileVersion>1.0.0.1</FileVersion>
+    <AssemblyName>dbpfc</AssemblyName>
   </PropertyGroup>
 
 </Project>

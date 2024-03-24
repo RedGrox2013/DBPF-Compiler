@@ -3,6 +3,8 @@
  * https://web.archive.org/web/20090130111849/http://blog.spore.vg/file-formats/package/
  */
 
+using DBPF_Compiler.Types;
+
 namespace DBPF_Compiler.DBPF
 {
     public class DatabasePackedFile : IDisposable
@@ -183,7 +185,7 @@ namespace DBPF_Compiler.DBPF
         public async Task WriteIndexAsync()
             => await Task.Run(WriteIndex);
 
-        public void ReadDBPFInfo()
+        public List<IndexEntry> ReadDBPFInfo()
         {
             _stream.Position = HeaderOffset;
             byte[] buffer = new byte[sizeof(uint)];
@@ -251,9 +253,21 @@ namespace DBPF_Compiler.DBPF
                 _index.Entries.Add(entry);
             }
             _stream.Position = IndexOffset;
+
+            return _index.Entries;
         }
-        public async Task ReadDBPFInfoAsync()
+        public async Task<List<IndexEntry>> ReadDBPFInfoAsync()
             => await Task.Run(ReadDBPFInfo);
+
+        public bool CopyDataTo(Stream stream, ResourceKey key)
+        {
+            //foreach (var entry in _index.Entries)
+            //{
+                
+            //}
+
+            throw new NotImplementedException();
+        }
 
         #region IDisposable realization
         public void Dispose()
