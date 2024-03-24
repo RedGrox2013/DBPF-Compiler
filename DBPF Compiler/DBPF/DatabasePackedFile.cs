@@ -180,8 +180,8 @@ namespace DBPF_Compiler.DBPF
 
             _indexWrited = true;
         }
-        public void WriteIndexAsync()
-            => Task.Run(WriteIndex);
+        public async void WriteIndexAsync()
+            => await Task.Run(WriteIndex);
 
         public void ReadDBPFInfo()
         {
