@@ -180,7 +180,7 @@ namespace DBPF_Compiler.DBPF
 
             _indexWrited = true;
         }
-        public async void WriteIndexAsync()
+        public async Task WriteIndexAsync()
             => await Task.Run(WriteIndex);
 
         public void ReadDBPFInfo()
@@ -252,6 +252,8 @@ namespace DBPF_Compiler.DBPF
             }
             _stream.Position = IndexOffset;
         }
+        public async Task ReadDBPFInfoAsync()
+            => await Task.Run(ReadDBPFInfo);
 
         #region IDisposable realization
         public void Dispose()
