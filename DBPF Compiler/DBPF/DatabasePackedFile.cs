@@ -191,9 +191,12 @@ namespace DBPF_Compiler.DBPF
 
             Task.Run(() => _onIndexWriting?.Invoke(IndexCount));
             _stream.WriteUInt32(_index.ValuesFlag);
-            _stream.WriteUInt32(_index.TypeID);
-            _stream.WriteUInt32(_index.GroupID);
-            _stream.WriteUInt32(_index.UnknownID);
+            if (_index.GetFlagAt(0))
+                _stream.WriteUInt32(_index.TypeID);
+            if (_index.GetFlagAt(1))
+                _stream.WriteUInt32(_index.GroupID);
+            if (_index.GetFlagAt(2))
+                _stream.WriteUInt32(_index.UnknownID);
 
             foreach (var entry in _index.Entries)
                 _stream.WriteIndexEntry(entry);
@@ -254,11 +257,13 @@ namespace DBPF_Compiler.DBPF
                     _stream.Read(buffer);
                     entry.TypeID = BitConverter.ToUInt32(buffer);
                 }
+                else entry.TypeID = _index.TypeID;
                 if (!_index.GetFlagAt(1))
                 {
                     _stream.Read(buffer);
                     entry.GroupID = BitConverter.ToUInt32(buffer);
                 }
+                else entry.GroupID = _index.GroupID;
                 if (!_index.GetFlagAt(2))
                     _stream.Seek(sizeof(uint), SeekOrigin.Begin);
                 _stream.Read(buffer);
@@ -277,6 +282,7 @@ namespace DBPF_Compiler.DBPF
                 keys[i] = new ResourceKey(entry.InstanceID, entry.TypeID ?? 0, entry.GroupID ?? 0);
             }
             _stream.Position = IndexOffset;
+            _index.ValuesFlag = 4;
 
             return keys;
         }
