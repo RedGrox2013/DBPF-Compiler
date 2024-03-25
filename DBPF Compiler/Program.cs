@@ -3,7 +3,6 @@ using DBPF_Compiler.DBPF;
 using DBPF_Compiler.Types;
 using System.Diagnostics;
 using System.Text;
-using System.Threading.Channels;
 
 Console.WriteLine("Spore Database Packed File Compiler");
 
