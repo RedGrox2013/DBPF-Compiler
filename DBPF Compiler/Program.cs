@@ -11,16 +11,16 @@ if (args.Length == 0)
 
 if (args[0].Equals("--help") || args[0].Equals("-h"))
     Console.WriteLine(@"
---help, -h:                    show help
---pack, -p <input> <output>:   pack the contents of a folder into DBPF
---unpack, -u <input> <output>: unpack DBPF to a specified directory
+--help, -h:                                   show help
+--pack, -p <input> <output> <secret>:         pack the contents of a folder into DBPF. <secret> - name of the folder whose contents are hidden in the DBPF
+--unpack, -u <input> <output> <unpackSecret>: unpack DBPF to a specified directory. <unpackSecret> - unpack hidden data (true/false)
 ");
 else if ((args[0].Equals("--pack") || args[0].Equals("-p")) && CheckArguments(args))
     Pack(args[1], args[2]);
 else if ((args[0].Equals("--unpack") || args[0].Equals("-u")) && CheckArguments(args))
     Unpack(args[1], args[2]);
 
-static void Pack(string inputPath, string outputPath)
+static void Pack(string inputPath, string outputPath, string? secretFolder = null)
 {
     DBPFPacker packer = new(inputPath);
     Stopwatch stopwatch = Stopwatch.StartNew();
@@ -36,7 +36,9 @@ static void Pack(string inputPath, string outputPath)
     dbpf.OnIndexWriting += msg => Console.WriteLine("Writing index...");
     dbpf.WriteData(data, new ResourceKey(dataID, dataID, dataID));
 
-    packer.Pack(dbpf);
+    dbpf.WriteSecretData(Encoding.Default.GetBytes("Уууу секретики"), new("Секретик", "txt"));
+
+    //packer.Pack(dbpf);
 
     stopwatch.Stop();
     var ts = stopwatch.Elapsed;
