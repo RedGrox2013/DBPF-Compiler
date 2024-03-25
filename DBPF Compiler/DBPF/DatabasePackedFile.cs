@@ -287,7 +287,7 @@ namespace DBPF_Compiler.DBPF
                 keys[i] = new ResourceKey(entry.InstanceID, entry.TypeID ?? 0, entry.GroupID ?? 0);
                 IndexSize += entry.EntrySize;
 
-                if ((entry.CompressedSize | COMPRESSED_OR) != entry.UncompressedSize)
+                if ((entry.UncompressedSize | COMPRESSED_OR) != entry.CompressedSize)
                     throw new NotSupportedException("Data is compressed");
             }
             _stream.Position = IndexOffset;
