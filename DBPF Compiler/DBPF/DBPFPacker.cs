@@ -35,7 +35,8 @@ namespace DBPF_Compiler.DBPF
             foreach (var resource in dbpf.ReadDBPFInfo())
             {
                 var sr = new StringResourceKey(resource);
-                var path = Directory.FullName + "\\" + sr.GroupID ?? "0x0";
+                var path = Directory.FullName + "\\" + (string.IsNullOrWhiteSpace(sr.GroupID) ?
+                    "0x0" : sr.GroupID);
                 if (!System.IO.Directory.Exists(path))
                     System.IO.Directory.CreateDirectory(path);
                 using FileStream file = File.Create(path + "\\" + sr.InstanceID + "." + sr.TypeID ?? "0x0");

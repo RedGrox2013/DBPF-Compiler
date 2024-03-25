@@ -4,6 +4,7 @@
  */
 
 using DBPF_Compiler.Types;
+using System.Text;
 
 namespace DBPF_Compiler.DBPF
 {
@@ -55,6 +56,8 @@ namespace DBPF_Compiler.DBPF
 
         public const uint HeaderSize = 96u;
         public readonly uint HeaderOffset;
+
+        private const uint COMPRESSED_OR = 0x80000000;
 
         #region DBPF Header
         /// <summary>
@@ -149,7 +152,7 @@ namespace DBPF_Compiler.DBPF
                 InstanceID = key.InstanceID,
                 GroupID = key.GroupID,
                 Offset = IndexOffset,
-                CompressedSize = size | 0x80000000,
+                CompressedSize = size | COMPRESSED_OR,
                 UncompressedSize = size,
             };
             _index.Entries.Add(entry);
@@ -172,7 +175,7 @@ namespace DBPF_Compiler.DBPF
                 InstanceID = key.InstanceID,
                 GroupID = key.GroupID,
                 Offset = IndexOffset,
-                CompressedSize = (uint)stream.Length | 0x80000000,
+                CompressedSize = (uint)stream.Length | COMPRESSED_OR,
                 UncompressedSize = (uint)stream.Length,
             };
             _index.Entries.Add(entry);
@@ -213,7 +216,7 @@ namespace DBPF_Compiler.DBPF
             byte[] buffer = new byte[sizeof(uint)];
             _stream.Read(buffer);
             if (BitConverter.ToUInt32(buffer) != Magic)
-                throw new NotSupportedException(BitConverter.ToString(buffer) +
+                throw new NotSupportedException(Encoding.ASCII.GetString(buffer) +
                     " is not supported.");
 
             _stream.Read(buffer);
@@ -222,9 +225,11 @@ namespace DBPF_Compiler.DBPF
             _stream.Read(buffer);
             var indexCount = BitConverter.ToInt32(buffer);
             _stream.Seek(sizeof(int), SeekOrigin.Current);
-            _stream.Read(buffer);
-            IndexSize = BitConverter.ToInt32(buffer);
-            _stream.Seek(12 + sizeof(int), SeekOrigin.Current);
+            //_stream.Read(buffer);
+            //IndexSize = BitConverter.ToInt32(buffer);
+            //_stream.Seek(12 + sizeof(int), SeekOrigin.Current);
+            _stream.Seek(12 + sizeof(int) * 2, SeekOrigin.Current);
+            IndexSize = 0;
             _stream.Read(buffer);
             _stream.Position = IndexOffset = BitConverter.ToUInt32(buffer);
 
@@ -280,9 +285,14 @@ namespace DBPF_Compiler.DBPF
                 _stream.Seek(1, SeekOrigin.Current);
                 _index.Entries.Add(entry);
                 keys[i] = new ResourceKey(entry.InstanceID, entry.TypeID ?? 0, entry.GroupID ?? 0);
+                IndexSize += entry.EntrySize;
+
+                if ((entry.CompressedSize | COMPRESSED_OR) != entry.UncompressedSize)
+                    throw new NotSupportedException("Data is compressed");
             }
             _stream.Position = IndexOffset;
             _index.ValuesFlag = 4;
+            IndexSize += _index.SizeWithoutEntries;
 
             return keys;
         }
