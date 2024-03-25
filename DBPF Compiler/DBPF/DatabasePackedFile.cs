@@ -29,6 +29,24 @@ namespace DBPF_Compiler.DBPF
             add => _onIndexWriting += value;
             remove => _onIndexWriting -= value;
         }
+        private PackingHandler? _onHeaderReading;
+        public event PackingHandler OnHeaderReading
+        {
+            add => _onHeaderReading += value;
+            remove => _onHeaderReading -= value;
+        }
+        private PackingHandler? _onDataReading;
+        public event PackingHandler OnDataReading
+        {
+            add => _onDataReading += value;
+            remove => _onDataReading -= value;
+        }
+        private PackingHandler? _onIndexReading;
+        public event PackingHandler OnIndexReading
+        {
+            add => _onIndexReading += value;
+            remove => _onIndexReading -= value;
+        }
 
         private readonly Stream _stream;
         private bool _disposed = false;
@@ -99,7 +117,7 @@ namespace DBPF_Compiler.DBPF
                 return;
 
             _stream.Position = HeaderOffset;
-            _onHeaderWriting?.Invoke(null);
+            Task.Run(() => _onHeaderWriting?.Invoke(null));
 
             _stream.WriteUInt32(Magic);
             _stream.WriteInt32(MajorVersion);
@@ -121,6 +139,7 @@ namespace DBPF_Compiler.DBPF
 
         public void WriteData(byte[] data, ResourceKey key)
         {
+            Task.Run(() => _onDataWriting?.Invoke(key));
             _headerWrited = _indexWrited = false;
 
             uint size = (uint)data.LongLength;
@@ -134,7 +153,6 @@ namespace DBPF_Compiler.DBPF
                 UncompressedSize = size,
             };
             _index.Entries.Add(entry);
-            _onDataWriting?.Invoke(key);
             _stream.Write(data);
 
             IndexSize += entry.EntrySize;
@@ -145,6 +163,7 @@ namespace DBPF_Compiler.DBPF
 
         public void CopyFromStream(Stream stream, ResourceKey key)
         {
+            Task.Run(() => _onDataWriting?.Invoke(key));
             _headerWrited = _indexWrited = false;
 
             var entry = new IndexEntry
@@ -157,7 +176,6 @@ namespace DBPF_Compiler.DBPF
                 UncompressedSize = (uint)stream.Length,
             };
             _index.Entries.Add(entry);
-            _onDataWriting?.Invoke(key);
             stream.CopyTo(_stream);
 
             IndexSize += entry.EntrySize;
@@ -171,7 +189,7 @@ namespace DBPF_Compiler.DBPF
             if (_indexWrited)
                 return;
 
-            _onIndexWriting?.Invoke(IndexCount);
+            Task.Run(() => _onIndexWriting?.Invoke(IndexCount));
             _stream.WriteUInt32(_index.ValuesFlag);
             _stream.WriteUInt32(_index.TypeID);
             _stream.WriteUInt32(_index.GroupID);
@@ -187,9 +205,10 @@ namespace DBPF_Compiler.DBPF
 
         public ResourceKey[] ReadDBPFInfo()
         {
+            Task.Run(() => _onHeaderReading?.Invoke(null));
             _stream.Position = HeaderOffset;
             byte[] buffer = new byte[sizeof(uint)];
-             _stream.Read(buffer);
+            _stream.Read(buffer);
             if (BitConverter.ToUInt32(buffer) != Magic)
                 throw new NotSupportedException(BitConverter.ToString(buffer) +
                     " is not supported.");
@@ -206,6 +225,7 @@ namespace DBPF_Compiler.DBPF
             _stream.Read(buffer);
             _stream.Position = IndexOffset = BitConverter.ToUInt32(buffer);
 
+            Task.Run(() => _onIndexReading?.Invoke(IndexOffset));
             _index.Entries.Clear();
             ResourceKey[] keys = new ResourceKey[indexCount];
             _stream.Read(buffer);
@@ -226,7 +246,7 @@ namespace DBPF_Compiler.DBPF
                 _index.UnknownID = BitConverter.ToUInt32(buffer);
             }
 
-           for (int i = 0; i < indexCount; i++)
+            for (int i = 0; i < indexCount; i++)
             {
                 var entry = new IndexEntry();
                 if (!_index.GetFlagAt(0))
@@ -263,8 +283,9 @@ namespace DBPF_Compiler.DBPF
         public async Task<ResourceKey[]> ReadDBPFInfoAsync()
             => await Task.Run(ReadDBPFInfo);
 
-        public bool CopyResourceTo(Stream destination, ResourceKey key)
+        public byte[]? ReadResource(ResourceKey key)
         {
+            Task.Run(() => _onDataReading?.Invoke(key));
             foreach (var entry in _index.Entries)
             {
                 if (key.Equals(entry))
@@ -273,14 +294,25 @@ namespace DBPF_Compiler.DBPF
                     _stream.Position = entry.Offset;
                     var buffer = new byte[entry.UncompressedSize];
                     _stream.Read(buffer);
-                    destination.Write(buffer);
                     _stream.Position = oldPosition;
 
-                    return true;
+                    return buffer;
                 }
             }
 
-            return false;
+            return null;
+        }
+        public async Task<byte[]?> ReadResourceAsync(ResourceKey key)
+            => await Task.Run(() => ReadResource(key));
+
+        public bool CopyResourceTo(Stream destination, ResourceKey key)
+        {
+            var buffer = ReadResource(key);
+            if (buffer == null)
+                return false;
+
+            destination.Write(buffer);
+            return true;
         }
         public async Task<bool> CopyResourceToAsync(Stream destination, ResourceKey key)
             => await Task.Run(() => CopyResourceTo(destination, key));

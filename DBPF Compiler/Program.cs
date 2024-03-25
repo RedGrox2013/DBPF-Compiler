@@ -3,6 +3,7 @@ using DBPF_Compiler.DBPF;
 using DBPF_Compiler.Types;
 using System.Diagnostics;
 using System.Text;
+using System.Threading.Channels;
 
 Console.WriteLine("Spore Database Packed File Compiler");
 
@@ -31,9 +32,9 @@ static void Pack(string inputPath, string outputPath)
 
     using FileStream fs = File.Create(outputPath);
     using DatabasePackedFile dbpf = new(fs);
-    dbpf.OnHeaderWriting += msg => Console.WriteLine("Writing header");
+    dbpf.OnHeaderWriting += msg => Console.WriteLine("Writing header...");
     dbpf.OnDataWriting += DisplayDataWritingMessage;
-    dbpf.OnIndexWriting += msg => Console.WriteLine("Writing index");
+    dbpf.OnIndexWriting += msg => Console.WriteLine("Writing index...");
     dbpf.WriteData(data, new ResourceKey(dataID, dataID, dataID));
 
     packer.Pack(dbpf);
@@ -45,21 +46,17 @@ static void Pack(string inputPath, string outputPath)
 
 static void Unpack(string inputPath, string outputPath)
 {
-    DirectoryInfo dir = new(outputPath);
+    Stopwatch stopwatch = Stopwatch.StartNew();
     using FileStream fs = new(inputPath, FileMode.Open, FileAccess.Read);
     using DatabasePackedFile dbpf = new(fs);
-    Stopwatch stopwatch = Stopwatch.StartNew();
 
-    foreach (var resource in dbpf.ReadDBPFInfo())
-    {
-        var path = outputPath + "\\0x" + Convert.ToString(resource.GroupID, 16);
-        if (!Directory.Exists(path))
-            Directory.CreateDirectory(path);
-        using FileStream file = File.Create(path + "\\0x" +
-            Convert.ToString(resource.InstanceID, 16) + ".0x" +
-            Convert.ToString(resource.TypeID, 16));
-        dbpf.CopyResourceTo(file, resource);
-    }
+    dbpf.OnHeaderReading += msg => Console.WriteLine("Reading header...");
+    dbpf.OnDataReading += DisplayDataReadingMessage;
+    dbpf.OnIndexReading += msg => Console.WriteLine("Reading index... Index offset: " + (msg as uint?));
+
+    DBPFPacker unpacker = new(outputPath);
+
+    unpacker.Unpack(dbpf);
 
     stopwatch.Stop();
     var ts = stopwatch.Elapsed;
@@ -69,7 +66,12 @@ static void Unpack(string inputPath, string outputPath)
 static void DisplayDataWritingMessage(object? message)
 {
     if (message is ResourceKey key)
-        Console.WriteLine("Writing data: {0}", key);
+        Console.WriteLine("Writing data: {0}...", key);
+}
+static void DisplayDataReadingMessage(object? message)
+{
+    if (message is ResourceKey key)
+        Console.WriteLine("Reading data: {0}...", key);
 }
 
 static bool CheckArguments(string[] args)
