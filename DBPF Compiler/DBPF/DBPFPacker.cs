@@ -30,6 +30,20 @@ namespace DBPF_Compiler.DBPF
             output.WriteHeader();
         }
 
+        public void Unpack(DatabasePackedFile dbpf)
+        {
+            foreach (var resource in dbpf.ReadDBPFInfo())
+            {
+                var sr = new StringResourceKey(resource);
+                var path = Directory.FullName + "\\" + sr.GroupID ?? "0x0";
+                if (!System.IO.Directory.Exists(path))
+                    System.IO.Directory.CreateDirectory(path);
+                using FileStream file = File.Create(path + "\\" + sr.InstanceID + "." + sr.TypeID ?? "0x0");
+                dbpf.CopyResourceTo(file, resource);
+            }
+
+        }
+
         private static uint ParseHashOrCompute(string input)
         {
             if (FNVHash.TryParse(input, out uint hash))
