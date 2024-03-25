@@ -36,9 +36,9 @@ static void Pack(string inputPath, string outputPath, string? secretFolder = nul
     dbpf.OnIndexWriting += msg => Console.WriteLine("Writing index...");
     dbpf.WriteData(data, new ResourceKey(dataID, dataID, dataID));
 
-    dbpf.WriteSecretData(Encoding.Default.GetBytes("Уууу секретики"), new("Секретик", "txt"));
+    //dbpf.WriteSecretData(Encoding.Default.GetBytes("Уууу секретики"), new("Секретик", "txt"));
 
-    //packer.Pack(dbpf);
+    packer.Pack(dbpf);
 
     stopwatch.Stop();
     var ts = stopwatch.Elapsed;
