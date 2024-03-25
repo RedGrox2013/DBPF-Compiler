@@ -4,6 +4,11 @@ namespace DBPF_Compiler
 {
     internal static class StreamHelpers
     {
+        public static void WriteUInt64(this Stream stream, ulong? value)
+        {
+            if (value != null)
+                stream.Write(BitConverter.GetBytes((ulong)value));
+        }
         public static void WriteUInt32(this Stream stream, uint? value)
         {
             if (value !=  null)
