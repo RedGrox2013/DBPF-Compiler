@@ -1,6 +1,6 @@
 ﻿namespace DBPF_Compiler.DBPF
 {
-    public class IndexEntry
+    internal class IndexEntry
     {
         public uint? TypeID { get; set; } = null;
         public uint? GroupID { get; set; } = null;

@@ -1,5 +1,6 @@
 ﻿using DBPF_Compiler;
 using DBPF_Compiler.DBPF;
+using DBPF_Compiler.Types;
 using System.Diagnostics;
 using System.Text;
 
@@ -33,7 +34,7 @@ static void Pack(string inputPath, string outputPath)
     dbpf.OnHeaderWriting += msg => Console.WriteLine("Writing header");
     dbpf.OnDataWriting += DisplayDataWritingMessage;
     dbpf.OnIndexWriting += msg => Console.WriteLine("Writing index");
-    dbpf.WriteData(data, dataID, dataID, dataID);
+    dbpf.WriteData(data, new ResourceKey(dataID, dataID, dataID));
 
     packer.Pack(dbpf);
 
@@ -67,19 +68,8 @@ static void Unpack(string inputPath, string outputPath)
 
 static void DisplayDataWritingMessage(object? message)
 {
-    if (message is not IndexEntry entry)
-        return;
-    string instance = Convert.ToString(entry.InstanceID, 16);
-    if (entry.GroupID == null || entry.TypeID == null)
-    {
-        Console.WriteLine("Writing data: " + instance);
-        return;
-    }
-
-    Console.WriteLine("Writing data: 0x{0}!0x{1}.0x{2}",
-        Convert.ToString((uint)entry.GroupID, 16),
-        instance,
-        Convert.ToString((uint)entry.TypeID, 16));
+    if (message is ResourceKey key)
+        Console.WriteLine("Writing data: {0}", key);
 }
 
 static bool CheckArguments(string[] args)

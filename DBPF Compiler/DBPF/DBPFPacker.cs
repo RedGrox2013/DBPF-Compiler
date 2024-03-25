@@ -1,4 +1,6 @@
-﻿namespace DBPF_Compiler.DBPF
+﻿using DBPF_Compiler.Types;
+
+namespace DBPF_Compiler.DBPF
 {
     public class DBPFPacker
     {
@@ -16,12 +18,12 @@
                 foreach (var file in dir.GetFiles())
                 {
                     string fileName = file.Name.Split('.')[0];
-                    var instanceID = ParseHashOrCompute(fileName);
-                    var typeID = ParseHashOrCompute(file.Extension.Remove(0, 1));
-                    var groupID = ParseHashOrCompute(dir.Name);
+                    ResourceKey key = new(ParseHashOrCompute(fileName),
+                        ParseHashOrCompute(file.Extension.Remove(0, 1)),
+                        ParseHashOrCompute(dir.Name));
 
                     using FileStream f = file.OpenRead();
-                    output.CopyFromStream(f, instanceID, typeID, groupID);
+                    output.CopyFromStream(f, key);
                 }
             }
             output.WriteIndex();

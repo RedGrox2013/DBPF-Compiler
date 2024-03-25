@@ -119,52 +119,52 @@ namespace DBPF_Compiler.DBPF
         public async Task WriteHeaderAsync()
             => await Task.Run(WriteHeader);
 
-        public void WriteData(byte[] data, uint instanceID, uint typeID, uint groupID)
+        public void WriteData(byte[] data, ResourceKey key)
         {
             _headerWrited = _indexWrited = false;
 
             uint size = (uint)data.LongLength;
             var entry = new IndexEntry
             {
-                TypeID = typeID,
-                InstanceID = instanceID,
-                GroupID = groupID,
+                TypeID = key.TypeID,
+                InstanceID = key.InstanceID,
+                GroupID = key.GroupID,
                 Offset = IndexOffset,
                 CompressedSize = size | 0x80000000,
                 UncompressedSize = size,
             };
             _index.Entries.Add(entry);
-            _onDataWriting?.Invoke(entry);
+            _onDataWriting?.Invoke(key);
             _stream.Write(data);
 
             IndexSize += entry.EntrySize;
             IndexOffset += size;
         }
-        public async Task WriteDataAsync(byte[] data, uint instanceID, uint typeID, uint groupID)
-            => await Task.Run(() => WriteData(data, instanceID, typeID, groupID));
+        public async Task WriteDataAsync(byte[] data, ResourceKey key)
+            => await Task.Run(() => WriteData(data, key));
 
-        public void CopyFromStream(Stream stream, uint instanceID, uint typeID, uint groupID)
+        public void CopyFromStream(Stream stream, ResourceKey key)
         {
             _headerWrited = _indexWrited = false;
 
             var entry = new IndexEntry
             {
-                TypeID = typeID,
-                InstanceID = instanceID,
-                GroupID = groupID,
+                TypeID = key.TypeID,
+                InstanceID = key.InstanceID,
+                GroupID = key.GroupID,
                 Offset = IndexOffset,
                 CompressedSize = (uint)stream.Length | 0x80000000,
                 UncompressedSize = (uint)stream.Length,
             };
             _index.Entries.Add(entry);
-            _onDataWriting?.Invoke(entry);
+            _onDataWriting?.Invoke(key);
             stream.CopyTo(_stream);
 
             IndexSize += entry.EntrySize;
             IndexOffset += (uint)stream.Length;
         }
-        public async Task CopyFromStreamAsync(Stream stream, uint instanceID, uint typeID, uint groupID)
-            => await Task.Run(() => CopyFromStream(stream, instanceID, typeID, groupID));
+        public async Task CopyFromStreamAsync(Stream stream, ResourceKey key)
+            => await Task.Run(() => CopyFromStream(stream, key));
 
         public void WriteIndex()
         {

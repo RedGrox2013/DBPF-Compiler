@@ -29,5 +29,8 @@ namespace DBPF_Compiler.Types
 
         public override readonly int GetHashCode()
             => base.GetHashCode();
+
+        public override readonly string ToString()
+            => new StringResourceKey(this).ToString();
     }
 }
