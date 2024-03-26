@@ -11,9 +11,9 @@ if (args.Length == 0)
 
 if (args[0].Equals("--help") || args[0].Equals("-h"))
     Console.WriteLine(@"
---help, -h:                                   show help
---pack, -p <input> <output> <secret>:         pack the contents of a folder into DBPF. <secret> - name of the folder whose contents are hidden in the DBPF
---unpack, -u <input> <output> <unpackSecret>: unpack DBPF to a specified directory. <unpackSecret> - unpack hidden data (true/false)
+--help, -h:                    show help
+--pack, -p <input> <output>:   pack the contents of a folder into DBPF. <secret> - name of the folder whose contents are hidden in the DBPF
+--unpack, -u <input> <output>: unpack DBPF to a specified directory. <unpackSecret> - unpack hidden data (true/false)
 ");
 else if ((args[0].Equals("--pack") || args[0].Equals("-p")) && CheckArguments(args))
     Pack(args[1], args[2]);

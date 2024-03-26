@@ -299,7 +299,7 @@ namespace DBPF_Compiler.DBPF
         public async Task<ResourceKey[]> ReadDBPFInfoAsync()
             => await Task.Run(ReadDBPFInfo);
 
-        public byte[]? ReadResource(ResourceKey key)
+        public byte[]? ReadResource(ResourceKey key, bool decompress = true)
         {
             Task.Run(() => _onDataReading?.Invoke(key));
             foreach (var entry in _index.Entries)
@@ -312,26 +312,28 @@ namespace DBPF_Compiler.DBPF
                     _stream.Read(buffer);
                     _stream.Position = oldPosition;
 
+                    // TODO: decompress
+
                     return buffer;
                 }
             }
 
             return null;
         }
-        public async Task<byte[]?> ReadResourceAsync(ResourceKey key)
-            => await Task.Run(() => ReadResource(key));
+        public async Task<byte[]?> ReadResourceAsync(ResourceKey key, bool decompress = true)
+            => await Task.Run(() => ReadResource(key, decompress));
 
-        public bool CopyResourceTo(Stream destination, ResourceKey key)
+        public bool CopyResourceTo(Stream destination, ResourceKey key, bool decompress = true)
         {
-            var buffer = ReadResource(key);
+            var buffer = ReadResource(key, decompress);
             if (buffer == null)
                 return false;
 
             destination.Write(buffer);
             return true;
         }
-        public async Task<bool> CopyResourceToAsync(Stream destination, ResourceKey key)
-            => await Task.Run(() => CopyResourceTo(destination, key));
+        public async Task<bool> CopyResourceToAsync(Stream destination, ResourceKey key, bool decompress = true)
+            => await Task.Run(() => CopyResourceTo(destination, key, decompress));
 
         #region IDisposable realization
         public void Dispose()
