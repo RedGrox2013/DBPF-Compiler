@@ -287,8 +287,8 @@ namespace DBPF_Compiler.DBPF
                 keys[i] = new ResourceKey(entry.InstanceID, entry.TypeID ?? 0, entry.GroupID ?? 0);
                 IndexSize += entry.EntrySize;
 
-                if ((entry.UncompressedSize | COMPRESSED_OR) != entry.CompressedSize)
-                    throw new NotSupportedException("Data is compressed");
+                //if ((entry.UncompressedSize | COMPRESSED_OR) != entry.CompressedSize)
+                //    throw new NotSupportedException("Data is compressed");
             }
             _stream.Position = IndexOffset;
             _index.ValuesFlag = 4;
@@ -304,18 +304,18 @@ namespace DBPF_Compiler.DBPF
             Task.Run(() => _onDataReading?.Invoke(key));
             foreach (var entry in _index.Entries)
             {
-                if (key.Equals(entry))
-                {
-                    var oldPosition = _stream.Position;
-                    _stream.Position = entry.Offset;
-                    var buffer = new byte[entry.UncompressedSize];
-                    _stream.Read(buffer);
-                    _stream.Position = oldPosition;
+                if (!key.Equals(entry))
+                    continue;
 
-                    // TODO: decompress
+                var oldPosition = _stream.Position;
+                _stream.Position = entry.Offset;
+                var buffer = new byte[entry.UncompressedSize];
+                _stream.Read(buffer);
+                _stream.Position = oldPosition;
 
-                    return buffer;
-                }
+                // TODO: decompress
+
+                return buffer;
             }
 
             return null;
