@@ -12,8 +12,8 @@ if (args.Length == 0)
 if (args[0].Equals("--help") || args[0].Equals("-h"))
     Console.WriteLine(@"
 --help, -h:                    show help
---pack, -p <input> <output>:   pack the contents of a folder into DBPF. <secret> - name of the folder whose contents are hidden in the DBPF
---unpack, -u <input> <output>: unpack DBPF to a specified directory. <unpackSecret> - unpack hidden data (true/false)
+--pack, -p <input> <output>:   pack the contents of a folder into DBPF
+--unpack, -u <input> <output>: unpack DBPF to a specified directory
 ");
 else if ((args[0].Equals("--pack") || args[0].Equals("-p")) && CheckArguments(args))
     Pack(args[1], args[2]);
@@ -31,9 +31,9 @@ static void Pack(string inputPath, string outputPath, string? secretFolder = nul
 
     using FileStream fs = File.Create(outputPath);
     using DatabasePackedFile dbpf = new(fs);
-    dbpf.OnHeaderWriting += msg => Console.WriteLine("Writing header...");
+    dbpf.OnHeaderWriting += msg => Console.WriteLine("Writing header . . .");
     dbpf.OnDataWriting += DisplayDataWritingMessage;
-    dbpf.OnIndexWriting += msg => Console.WriteLine("Writing index...");
+    dbpf.OnIndexWriting += msg => Console.WriteLine("Writing index . . .");
     dbpf.WriteData(data, new ResourceKey(dataID, dataID, dataID));
 
     //dbpf.WriteSecretData(Encoding.Default.GetBytes("Уууу секретики"), new("Секретик", "txt"));
@@ -51,9 +51,9 @@ static void Unpack(string inputPath, string outputPath)
     using FileStream fs = new(inputPath, FileMode.Open, FileAccess.Read);
     using DatabasePackedFile dbpf = new(fs);
 
-    dbpf.OnHeaderReading += msg => Console.WriteLine("Reading header...");
+    dbpf.OnHeaderReading += msg => Console.WriteLine("Reading header . . .");
     dbpf.OnDataReading += DisplayDataReadingMessage;
-    dbpf.OnIndexReading += msg => Console.WriteLine("Reading index... Index offset: " + (msg as uint?));
+    dbpf.OnIndexReading += msg => Console.WriteLine("Reading index . . . Index offset: " + (msg as uint?));
 
     DBPFPacker unpacker = new(outputPath);
 
@@ -67,12 +67,12 @@ static void Unpack(string inputPath, string outputPath)
 static void DisplayDataWritingMessage(object? message)
 {
     if (message is ResourceKey key)
-        Console.WriteLine("Writing data: {0}...", key);
+        Console.WriteLine("Writing data: {0} . . .", key);
 }
 static void DisplayDataReadingMessage(object? message)
 {
     if (message is ResourceKey key)
-        Console.WriteLine("Reading data: {0}...", key);
+        Console.WriteLine("Reading data: {0} . . .", key);
 }
 
 static bool CheckArguments(string[] args)
