@@ -2,29 +2,29 @@
 
 namespace DBPF_Compiler
 {
-    internal static class StreamHelpers
+    public static class StreamHelpers
     {
-        public static void WriteUInt64(this Stream stream, ulong? value)
+        internal static void WriteUInt64(this Stream stream, ulong? value)
         {
             if (value != null)
                 stream.Write(BitConverter.GetBytes((ulong)value));
         }
-        public static void WriteUInt32(this Stream stream, uint? value)
+        internal static void WriteUInt32(this Stream stream, uint? value)
         {
             if (value !=  null)
                 stream.Write(BitConverter.GetBytes((uint)value));
         }
-        public static void WriteInt32(this Stream stream, int? value)
+        internal static void WriteInt32(this Stream stream, int? value)
         {
             if (value != null)
                 stream.Write(BitConverter.GetBytes((uint)value));
         }
-        public static void WriteUInt16(this Stream stream, ushort? value)
+        internal static void WriteUInt16(this Stream stream, ushort? value)
         {
             if (value != null)
                 stream.Write(BitConverter.GetBytes((ushort)value));
         }
-        public static void WriteBoolean(this Stream stream, bool? value)
+        internal static void WriteBoolean(this Stream stream, bool? value)
         {
             if (value == null)
                 return;
@@ -35,7 +35,7 @@ namespace DBPF_Compiler
                 stream.WriteByte(0);
         }
 
-        public static void WriteIndexEntry(this Stream stream, IndexEntry entry)
+        internal static void WriteIndexEntry(this Stream stream, IndexEntry entry)
         {
             stream.WriteUInt32(entry.TypeID);
             stream.WriteUInt32(entry.GroupID);
@@ -54,7 +54,7 @@ namespace DBPF_Compiler
          * Украл реализацию разжатия из SporeMaster'а
          * https://github.com/dptetc/SporeMaster/blob/master/SporeMaster/Gibbed.Spore/Helpers/StreamHelpers.cs
          */
-        public static void ReadRefPackCompressionHeader(this Stream stream)
+        private static void ReadRefPackCompressionHeader(this Stream stream)
         {
             byte[] header = new byte[2];
             stream.Read(header, 0, header.Length);
