@@ -3,10 +3,11 @@
     public interface ISporeFile
     {
         uint TypeID { get; }
+        uint DataSize { get; }
 
         bool Decode(byte[]? data);
-        byte[] Encode();
-        //void ToXML();
-        //string ToArgScript();
+        List<byte> Encode();
+        string ToXML();
+        string ToArgScript();
     }
 }

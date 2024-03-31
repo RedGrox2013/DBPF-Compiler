@@ -1,5 +1,4 @@
 ﻿using DBPF_Compiler.Types;
-using System.Numerics;
 using System.Text;
 
 namespace DBPF_Compiler.FileTypes
@@ -7,6 +6,30 @@ namespace DBPF_Compiler.FileTypes
     public class PollenMetadata : ISporeFile
     {
         public uint TypeID => 0x030BDEE3;
+
+        public uint DataSize
+        {
+            get
+            {
+                int size = sizeof(int) * 7 + sizeof(long) * 9 + sizeof(ulong) * 2;
+                if (!HasLocale)
+                    size += sizeof(long) + sizeof(int) +
+                        Encoding.Unicode.GetByteCount(AuthorName ?? string.Empty) +
+                        Encoding.Unicode.GetByteCount(Name ?? string.Empty) +
+                        Encoding.Unicode.GetByteCount(Description ?? string.Empty);
+                else
+                    size += sizeof(uint) * 3;
+
+                if (HasAuthors)
+                    size += sizeof(int) + Encoding.ASCII.GetByteCount(Authors ?? string.Empty);
+                if (HasTags)
+                    size += sizeof(int) + Encoding.Unicode.GetByteCount(Tags ?? string.Empty);
+                if (HasConsequenceTraits)
+                    size += sizeof(uint);
+
+                return (uint)size;
+            }
+        }
 
         /// <summary>
         /// Поддерживается пока что только 13 версия
@@ -65,7 +88,7 @@ namespace DBPF_Compiler.FileTypes
         /// <summary>
         /// 4 байта
         /// </summary>
-        public bool HasAuthors => !string.IsNullOrEmpty(AuthorName);
+        public bool HasAuthors => !string.IsNullOrEmpty(Authors);
 
         public string? Authors { get; set; }
 
@@ -189,7 +212,17 @@ namespace DBPF_Compiler.FileTypes
             return Encoding.Unicode.GetString(data, offset, len);
         }
 
-        public byte[] Encode()
+        public List<byte> Encode()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string ToXML()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string ToArgScript()
         {
             throw new NotImplementedException();
         }
