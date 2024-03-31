@@ -4,7 +4,7 @@
     {
         uint TypeID { get; }
 
-        bool Decode(byte[] data);
+        bool Decode(byte[]? data);
         byte[] Encode();
         //void ToXML();
         //string ToArgScript();
