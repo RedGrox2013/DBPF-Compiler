@@ -95,8 +95,11 @@ namespace DBPF_Compiler.FileTypes
 
         public uint ConsequenceTraits { get; set; }
 
-        public bool Decode(byte[] data)
+        public bool Decode(byte[]? data)
         {
+            if (data == null)
+                return false;
+
             Array.Reverse(data);
             int offset = data.Length - sizeof(int);
             MetadataVersion = BitConverter.ToInt32(data, offset);
@@ -151,7 +154,26 @@ namespace DBPF_Compiler.FileTypes
             offset -= sizeof(int);
             if (BitConverter.ToInt32(data, offset) == 1)
             {
-                // Я устал(
+                offset -= sizeof(int);
+                int len = BitConverter.ToInt32(data, offset);
+                offset -= len;
+                Array.Reverse(data, offset, len);
+                Authors = Encoding.ASCII.GetString(data, offset, len);
+            }
+
+            offset -= sizeof(int);
+            UnknownValue = BitConverter.ToInt32(data, offset);
+            offset -= sizeof(int);
+            if (BitConverter.ToInt32(data, offset) == 1)
+                Tags = GetUnicodeString(data, ref offset);
+            offset -= sizeof(uint);
+            IsShareable = BitConverter.ToUInt32(data, offset) == 0xFFFFFFFF;
+            offset -= sizeof(int);
+            HasConsequenceTraits = BitConverter.ToInt32(data, offset) == 1;
+            if (HasConsequenceTraits)
+            {
+                offset -= sizeof(uint);
+                ConsequenceTraits = BitConverter.ToUInt32(data, offset);
             }
 
             return true;
