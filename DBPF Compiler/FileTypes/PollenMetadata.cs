@@ -1,12 +1,16 @@
 ﻿using DBPF_Compiler.Types;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace DBPF_Compiler.FileTypes
 {
+    [Serializable]
     public class PollenMetadata : ISporeFile
     {
+        [XmlIgnore]
         public uint TypeID => 0x030BDEE3;
 
+        [XmlIgnore]
         public uint DataSize
         {
             get
@@ -48,7 +52,8 @@ namespace DBPF_Compiler.FileTypes
         /// 0xFFFFFFFF - если есть локализации<br/>
         /// 0 - если их нет
         /// </summary>
-        public bool HasLocale { get; set; } = false;
+        [XmlIgnore]
+        public bool HasLocale => LocaleTableID != null;
 
         /// <summary>
         /// Имеется только если нет локализаций
@@ -73,7 +78,7 @@ namespace DBPF_Compiler.FileTypes
         /// <summary>
         /// Имеется только если есть локализации
         /// </summary>
-        public uint LocaleTableID { get; set; }
+        public uint? LocaleTableID { get; set; }
 
         /// <summary>
         /// Имеется только если есть локализации
@@ -88,6 +93,7 @@ namespace DBPF_Compiler.FileTypes
         /// <summary>
         /// 4 байта
         /// </summary>
+        [XmlIgnore]
         public bool HasAuthors => !string.IsNullOrEmpty(Authors);
 
         public string? Authors { get; set; }
@@ -95,11 +101,13 @@ namespace DBPF_Compiler.FileTypes
         /// <summary>
         /// Хз что это такое, вроде равно нулю
         /// </summary>
+        [XmlIgnore]
         public int UnknownValue { get; set; } = 0;
 
         /// <summary>
         /// 4 байта
         /// </summary>
+        [XmlIgnore]
         public bool HasTags => !string.IsNullOrEmpty(Tags);
 
         public string? Tags { get; set; }
@@ -114,9 +122,10 @@ namespace DBPF_Compiler.FileTypes
         /// <summary>
         /// 4 байта
         /// </summary>
-        public bool HasConsequenceTraits { get; set; } = false;
+        [XmlIgnore]
+        public bool HasConsequenceTraits => ConsequenceTraits != null;
 
-        public uint ConsequenceTraits { get; set; }
+        public uint? ConsequenceTraits { get; set; }
 
         public bool Decode(byte[]? data)
         {
@@ -153,10 +162,9 @@ namespace DBPF_Compiler.FileTypes
             TimeCreated = BitConverter.ToUInt64(data, offset);
             offset -= sizeof(ulong);
             TimeDownloaded = BitConverter.ToUInt64(data, offset);
-            offset -= sizeof(int);
-            HasLocale = BitConverter.ToUInt32(data, offset) == 0xFFFFFFFF;
 
-            if (!HasLocale)
+            offset -= sizeof(int);
+            if (BitConverter.ToUInt32(data, offset) != 0xFFFFFFFF)
             {
                 offset -= sizeof(long);
                 AuthorID = BitConverter.ToInt64(data, offset);
@@ -192,8 +200,7 @@ namespace DBPF_Compiler.FileTypes
             offset -= sizeof(uint);
             IsShareable = BitConverter.ToUInt32(data, offset) == 0xFFFFFFFF;
             offset -= sizeof(int);
-            HasConsequenceTraits = BitConverter.ToInt32(data, offset) == 1;
-            if (HasConsequenceTraits)
+            if (BitConverter.ToInt32(data, offset) == 1)
             {
                 offset -= sizeof(uint);
                 ConsequenceTraits = BitConverter.ToUInt32(data, offset);
@@ -213,16 +220,6 @@ namespace DBPF_Compiler.FileTypes
         }
 
         public List<byte> Encode()
-        {
-            throw new NotImplementedException();
-        }
-
-        public string ToXML()
-        {
-            throw new NotImplementedException();
-        }
-
-        public string ToArgScript()
         {
             throw new NotImplementedException();
         }

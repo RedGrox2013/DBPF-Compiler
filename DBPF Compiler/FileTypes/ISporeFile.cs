@@ -7,7 +7,5 @@
 
         bool Decode(byte[]? data);
         List<byte> Encode();
-        string ToXML();
-        string ToArgScript();
     }
 }
