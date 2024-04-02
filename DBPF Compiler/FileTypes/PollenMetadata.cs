@@ -219,8 +219,27 @@ namespace DBPF_Compiler.FileTypes
             return Encoding.Unicode.GetString(data, offset, len);
         }
 
-        public List<byte> Encode()
+        public byte[] Encode()
         {
+            //byte[] data = new byte[DataSize];
+            //int index = 0;
+            //if (HasConsequenceTraits)
+            //{
+            //    Array.Copy(BitConverter.GetBytes(ConsequenceTraits ?? 0), data, sizeof(uint));
+            //    index += sizeof(uint);
+            //    Array.Copy(BitConverter.GetBytes(1), 0, data, index, sizeof(int));
+            //}
+            //else
+            //    Array.Copy(BitConverter.GetBytes(0), data, sizeof(int));
+            //index += sizeof(int);
+            //for (int i = 0; i < sizeof(uint); i++)
+            //    data[index + i] = IsShareable ? (byte)0xFF : (byte)0;
+            //index += sizeof(uint);
+
+
+            //Array.Reverse(data);
+            //return data;
+
             throw new NotImplementedException();
         }
     }

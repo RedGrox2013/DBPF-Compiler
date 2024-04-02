@@ -6,6 +6,6 @@
         uint DataSize { get; }
 
         bool Decode(byte[]? data);
-        List<byte> Encode();
+        byte[] Encode();
     }
 }
