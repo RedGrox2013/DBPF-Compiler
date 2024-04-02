@@ -221,24 +221,36 @@ namespace DBPF_Compiler.FileTypes
 
         public byte[] Encode()
         {
-            //byte[] data = new byte[DataSize];
-            //int index = 0;
-            //if (HasConsequenceTraits)
-            //{
-            //    Array.Copy(BitConverter.GetBytes(ConsequenceTraits ?? 0), data, sizeof(uint));
-            //    index += sizeof(uint);
-            //    Array.Copy(BitConverter.GetBytes(1), 0, data, index, sizeof(int));
-            //}
-            //else
-            //    Array.Copy(BitConverter.GetBytes(0), data, sizeof(int));
-            //index += sizeof(int);
-            //for (int i = 0; i < sizeof(uint); i++)
-            //    data[index + i] = IsShareable ? (byte)0xFF : (byte)0;
-            //index += sizeof(uint);
+            /*byte[] data = new byte[DataSize];
+            int index = 0;
+            if (HasConsequenceTraits)
+            {
+                Array.Copy(BitConverter.GetBytes(ConsequenceTraits ?? 0), data, sizeof(uint));
+                index += sizeof(uint);
+                Array.Copy(BitConverter.GetBytes(1), 0, data, index, sizeof(int));
+            }
+            else
+                Array.Copy(BitConverter.GetBytes(0), data, sizeof(int));
+            index += sizeof(int);
+            for (int i = 0; i < sizeof(uint); i++)
+                data[index + i] = IsShareable ? (byte)0xFF : (byte)0;
+            index += sizeof(uint);
+            if (HasTags)
+            {
+                var tags = Encoding.Unicode.GetBytes(Tags);
+                Array.Reverse(tags);
+                Array.Copy(tags, 0, data, index, tags.Length);
+                index += tags.Length;
+                Array.Copy(BitConverter.GetBytes(tags.Length), 0, data, index, sizeof(int));
+                index += sizeof(int);
+                Array.Copy(BitConverter.GetBytes(1), 0, data, index, sizeof(int));
+            }
+            else
+                Array.Copy((BitConverter.GetBytes(0), 0, data, index, sizeof(int));
+            index += sizeof(int);
 
-
-            //Array.Reverse(data);
-            //return data;
+            Array.Reverse(data);
+            return data;*/
 
             throw new NotImplementedException();
         }
