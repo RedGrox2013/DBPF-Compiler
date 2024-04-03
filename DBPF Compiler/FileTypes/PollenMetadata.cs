@@ -237,7 +237,7 @@ namespace DBPF_Compiler.FileTypes
             index += sizeof(uint);
             if (HasTags)
             {
-                var tags = Encoding.Unicode.GetBytes(Tags);
+                var tags = Encoding.Unicode.GetBytes(Tags ?? string.Empty);
                 Array.Reverse(tags);
                 Array.Copy(tags, 0, data, index, tags.Length);
                 index += tags.Length;
@@ -246,7 +246,23 @@ namespace DBPF_Compiler.FileTypes
                 Array.Copy(BitConverter.GetBytes(1), 0, data, index, sizeof(int));
             }
             else
-                Array.Copy((BitConverter.GetBytes(0), 0, data, index, sizeof(int));
+                Array.Copy(BitConverter.GetBytes(0), 0, data, index, sizeof(int));
+            index += sizeof(int);
+
+            Array.Copy(BitConverter.GetBytes(UnknownValue), 0, data, index, sizeof(int));
+            index += sizeof(int);
+            if (HasAuthors)
+            {
+                var authorsData = Encoding.ASCII.GetBytes(Authors ?? string.Empty);
+                Array.Reverse(authorsData);
+                Array.Copy(authorsData, 0, data, index, authorsData.Length);
+                index += authorsData.Length;
+                Array.Copy(BitConverter.GetBytes(authorsData.Length), 0, data, index, sizeof(int));
+                index += sizeof(int);
+                Array.Copy(BitConverter.GetBytes(1), 0, data, index, sizeof(int));
+            }
+            else
+                Array.Copy(BitConverter.GetBytes(0), 0, data, index, sizeof(int));
             index += sizeof(int);
 
             Array.Reverse(data);
