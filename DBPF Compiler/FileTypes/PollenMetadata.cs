@@ -237,12 +237,13 @@ namespace DBPF_Compiler.FileTypes
             index += sizeof(uint);
             if (HasTags)
             {
-                var tags = Encoding.Unicode.GetBytes(Tags ?? string.Empty);
-                Array.Reverse(tags);
-                Array.Copy(tags, 0, data, index, tags.Length);
-                index += tags.Length;
-                Array.Copy(BitConverter.GetBytes(tags.Length), 0, data, index, sizeof(int));
-                index += sizeof(int);
+                //var tags = Encoding.Unicode.GetBytes(Tags ?? string.Empty);
+                //Array.Reverse(tags);
+                //Array.Copy(tags, 0, data, index, tags.Length);
+                //index += tags.Length;
+                //Array.Copy(BitConverter.GetBytes(tags.Length), 0, data, index, sizeof(int));
+                //index += sizeof(int);
+                index = EncodeString(Tags ?? string.Empty, data, index, Encoding.Unicode);
                 Array.Copy(BitConverter.GetBytes(1), 0, data, index, sizeof(int));
             }
             else
@@ -253,12 +254,13 @@ namespace DBPF_Compiler.FileTypes
             index += sizeof(int);
             if (HasAuthors)
             {
-                var authorsData = Encoding.ASCII.GetBytes(Authors ?? string.Empty);
-                Array.Reverse(authorsData);
-                Array.Copy(authorsData, 0, data, index, authorsData.Length);
-                index += authorsData.Length;
-                Array.Copy(BitConverter.GetBytes(authorsData.Length), 0, data, index, sizeof(int));
-                index += sizeof(int);
+                //var authorsData = Encoding.ASCII.GetBytes(Authors ?? string.Empty);
+                //Array.Reverse(authorsData);
+                //Array.Copy(authorsData, 0, data, index, authorsData.Length);
+                //index += authorsData.Length;
+                //Array.Copy(BitConverter.GetBytes(authorsData.Length), 0, data, index, sizeof(int));
+                //index += sizeof(int);
+                index = EncodeString(Authors ?? string.Empty, data, index, Encoding.ASCII);
                 Array.Copy(BitConverter.GetBytes(1), 0, data, index, sizeof(int));
             }
             else
@@ -269,6 +271,17 @@ namespace DBPF_Compiler.FileTypes
             return data;*/
 
             throw new NotImplementedException();
+        }
+
+        private int EncodeString(string s, byte[] data, int index, Encoding encoding) 
+        {
+            var sData = encoding.GetBytes(s);
+            Array.Reverse(sData);
+            Array.Copy(sData, 0, data, index, sData.Length);
+            index += sData.Length;
+            Array.Copy(BitConverter.GetBytes(sData.Length), 0, data, index, sizeof(int));
+
+            return index + sizeof(int);
         }
     }
 }
