@@ -83,6 +83,11 @@ namespace DBPF_Compiler.FileTypes
         /// <summary>
         /// Имеется только если есть локализации
         /// </summary>
+        public uint  NameLocale { get; set; }
+
+        /// <summary>
+        /// Имеется только если есть локализации
+        /// </summary>
         public uint AuthorNameLocale { get; set; }
 
         /// <summary>
@@ -180,6 +185,7 @@ namespace DBPF_Compiler.FileTypes
                 AuthorNameLocale = BitConverter.ToUInt32(data, offset);
                 offset -= sizeof(uint);
                 DescriptionLocale = BitConverter.ToUInt32(data, offset);
+                // TODO: чтение NameLocale
             }
 
             offset -= sizeof(int);
