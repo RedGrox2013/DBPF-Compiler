@@ -267,6 +267,15 @@ namespace DBPF_Compiler.FileTypes
                 Array.Copy(BitConverter.GetBytes(0), 0, data, index, sizeof(int));
             index += sizeof(int);
 
+            if (HasLocale) 
+            {
+                Array.Copy(BitConverter.GetBytes(DescriptionLocale), 0, data, index, sizeof(uint));
+                index += sizeof(uint);
+                Array.Copy(BitConverter.GetBytes(AuthorNameLocale), 0, data, index, sizeof(uint));
+                index += sizeof(uint);
+                // доделать
+            }
+
             Array.Reverse(data);
             return data;*/
 
