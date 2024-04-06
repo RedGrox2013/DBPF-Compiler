@@ -279,8 +279,22 @@ namespace DBPF_Compiler.FileTypes
                 index += sizeof(uint);
                 Array.Copy(BitConverter.GetBytes(AuthorNameLocale), 0, data, index, sizeof(uint));
                 index += sizeof(uint);
-                // доделать
+                Array.Copy(BitConverter.GetBytes(NameLocale), 0, data, index, sizeof(uint));
+                index += sizeof(uint);
+                Array.Copy(BitConverter.GetBytes(LocaleTableID), 0, data, index, sizeof(uint));
+                index += sizeof(uint);
+                Array.Copy(BitConverter.GetBytes(0xFFFFFFFF), 0, data, index, sizeof(uint));
             }
+            else
+            {
+                index = EncodeString(Description, data, index, Encoding.Unicode);
+                index = EncodeString(Name, data, index, Encoding.Unicode);
+                index = EncodeString(AuthorName, data, index, Encoding.Unicode);
+                Array.Copy(BitConverter.GetBytes(AuthorID), 0, data, index, sizeof(long));
+                index += sizeof(long);
+                Array.Copy(BitConverter.GetBytes(0), 0, data, index, sizeof(uint));
+            }
+            index += sizeof(uint);
 
             Array.Reverse(data);
             return data;*/
