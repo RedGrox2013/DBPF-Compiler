@@ -184,8 +184,9 @@ namespace DBPF_Compiler.FileTypes
                 offset -= sizeof(uint);
                 AuthorNameLocale = BitConverter.ToUInt32(data, offset);
                 offset -= sizeof(uint);
+                NameLocale = BitConverter.ToUInt32(data, offset);
+                offset -= sizeof(uint);
                 DescriptionLocale = BitConverter.ToUInt32(data, offset);
-                // TODO: чтение NameLocale
             }
 
             offset -= sizeof(int);
@@ -273,7 +274,7 @@ namespace DBPF_Compiler.FileTypes
                 Array.Copy(BitConverter.GetBytes(0), 0, data, index, sizeof(int));
             index += sizeof(int);
 
-            if (HasLocale) 
+            if (HasLocale)
             {
                 Array.Copy(BitConverter.GetBytes(DescriptionLocale), 0, data, index, sizeof(uint));
                 index += sizeof(uint);
@@ -281,20 +282,30 @@ namespace DBPF_Compiler.FileTypes
                 index += sizeof(uint);
                 Array.Copy(BitConverter.GetBytes(NameLocale), 0, data, index, sizeof(uint));
                 index += sizeof(uint);
-                Array.Copy(BitConverter.GetBytes(LocaleTableID), 0, data, index, sizeof(uint));
+                Array.Copy(BitConverter.GetBytes(LocaleTableID ?? 0), 0, data, index, sizeof(uint));
                 index += sizeof(uint);
                 Array.Copy(BitConverter.GetBytes(0xFFFFFFFF), 0, data, index, sizeof(uint));
             }
             else
             {
-                index = EncodeString(Description, data, index, Encoding.Unicode);
-                index = EncodeString(Name, data, index, Encoding.Unicode);
-                index = EncodeString(AuthorName, data, index, Encoding.Unicode);
+                index = EncodeString(Description ?? string.Empty, data, index, Encoding.Unicode);
+                index = EncodeString(Name ?? string.Empty, data, index, Encoding.Unicode);
+                index = EncodeString(AuthorName ?? string.Empty, data, index, Encoding.Unicode);
                 Array.Copy(BitConverter.GetBytes(AuthorID), 0, data, index, sizeof(long));
                 index += sizeof(long);
                 Array.Copy(BitConverter.GetBytes(0), 0, data, index, sizeof(uint));
             }
             index += sizeof(uint);
+
+            Array.Copy(BitConverter.GetBytes(TimeDownloaded), 0, data, index, sizeof(ulong));
+            index += sizeof(ulong);
+            Array.Copy(BitConverter.GetBytes(TimeCreated), 0, data, index, sizeof(ulong));
+            index += sizeof(ulong);
+            Array.Copy(BitConverter.GetBytes(OriginalParentAssetID), 0, data, index, sizeof(long));
+            index += sizeof(long);
+            Array.Copy(BitConverter.GetBytes(ParentAssetID), 0, data, index, sizeof(long));
+            index += sizeof(long);
+            
 
             Array.Reverse(data);
             return data;*/
