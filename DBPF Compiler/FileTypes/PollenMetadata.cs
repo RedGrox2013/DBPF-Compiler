@@ -22,7 +22,7 @@ namespace DBPF_Compiler.FileTypes
                         Encoding.Unicode.GetByteCount(Name ?? string.Empty) +
                         Encoding.Unicode.GetByteCount(Description ?? string.Empty);
                 else
-                    size += sizeof(uint) * 3;
+                    size += sizeof(uint) * 4;
 
                 if (HasAuthors)
                     size += sizeof(int) + Encoding.ASCII.GetByteCount(Authors ?? string.Empty);
@@ -305,7 +305,12 @@ namespace DBPF_Compiler.FileTypes
             index += sizeof(long);
             Array.Copy(BitConverter.GetBytes(ParentAssetID), 0, data, index, sizeof(long));
             index += sizeof(long);
-            
+
+            index = EncodeResourceKey(ParentAssetKey, data, index);
+            index = EncodeResourceKey(AssetKey, data, index);
+            Array.Copy(BitConverter.GetBytes(AssetID), 0, data, index, sizeof(long));
+            index += sizeof(long);
+            Array.Copy(BitConverter.GetBytes(MetadataVersion), 0, data, index, sizeof(int));
 
             Array.Reverse(data);
             return data;*/
@@ -313,7 +318,7 @@ namespace DBPF_Compiler.FileTypes
             throw new NotImplementedException();
         }
 
-        private int EncodeString(string s, byte[] data, int index, Encoding encoding) 
+        private static int EncodeString(string s, byte[] data, int index, Encoding encoding) 
         {
             var sData = encoding.GetBytes(s);
             Array.Reverse(sData);
@@ -322,6 +327,17 @@ namespace DBPF_Compiler.FileTypes
             Array.Copy(BitConverter.GetBytes(sData.Length), 0, data, index, sizeof(int));
 
             return index + sizeof(int);
+        }
+
+        private static int EncodeResourceKey(ResourceKey key, byte[] data, int index)
+        {
+            Array.Copy(BitConverter.GetBytes(key.TypeID), 0, data, index, sizeof(uint));
+            index += sizeof(long);
+            Array.Copy(BitConverter.GetBytes(key.GroupID), 0, data, index, sizeof(uint));
+            index += sizeof(long);
+            Array.Copy(BitConverter.GetBytes(key.InstanceID), 0, data, index, sizeof(uint));
+
+            return index + sizeof(long);
         }
     }
 }
