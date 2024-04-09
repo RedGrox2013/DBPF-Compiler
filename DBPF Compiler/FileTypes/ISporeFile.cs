@@ -3,9 +3,8 @@
     public interface ISporeFile
     {
         uint TypeID { get; }
-        uint DataSize { get; }
 
-        bool Decode(byte[]? data);
-        byte[] Encode();
+        void ReadFromStream(Stream stream);
+        void WriteToStream(Stream stream);
     }
 }
