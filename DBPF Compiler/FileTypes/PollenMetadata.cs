@@ -132,14 +132,217 @@ namespace DBPF_Compiler.FileTypes
 
         public uint? ConsequenceTraits { get; set; }
 
-        public void ReadFromStream(Stream stream)
+        public bool Decode(byte[]? data)
+        {
+            if (data == null)
+                return false;
+
+            Array.Reverse(data);
+            int offset = data.Length - sizeof(int);
+            MetadataVersion = BitConverter.ToInt32(data, offset);
+            if (MetadataVersion != 13)
+                return false;
+
+            offset -= sizeof(long);
+            AssetID = BitConverter.ToInt64(data, offset);
+            offset -= sizeof(uint);
+            var typeID = BitConverter.ToUInt32(data, offset);
+            offset -= sizeof(uint);
+            var groupID = BitConverter.ToUInt32(data, offset);
+            offset -= sizeof(uint);
+            var instanceID = BitConverter.ToUInt32(data, offset);
+            AssetKey = new(instanceID, typeID, groupID);
+            offset -= sizeof(uint);
+            typeID = BitConverter.ToUInt32(data, offset);
+            offset -= sizeof(uint);
+            groupID = BitConverter.ToUInt32(data, offset);
+            offset -= sizeof(uint);
+            instanceID = BitConverter.ToUInt32(data, offset);
+            ParentAssetKey = new(instanceID, typeID, groupID);
+            offset -= sizeof(long);
+            ParentAssetID = BitConverter.ToInt64(data, offset);
+            offset -= sizeof(long);
+            OriginalParentAssetID = BitConverter.ToInt64(data, offset);
+            offset -= sizeof(ulong);
+            TimeCreated = BitConverter.ToUInt64(data, offset);
+            offset -= sizeof(ulong);
+            TimeDownloaded = BitConverter.ToUInt64(data, offset);
+
+            offset -= sizeof(int);
+            if (BitConverter.ToUInt32(data, offset) != 0xFFFFFFFF)
+            {
+                offset -= sizeof(long);
+                AuthorID = BitConverter.ToInt64(data, offset);
+                AuthorName = GetUnicodeString(data, ref offset);
+                Name = GetUnicodeString(data, ref offset);
+                Description = GetUnicodeString(data, ref offset);
+            }
+            else
+            {
+                offset -= sizeof(uint);
+                LocaleTableID = BitConverter.ToUInt32(data, offset);
+                offset -= sizeof(uint);
+                AuthorNameLocale = BitConverter.ToUInt32(data, offset);
+                offset -= sizeof(uint);
+                NameLocale = BitConverter.ToUInt32(data, offset);
+                offset -= sizeof(uint);
+                DescriptionLocale = BitConverter.ToUInt32(data, offset);
+            }
+
+            offset -= sizeof(int);
+            if (BitConverter.ToInt32(data, offset) == 1)
+            {
+                offset -= sizeof(int);
+                int len = BitConverter.ToInt32(data, offset);
+                offset -= len;
+                Array.Reverse(data, offset, len);
+                Authors = Encoding.ASCII.GetString(data, offset, len);
+            }
+
+            offset -= sizeof(int);
+            UnknownValue = BitConverter.ToInt32(data, offset);
+            offset -= sizeof(int);
+            if (BitConverter.ToInt32(data, offset) == 1)
+                Tags = GetUnicodeString(data, ref offset);
+            offset -= sizeof(uint);
+            IsShareable = BitConverter.ToUInt32(data, offset) == 0xFFFFFFFF;
+            offset -= sizeof(int);
+            if (BitConverter.ToInt32(data, offset) == 1)
+            {
+                offset -= sizeof(uint);
+                ConsequenceTraits = BitConverter.ToUInt32(data, offset);
+            }
+
+            return true;
+        }
+
+        private static string GetUnicodeString(byte[] data, ref int offset)
+        {
+            offset -= sizeof(int);
+            int len = BitConverter.ToInt32(data, offset);
+            offset -= len;
+            Array.Reverse(data, offset, len);
+
+            return Encoding.Unicode.GetString(data, offset, len);
+        }
+
+        public uint WriteToStream(Stream stream)
         {
             throw new NotImplementedException();
         }
 
-        public void WriteToStream(Stream stream)
+        /*public byte[] Encode()
         {
+            byte[] data = new byte[DataSize];
+            int index = 0;
+            if (HasConsequenceTraits)
+            {
+                Array.Copy(BitConverter.GetBytes(ConsequenceTraits ?? 0), data, sizeof(uint));
+                index += sizeof(uint);
+                Array.Copy(BitConverter.GetBytes(1), 0, data, index, sizeof(int));
+            }
+            else
+                Array.Copy(BitConverter.GetBytes(0), data, sizeof(int));
+            index += sizeof(int);
+            for (int i = 0; i < sizeof(uint); i++)
+                data[index + i] = IsShareable ? (byte)0xFF : (byte)0;
+            index += sizeof(uint);
+            if (HasTags)
+            {
+                //var tags = Encoding.Unicode.GetBytes(Tags ?? string.Empty);
+                //Array.Reverse(tags);
+                //Array.Copy(tags, 0, data, index, tags.Length);
+                //index += tags.Length;
+                //Array.Copy(BitConverter.GetBytes(tags.Length), 0, data, index, sizeof(int));
+                //index += sizeof(int);
+                index = EncodeString(Tags ?? string.Empty, data, index, Encoding.Unicode);
+                Array.Copy(BitConverter.GetBytes(1), 0, data, index, sizeof(int));
+            }
+            else
+                Array.Copy(BitConverter.GetBytes(0), 0, data, index, sizeof(int));
+            index += sizeof(int);
+
+            Array.Copy(BitConverter.GetBytes(UnknownValue), 0, data, index, sizeof(int));
+            index += sizeof(int);
+            if (HasAuthors)
+            {
+                //var authorsData = Encoding.ASCII.GetBytes(Authors ?? string.Empty);
+                //Array.Reverse(authorsData);
+                //Array.Copy(authorsData, 0, data, index, authorsData.Length);
+                //index += authorsData.Length;
+                //Array.Copy(BitConverter.GetBytes(authorsData.Length), 0, data, index, sizeof(int));
+                //index += sizeof(int);
+                index = EncodeString(Authors ?? string.Empty, data, index, Encoding.ASCII);
+                Array.Copy(BitConverter.GetBytes(1), 0, data, index, sizeof(int));
+            }
+            else
+                Array.Copy(BitConverter.GetBytes(0), 0, data, index, sizeof(int));
+            index += sizeof(int);
+
+            if (HasLocale)
+            {
+                Array.Copy(BitConverter.GetBytes(DescriptionLocale), 0, data, index, sizeof(uint));
+                index += sizeof(uint);
+                Array.Copy(BitConverter.GetBytes(AuthorNameLocale), 0, data, index, sizeof(uint));
+                index += sizeof(uint);
+                Array.Copy(BitConverter.GetBytes(NameLocale), 0, data, index, sizeof(uint));
+                index += sizeof(uint);
+                Array.Copy(BitConverter.GetBytes(LocaleTableID ?? 0), 0, data, index, sizeof(uint));
+                index += sizeof(uint);
+                Array.Copy(BitConverter.GetBytes(0xFFFFFFFF), 0, data, index, sizeof(uint));
+            }
+            else
+            {
+                index = EncodeString(Description ?? string.Empty, data, index, Encoding.Unicode);
+                index = EncodeString(Name ?? string.Empty, data, index, Encoding.Unicode);
+                index = EncodeString(AuthorName ?? string.Empty, data, index, Encoding.Unicode);
+                Array.Copy(BitConverter.GetBytes(AuthorID), 0, data, index, sizeof(long));
+                index += sizeof(long);
+                Array.Copy(BitConverter.GetBytes(0), 0, data, index, sizeof(uint));
+            }
+            index += sizeof(uint);
+
+            Array.Copy(BitConverter.GetBytes(TimeDownloaded), 0, data, index, sizeof(ulong));
+            index += sizeof(ulong);
+            Array.Copy(BitConverter.GetBytes(TimeCreated), 0, data, index, sizeof(ulong));
+            index += sizeof(ulong);
+            Array.Copy(BitConverter.GetBytes(OriginalParentAssetID), 0, data, index, sizeof(long));
+            index += sizeof(long);
+            Array.Copy(BitConverter.GetBytes(ParentAssetID), 0, data, index, sizeof(long));
+            index += sizeof(long);
+
+            index = EncodeResourceKey(ParentAssetKey, data, index);
+            index = EncodeResourceKey(AssetKey, data, index);
+            Array.Copy(BitConverter.GetBytes(AssetID), 0, data, index, sizeof(long));
+            index += sizeof(long);
+            Array.Copy(BitConverter.GetBytes(MetadataVersion), 0, data, index, sizeof(int));
+
+            Array.Reverse(data);
+            return data;
+
             throw new NotImplementedException();
         }
+
+        private static int EncodeString(string s, byte[] data, int index, Encoding encoding) 
+        {
+            var sData = encoding.GetBytes(s);
+            Array.Reverse(sData);
+            Array.Copy(sData, 0, data, index, sData.Length);
+            index += sData.Length;
+            Array.Copy(BitConverter.GetBytes(sData.Length), 0, data, index, sizeof(int));
+
+            return index + sizeof(int);
+        }
+
+        private static int EncodeResourceKey(ResourceKey key, byte[] data, int index)
+        {
+            Array.Copy(BitConverter.GetBytes(key.TypeID), 0, data, index, sizeof(uint));
+            index += sizeof(long);
+            Array.Copy(BitConverter.GetBytes(key.GroupID), 0, data, index, sizeof(uint));
+            index += sizeof(long);
+            Array.Copy(BitConverter.GetBytes(key.InstanceID), 0, data, index, sizeof(uint));
+
+            return index + sizeof(long);
+        }*/
     }
 }

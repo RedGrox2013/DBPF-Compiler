@@ -4,7 +4,18 @@
     {
         uint TypeID { get; }
 
-        void ReadFromStream(Stream stream);
-        void WriteToStream(Stream stream);
+        /// <summary>
+        /// Декодирует массив байтов
+        /// </summary>
+        /// <param name="data">Исходные данные</param>
+        /// <returns><c>true</c>, если удалось декодировать, в противном случае <c>false</c></returns>
+        bool Decode(byte[]? data);
+
+        /// <summary>
+        /// Кодирует файл и записывает в поток
+        /// </summary>
+        /// <param name="stream">Куда будет записан файл</param>
+        /// <returns>Размер записанных данных</returns>
+        uint WriteToStream(Stream stream);
     }
 }

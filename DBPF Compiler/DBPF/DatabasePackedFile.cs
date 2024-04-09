@@ -3,6 +3,7 @@
  * https://web.archive.org/web/20090130111849/http://blog.spore.vg/file-formats/package/
  */
 
+using DBPF_Compiler.FileTypes;
 using DBPF_Compiler.Types;
 using System.Text;
 
@@ -163,6 +164,28 @@ namespace DBPF_Compiler.DBPF
         }
         public async Task WriteDataAsync(byte[] data, ResourceKey key)
             => await Task.Run(() => WriteData(data, key));
+
+        public void WriteSporeFile(ISporeFile file, ResourceKey key)
+        {
+            Task.Run(() => _onDataWriting?.Invoke(key));
+            _headerWrited = _indexWrited = false;
+
+            uint size = file.WriteToStream(_stream);
+            var entry = new IndexEntry
+            {
+                TypeID = key.TypeID,
+                InstanceID = key.InstanceID,
+                GroupID = key.GroupID,
+                Offset = IndexOffset,
+                CompressedSize= size | COMPRESSED_OR,
+                UncompressedSize = size,
+            };
+            _index.Entries.Add(entry);
+            IndexSize += entry.EntrySize;
+            IndexOffset += size;
+        }
+        public async Task WriteSporeFileAsync(ISporeFile file, ResourceKey key)
+            => await Task.Run(() => WriteSporeFile(file, key));
 
         public void CopyFromStream(Stream stream, ResourceKey key)
         {
