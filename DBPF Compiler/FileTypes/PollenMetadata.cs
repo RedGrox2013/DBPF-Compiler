@@ -10,30 +10,30 @@ namespace DBPF_Compiler.FileTypes
         [XmlIgnore]
         public uint TypeID => 0x030BDEE3;
 
-        [XmlIgnore]
-        public uint DataSize
-        {
-            get
-            {
-                int size = sizeof(int) * 7 + sizeof(long) * 9 + sizeof(ulong) * 2;
-                if (!HasLocale)
-                    size += sizeof(long) + sizeof(int) +
-                        Encoding.Unicode.GetByteCount(AuthorName ?? string.Empty) +
-                        Encoding.Unicode.GetByteCount(Name ?? string.Empty) +
-                        Encoding.Unicode.GetByteCount(Description ?? string.Empty);
-                else
-                    size += sizeof(uint) * 4;
+        //[XmlIgnore]
+        //public uint DataSize
+        //{
+        //    get
+        //    {
+        //        int size = sizeof(int) * 7 + sizeof(long) * 9 + sizeof(ulong) * 2;
+        //        if (!HasLocale)
+        //            size += sizeof(long) + sizeof(int) +
+        //                Encoding.Unicode.GetByteCount(AuthorName ?? string.Empty) +
+        //                Encoding.Unicode.GetByteCount(Name ?? string.Empty) +
+        //                Encoding.Unicode.GetByteCount(Description ?? string.Empty);
+        //        else
+        //            size += sizeof(uint) * 4;
 
-                if (HasAuthors)
-                    size += sizeof(int) + Encoding.ASCII.GetByteCount(Authors ?? string.Empty);
-                if (HasTags)
-                    size += sizeof(int) + Encoding.Unicode.GetByteCount(Tags ?? string.Empty);
-                if (HasConsequenceTraits)
-                    size += sizeof(uint);
+        //        if (HasAuthors)
+        //            size += sizeof(int) + Encoding.ASCII.GetByteCount(Authors ?? string.Empty);
+        //        if (HasTags)
+        //            size += sizeof(int) + Encoding.Unicode.GetByteCount(Tags ?? string.Empty);
+        //        if (HasConsequenceTraits)
+        //            size += sizeof(uint);
 
-                return (uint)size;
-            }
-        }
+        //        return (uint)size;
+        //    }
+        //}
 
         /// <summary>
         /// Поддерживается пока что только 13 версия
