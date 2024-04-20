@@ -102,9 +102,15 @@ namespace DBPF_Compiler.DBPF
         /// Absolute offset in package to the index header.
         /// </summary>
         public uint IndexOffset { get; private set; }
+
+        ////////// Secret data //////////
+
+        public uint SecretIndexOffset => (uint)(IndexOffset + IndexSize);
         #endregion
 
         private DBPFIndex _index = new();
+
+        private SecretDBPFIndex? _secretIndex = null;
 
         public DatabasePackedFile(FileStream stream)
         {
@@ -177,7 +183,7 @@ namespace DBPF_Compiler.DBPF
                 InstanceID = key.InstanceID,
                 GroupID = key.GroupID,
                 Offset = IndexOffset,
-                CompressedSize= size | COMPRESSED_OR,
+                CompressedSize = size | COMPRESSED_OR,
                 UncompressedSize = size,
             };
             _index.Entries.Add(entry);
@@ -236,45 +242,38 @@ namespace DBPF_Compiler.DBPF
         {
             Task.Run(() => _onHeaderReading?.Invoke(null));
             _stream.Position = HeaderOffset;
-            byte[] buffer = new byte[sizeof(uint)];
-            _stream.Read(buffer);
-            if (BitConverter.ToUInt32(buffer) != Magic)
-                throw new NotSupportedException(Encoding.ASCII.GetString(buffer) +
+            using BinaryReader reader = new(_stream, Encoding.Default, true);
+            var magic = reader.ReadUInt32();
+            if (magic != Magic)
+                throw new NotSupportedException(Encoding.ASCII.GetString(BitConverter.GetBytes(magic)) +
                     " is not supported.");
 
-            _stream.Read(buffer);
-            MajorVersion = BitConverter.ToInt32(buffer);
+            MajorVersion = reader.ReadInt32();
             _stream.Seek(7 * sizeof(int), SeekOrigin.Current);
-            _stream.Read(buffer);
-            var indexCount = BitConverter.ToInt32(buffer);
+            var indexCount = reader.ReadInt32();
             _stream.Seek(sizeof(int), SeekOrigin.Current);
             //_stream.Read(buffer);
             //IndexSize = BitConverter.ToInt32(buffer);
             //_stream.Seek(12 + sizeof(int), SeekOrigin.Current);
             _stream.Seek(12 + sizeof(int) * 2, SeekOrigin.Current);
             IndexSize = 0;
-            _stream.Read(buffer);
-            _stream.Position = IndexOffset = BitConverter.ToUInt32(buffer);
+            _stream.Position = IndexOffset = reader.ReadUInt32();
 
             Task.Run(() => _onIndexReading?.Invoke(IndexOffset));
             _index.Entries.Clear();
             ResourceKey[] keys = new ResourceKey[indexCount];
-            _stream.Read(buffer);
-            _index.ValuesFlag = BitConverter.ToUInt32(buffer);
+            _index.ValuesFlag = reader.ReadUInt32();
             if (_index.GetFlagAt(0))
             {
-                _stream.Read(buffer);
-                _index.TypeID = BitConverter.ToUInt32(buffer);
+                _index.TypeID = reader.ReadUInt32();
             }
             if (_index.GetFlagAt(1))
             {
-                _stream.Read(buffer);
-                _index.GroupID = BitConverter.ToUInt32(buffer);
+                _index.GroupID = reader.ReadUInt32();
             }
             if (_index.GetFlagAt(2))
             {
-                _stream.Read(buffer);
-                _index.UnknownID = BitConverter.ToUInt32(buffer);
+                _index.UnknownID = reader.ReadUInt32();
             }
 
             for (int i = 0; i < indexCount; i++)
@@ -282,37 +281,29 @@ namespace DBPF_Compiler.DBPF
                 var entry = new IndexEntry();
                 if (!_index.GetFlagAt(0))
                 {
-                    _stream.Read(buffer);
-                    entry.TypeID = BitConverter.ToUInt32(buffer);
+                    entry.TypeID = reader.ReadUInt32();
                 }
                 else entry.TypeID = _index.TypeID;
                 if (!_index.GetFlagAt(1))
                 {
-                    _stream.Read(buffer);
-                    entry.GroupID = BitConverter.ToUInt32(buffer);
+                    entry.GroupID = reader.ReadUInt32();
                 }
                 else entry.GroupID = _index.GroupID;
                 if (!_index.GetFlagAt(2))
                     _stream.Seek(sizeof(uint), SeekOrigin.Begin);
-                _stream.Read(buffer);
-                entry.InstanceID = BitConverter.ToUInt32(buffer);
-                _stream.Read(buffer);
-                entry.Offset = BitConverter.ToUInt32(buffer);
-                _stream.Read(buffer);
-                entry.CompressedSize = BitConverter.ToUInt32(buffer);
-                _stream.Read(buffer);
-                entry.UncompressedSize = BitConverter.ToUInt32(buffer);
-                _stream.Read(buffer, 0, sizeof(ushort));
-                entry.IsCompressed = BitConverter.ToUInt16(buffer) == 0xFFFF;
-                entry.IsSaved = _stream.ReadByte() == 1;
+                
+                entry.InstanceID = reader.ReadUInt32();
+                entry.Offset = reader.ReadUInt32();
+                entry.CompressedSize = reader.ReadUInt32();
+                entry.UncompressedSize = reader.ReadUInt32();
+                entry.IsCompressed = reader.ReadUInt16() == 0xFFFF;
+                entry.IsSaved = reader.ReadByte() == 1;
                 _stream.Seek(1, SeekOrigin.Current);
                 _index.Entries.Add(entry);
                 keys[i] = new ResourceKey(entry.InstanceID, entry.TypeID ?? 0, entry.GroupID ?? 0);
                 IndexSize += entry.EntrySize;
-
-                //if ((entry.UncompressedSize | COMPRESSED_OR) != entry.CompressedSize)
-                //    throw new NotSupportedException("Data is compressed");
             }
+
             _stream.Position = IndexOffset;
             _index.ValuesFlag = 4;
             IndexSize += _index.SizeWithoutEntries;
@@ -321,6 +312,31 @@ namespace DBPF_Compiler.DBPF
         }
         public async Task<ResourceKey[]> ReadDBPFInfoAsync()
             => await Task.Run(ReadDBPFInfo);
+
+        public StringResourceKey[]? ReadSecretIndex()
+        {
+            if (SecretIndexOffset >= _stream.Length)
+                return null;
+
+            _stream.Position = SecretIndexOffset;
+            using BinaryReader reader = new(_stream, Encoding.UTF8, true);
+            _secretIndex = new(reader.ReadString());
+            int count = reader.ReadInt32();
+
+            StringResourceKey[] keys = new StringResourceKey[count];
+            for (int i = 0; i < count; i++)
+            {
+                keys[i] = new(instanceID: reader.ReadString(), typeID: reader.ReadString());
+                SecretIndexEntry entry = new()
+                {
+                    Key = keys[i],
+                    Offset = reader.ReadUInt32(),
+                    Size = reader.ReadUInt32()
+                };
+            }
+
+            return keys;
+        }
 
         public byte[]? ReadResource(ResourceKey key, bool decompress = true)
         {
