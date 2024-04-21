@@ -238,6 +238,27 @@ namespace DBPF_Compiler.DBPF
         public async Task WriteIndexAsync()
             => await Task.Run(WriteIndex);
 
+        public void WriteSecretIndex()
+        {
+            if (_secretIndex == null)
+                return;
+
+            _stream.Position = SecretIndexOffset;
+            using BinaryWriter writer = new(_stream, Encoding.UTF8, true);
+            writer.Write(_secretIndex.GroupName);
+            writer.Write(_secretIndex.IndexCount);
+            
+            foreach (var entry in _secretIndex.Entries)
+            {
+                writer.Write(entry.Key.InstanceID);
+                writer.Write(entry.Key.TypeID ?? string.Empty);
+                writer.Write(entry.Offset);
+                writer.Write(entry.Size);
+            }
+        }
+        public async Task WriteSecretIndexAsync()
+            => await Task.Run(WriteSecretIndex);
+
         public ResourceKey[] ReadDBPFInfo()
         {
             Task.Run(() => _onHeaderReading?.Invoke(null));
