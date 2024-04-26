@@ -42,7 +42,7 @@
                 if (string.IsNullOrWhiteSpace(l) || l.StartsWith('#'))
                     continue;
 
-                string[] pair = l.Split('\t', ' ');
+                string[] pair = l.Split('\t');
                 if (pair.Length == 1 || !FNVHash.TryParse(pair[1], out uint hash))
                     hash = FNVHash.Compute(pair[0]);
                 reg.Add(pair[0], hash);
@@ -64,7 +64,7 @@
                 if (reg.Name != regName && reg.GetName(hash, out string name))
                     return name;
 
-            return "0x" + Convert.ToString(hash, 16);
+            return "0x" + Convert.ToString(hash, 16).ToUpper();
         }
 
         public uint GetHash(string name, string? regName = null)

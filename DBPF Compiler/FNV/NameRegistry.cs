@@ -17,6 +17,8 @@
 
         public bool GetHash(string name, out uint hash)
         {
+            if (FNVHash.TryParse(name, out hash))
+                return true;
             if (_reg.TryGetValue(name, out hash))
                 return true;
 
@@ -42,7 +44,7 @@
             if (GetName(hash, out string name))
                 return name;
 
-            return "0x" + Convert.ToString(hash, 16);
+            return "0x" + Convert.ToString(hash, 16).ToUpper();
         }
     }
 }
