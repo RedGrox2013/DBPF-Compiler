@@ -1,5 +1,5 @@
-﻿using DBPF_Compiler;
-using DBPF_Compiler.DBPF;
+﻿using DBPF_Compiler.DBPF;
+using DBPF_Compiler.FNV;
 using DBPF_Compiler.Types;
 using System.Diagnostics;
 using System.Text;
@@ -8,6 +8,14 @@ Console.WriteLine("Spore Database Packed File Compiler");
 
 if (args.Length == 0)
     return;
+
+DirectoryInfo regDir = new("Registries");
+if (regDir.Exists)
+{
+    foreach (var file in regDir.GetFiles())
+        if (file.Name.StartsWith("reg_"))
+            NameRegistryManager.Instance.AddRegistryFromFileAsync(file.FullName).Wait();
+}
 
 if (args[0].Equals("--help") || args[0].Equals("-h"))
     Console.WriteLine(@"
@@ -34,7 +42,7 @@ static void Pack(string inputPath, string outputPath, string? secretFolder = nul
     dbpf.OnHeaderWriting += msg => Console.WriteLine("Writing header . . .");
     dbpf.OnDataWriting += DisplayDataWritingMessage;
     dbpf.OnIndexWriting += msg => Console.WriteLine("Writing index . . .");
-    dbpf.WriteData(data, new ResourceKey(dataID, dataID, dataID));
+    dbpf.WriteData(data, new ResourceKey(dataID, FNVHash.Compute("txt"), dataID));
 
     //dbpf.WriteSecretData(Encoding.Default.GetBytes("Уууу секретики"), new("Секретик", "txt"));
 

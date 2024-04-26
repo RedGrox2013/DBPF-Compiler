@@ -1,4 +1,4 @@
-﻿namespace DBPF_Compiler
+﻿namespace DBPF_Compiler.FNV
 {
     public static class FNVHash
     {

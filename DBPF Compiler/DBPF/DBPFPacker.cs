@@ -1,4 +1,5 @@
-﻿using DBPF_Compiler.Types;
+﻿using DBPF_Compiler.FNV;
+using DBPF_Compiler.Types;
 
 namespace DBPF_Compiler.DBPF
 {
@@ -10,6 +11,8 @@ namespace DBPF_Compiler.DBPF
             => Directory = directory;
         public DBPFPacker(string path)
             => Directory = new DirectoryInfo(path);
+
+        private readonly NameRegistryManager _regManager = NameRegistryManager.Instance;
 
         public void Pack(DatabasePackedFile output)
         {
@@ -34,12 +37,16 @@ namespace DBPF_Compiler.DBPF
         {
             foreach (var resource in dbpf.ReadDBPFInfo())
             {
-                var sr = new StringResourceKey(resource);
-                var path = Directory.FullName + "\\" + (string.IsNullOrWhiteSpace(sr.GroupID) ?
-                    "0x0" : sr.GroupID);
+                var key = new StringResourceKey(
+                    _regManager.GetName(resource.InstanceID, "file"),
+                    _regManager.GetName(resource.TypeID, "type"),
+                    _regManager.GetName(resource.GroupID, "file")
+                    );
+                var path = Directory.FullName + "\\" + (string.IsNullOrWhiteSpace(key.GroupID) ?
+                    "animations~" : key.GroupID);
                 if (!System.IO.Directory.Exists(path))
                     System.IO.Directory.CreateDirectory(path);
-                using FileStream file = File.Create(path + "\\" + sr.InstanceID + "." + sr.TypeID ?? "0x0");
+                using FileStream file = File.Create(path + "\\" + key.InstanceID + "." + key.TypeID ?? "0x0");
                 dbpf.CopyResourceTo(file, resource);
             }
 
