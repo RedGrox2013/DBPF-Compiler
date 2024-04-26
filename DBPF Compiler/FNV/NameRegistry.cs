@@ -15,11 +15,13 @@
 
         public void Add(string name, uint hash) => _reg.TryAdd(name, hash);
 
-        public uint GetHash(string name)
+        public bool GetHash(string name, out uint hash)
         {
-            if (_reg.TryGetValue(name, out uint hash))
-                return hash;
-            return FNVHash.Compute(name);
+            if (_reg.TryGetValue(name, out hash))
+                return true;
+
+            hash = 0;
+            return false;
         }
 
         public bool GetName(uint hash, out string name)

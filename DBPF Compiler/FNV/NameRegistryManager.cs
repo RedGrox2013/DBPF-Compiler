@@ -18,7 +18,7 @@
         public string[] RegistriesNames
             => (from r in _regs select r.Name).ToArray();
 
-        public NameRegistry? GetRegistry(string regName)
+        public NameRegistry? GetRegistry(string? regName)
         {
             foreach (var reg in _regs)
                 if (reg.Name == regName)
@@ -65,6 +65,22 @@
                     return name;
 
             return "0x" + Convert.ToString(hash, 16);
+        }
+
+        public uint GetHash(string name, string? regName = null)
+        {
+            if (!string.IsNullOrWhiteSpace(regName))
+            {
+                var reg = GetRegistry(regName);
+                if (reg != null && reg.GetHash(name, out uint hash))
+                    return hash;
+            }
+
+            foreach (var reg in _regs)
+                if (reg.Name != regName && reg.GetHash(name, out uint hash))
+                    return hash;
+
+            return FNVHash.Compute(name);
         }
     }
 }

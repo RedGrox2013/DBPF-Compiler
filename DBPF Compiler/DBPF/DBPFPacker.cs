@@ -21,9 +21,11 @@ namespace DBPF_Compiler.DBPF
                 foreach (var file in dir.GetFiles())
                 {
                     string fileName = file.Name.Split('.')[0];
-                    ResourceKey key = new(ParseHashOrCompute(fileName),
-                        ParseHashOrCompute(file.Extension.Remove(0, 1)),
-                        ParseHashOrCompute(dir.Name));
+                    ResourceKey key = new(
+                        _regManager.GetHash(fileName, "file"),
+                        _regManager.GetHash(file.Extension.Remove(0, 1), "type"),
+                        _regManager.GetHash(dir.Name, "file")
+                        );
 
                     using FileStream f = file.OpenRead();
                     output.CopyFromStream(f, key);
@@ -50,13 +52,6 @@ namespace DBPF_Compiler.DBPF
                 dbpf.CopyResourceTo(file, resource);
             }
 
-        }
-
-        private static uint ParseHashOrCompute(string input)
-        {
-            if (FNVHash.TryParse(input, out uint hash))
-                return hash;
-            return FNVHash.Compute(input);
         }
     }
 }
