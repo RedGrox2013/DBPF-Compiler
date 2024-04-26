@@ -21,7 +21,7 @@
         public NameRegistry? GetRegistry(string? regName)
         {
             foreach (var reg in _regs)
-                if (reg.Name == regName)
+                if (reg.Name.Equals(regName, StringComparison.InvariantCultureIgnoreCase))
                     return reg;
 
             return null;
@@ -51,9 +51,9 @@
             AddRegistry(reg);
         }
 
-        public string GetName(uint hash, string? regName = null)
+        public string GetName(uint hash, string? regName = "all")
         {
-            if (!string.IsNullOrWhiteSpace(regName))
+            if (regName != "all")
             {
                 var reg = GetRegistry(regName);
                 if (reg != null && reg.GetName(hash, out string name))
@@ -67,9 +67,9 @@
             return "0x" + Convert.ToString(hash, 16).ToUpper();
         }
 
-        public uint GetHash(string name, string? regName = null)
+        public uint GetHash(string name, string? regName = "all")
         {
-            if (!string.IsNullOrWhiteSpace(regName))
+            if (regName != "all")
             {
                 var reg = GetRegistry(regName);
                 if (reg != null && reg.GetHash(name, out uint hash))
