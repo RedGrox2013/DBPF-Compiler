@@ -5,26 +5,44 @@ namespace DBPF_Compiler.DBPF
 {
     public class DBPFPacker
     {
-        public DirectoryInfo Directory { get; set; }
+        public DirectoryInfo UnpackedDataDirectory { get; set; }
 
-        public DBPFPacker(DirectoryInfo directory)
-            => Directory = directory;
-        public DBPFPacker(string path)
-            => Directory = new DirectoryInfo(path);
+        public DBPFPacker(DirectoryInfo unpackedDataDirectory)
+            => UnpackedDataDirectory = unpackedDataDirectory;
+        public DBPFPacker(string unpackedDataPath)
+            => UnpackedDataDirectory = new DirectoryInfo(unpackedDataPath);
 
         private readonly NameRegistryManager _regManager = NameRegistryManager.Instance;
 
         public void Pack(DatabasePackedFile output)
         {
-            foreach (var dir in Directory.GetDirectories())
+            foreach (var group in UnpackedDataDirectory.GetDirectories())
             {
-                foreach (var file in dir.GetFiles())
+                foreach (var d in group.GetDirectories())
+                    if (d.Name.EndsWith(".package.unpacked"))
+                    {
+                        DBPFPacker packer = new(d);
+                        using MemoryStream stream = new();
+                        using DatabasePackedFile package = new(stream);
+                        packer.Pack(package);
+
+                        string folderName = d.Name.Split('.')[0];
+                        ResourceKey key = new(
+                            _regManager.GetHash(folderName, "file"),
+                            0x06EFC6AA, // package 
+                            _regManager.GetHash(group.Name, "file")
+                            );
+                        stream.Position = 0;
+                        output.CopyFromStream(stream, key);
+                    }
+
+                foreach (var file in group.GetFiles())
                 {
                     string fileName = file.Name.Split('.')[0];
                     ResourceKey key = new(
                         _regManager.GetHash(fileName, "file"),
                         _regManager.GetHash(file.Extension.Remove(0, 1), "type"),
-                        _regManager.GetHash(dir.Name, "file")
+                        _regManager.GetHash(group.Name, "file")
                         );
 
                     using FileStream f = file.OpenRead();
@@ -44,10 +62,10 @@ namespace DBPF_Compiler.DBPF
                     _regManager.GetName(resource.TypeID, "type"),
                     _regManager.GetName(resource.GroupID, "file")
                     );
-                var path = Directory.FullName + "\\" + (string.IsNullOrWhiteSpace(key.GroupID) ?
+                var path = UnpackedDataDirectory.FullName + "\\" + (string.IsNullOrWhiteSpace(key.GroupID) ?
                     "animations~" : key.GroupID);
-                if (!System.IO.Directory.Exists(path))
-                    System.IO.Directory.CreateDirectory(path);
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
                 using FileStream file = File.Create(path + "\\" + key.InstanceID + "." + key.TypeID ?? "0x0");
                 dbpf.CopyResourceTo(file, resource);
             }
