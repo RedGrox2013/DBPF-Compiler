@@ -52,8 +52,8 @@ namespace DBPF_Compiler.DBPF
 
         private readonly Stream _stream;
         private bool _disposed = false;
-        private bool _headerWrited = false;
-        private bool _indexWrited = false;
+        private bool _headerWritten = false;
+        private bool _indexWritten = false;
 
         public const uint HeaderSize = 96u;
         public readonly uint HeaderOffset;
@@ -112,7 +112,7 @@ namespace DBPF_Compiler.DBPF
 
         private SecretDBPFIndex? _secretIndex = null;
 
-        public DatabasePackedFile(FileStream stream)
+        public DatabasePackedFile(Stream stream)
         {
             HeaderOffset = (uint)stream.Position;
             stream.Seek(HeaderSize, SeekOrigin.Current);
@@ -123,7 +123,7 @@ namespace DBPF_Compiler.DBPF
 
         public void WriteHeader()
         {
-            if (_headerWrited)
+            if (_headerWritten)
                 return;
 
             _stream.Position = HeaderOffset;
@@ -142,7 +142,7 @@ namespace DBPF_Compiler.DBPF
             //_stream.Seek(sizeof(int) + 24, SeekOrigin.Current); // Unknown value + unknown byte array
 
             _stream.Position = IndexOffset;
-            _headerWrited = true;
+            _headerWritten = true;
         }
         public async Task WriteHeaderAsync()
             => await Task.Run(WriteHeader);
@@ -150,7 +150,7 @@ namespace DBPF_Compiler.DBPF
         public void WriteData(byte[] data, ResourceKey key)
         {
             Task.Run(() => _onDataWriting?.Invoke(key));
-            _headerWrited = _indexWrited = false;
+            _headerWritten = _indexWritten = false;
 
             uint size = (uint)data.LongLength;
             var entry = new IndexEntry
@@ -174,7 +174,7 @@ namespace DBPF_Compiler.DBPF
         public void WriteSporeFile(ISporeFile file, ResourceKey key)
         {
             Task.Run(() => _onDataWriting?.Invoke(key));
-            _headerWrited = _indexWrited = false;
+            _headerWritten = _indexWritten = false;
 
             uint size = file.WriteToStream(_stream);
             var entry = new IndexEntry
@@ -196,29 +196,30 @@ namespace DBPF_Compiler.DBPF
         public void CopyFromStream(Stream stream, ResourceKey key)
         {
             Task.Run(() => _onDataWriting?.Invoke(key));
-            _headerWrited = _indexWrited = false;
+            _headerWritten = _indexWritten = false;
 
+            uint size = (uint)(stream.Length - stream.Position);
             var entry = new IndexEntry
             {
                 TypeID = key.TypeID,
                 InstanceID = key.InstanceID,
                 GroupID = key.GroupID,
                 Offset = IndexOffset,
-                CompressedSize = (uint)stream.Length | COMPRESSED_OR,
-                UncompressedSize = (uint)stream.Length,
+                CompressedSize = size | COMPRESSED_OR,
+                UncompressedSize = size,
             };
             _index.Entries.Add(entry);
             stream.CopyTo(_stream);
 
             IndexSize += entry.EntrySize;
-            IndexOffset += (uint)stream.Length;
+            IndexOffset += size;
         }
         public async Task CopyFromStreamAsync(Stream stream, ResourceKey key)
             => await Task.Run(() => CopyFromStream(stream, key));
 
         public void WriteIndex()
         {
-            if (_indexWrited)
+            if (_indexWritten)
                 return;
 
             Task.Run(() => _onIndexWriting?.Invoke(IndexCount));
@@ -233,7 +234,7 @@ namespace DBPF_Compiler.DBPF
             foreach (var entry in _index.Entries)
                 _stream.WriteIndexEntry(entry);
 
-            _indexWrited = true;
+            _indexWritten = true;
         }
         public async Task WriteIndexAsync()
             => await Task.Run(WriteIndex);
