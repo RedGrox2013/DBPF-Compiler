@@ -19,22 +19,24 @@ namespace DBPF_Compiler.DBPF
             foreach (var group in UnpackedDataDirectory.GetDirectories())
             {
                 foreach (var d in group.GetDirectories())
-                    if (d.Name.EndsWith(".package.unpacked"))
-                    {
-                        DBPFPacker packer = new(d);
-                        using MemoryStream stream = new();
-                        using DatabasePackedFile package = new(stream);
-                        packer.Pack(package);
+                {
+                    if (!d.Name.EndsWith(".package.unpacked"))
+                        continue;
 
-                        string folderName = d.Name.Split('.')[0];
-                        ResourceKey key = new(
-                            _regManager.GetHash(folderName, "file"),
-                            0x06EFC6AA, // package 
-                            _regManager.GetHash(group.Name, "file")
-                            );
-                        stream.Position = 0;
-                        output.CopyFromStream(stream, key);
-                    }
+                    DBPFPacker packer = new(d);
+                    using MemoryStream stream = new();
+                    using DatabasePackedFile package = new(stream);
+                    packer.Pack(package);
+
+                    string folderName = d.Name.Split('.')[0];
+                    ResourceKey key = new(
+                        _regManager.GetHash(folderName, "file"),
+                        0x06EFC6AA, // package
+                        _regManager.GetHash(group.Name, "file")
+                        );
+                    stream.Position = 0;
+                    output.CopyFromStream(stream, key);
+                }
 
                 foreach (var file in group.GetFiles())
                 {
@@ -49,6 +51,7 @@ namespace DBPF_Compiler.DBPF
                     output.CopyFromStream(f, key);
                 }
             }
+
             output.WriteIndex();
             output.WriteHeader();
         }
@@ -62,14 +65,12 @@ namespace DBPF_Compiler.DBPF
                     _regManager.GetName(resource.TypeID, "type"),
                     _regManager.GetName(resource.GroupID, "file")
                     );
-                var path = UnpackedDataDirectory.FullName + "\\" + (string.IsNullOrWhiteSpace(key.GroupID) ?
-                    "animations~" : key.GroupID);
+                var path = UnpackedDataDirectory.FullName + "\\" + key.GroupID;
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
-                using FileStream file = File.Create(path + "\\" + key.InstanceID + "." + key.TypeID ?? "0x0");
+                using FileStream file = File.Create(path + "\\" + key.InstanceID + "." + key.TypeID);
                 dbpf.CopyResourceTo(file, resource);
             }
-
         }
     }
 }
