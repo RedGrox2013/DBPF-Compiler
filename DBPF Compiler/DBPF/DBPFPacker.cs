@@ -31,7 +31,7 @@ namespace DBPF_Compiler.DBPF
                     string folderName = d.Name.Split('.')[0];
                     ResourceKey key = new(
                         _regManager.GetHash(folderName, "file"),
-                        0x06EFC6AA, // package
+                        (uint)TypeIDs.package,
                         _regManager.GetHash(group.Name, "file")
                         );
                     stream.Position = 0;
@@ -56,7 +56,7 @@ namespace DBPF_Compiler.DBPF
             output.WriteHeader();
         }
 
-        public void Unpack(DatabasePackedFile dbpf)
+        public void Unpack(DatabasePackedFile dbpf, EncodeFlags flags = EncodeFlags.All)
         {
             foreach (var resource in dbpf.ReadDBPFInfo())
             {
@@ -64,9 +64,31 @@ namespace DBPF_Compiler.DBPF
                 var path = UnpackedDataDirectory.FullName + "\\" + key.GroupID;
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
-                using FileStream file = File.Create(path + "\\" + key.InstanceID + "." + key.TypeID);
-                dbpf.CopyResourceTo(file, resource);
+                path += "\\" + key.InstanceID + "." + key.TypeID;
+
+                if (resource.TypeID == (uint)TypeIDs.package && flags.HasFlag(EncodeFlags.Package))
+                {
+                    DBPFPacker unpacker = new(path + ".unpacked");
+                    using MemoryStream stream = new();
+                    dbpf.CopyResourceTo(stream, resource);
+                    DatabasePackedFile package = new(stream);
+                    unpacker.Unpack(package);
+                }
+                else
+                {
+                    using FileStream file = File.Create(path);
+                    dbpf.CopyResourceTo(file, resource);
+                }
             }
         }
+    }
+
+    [Flags]
+    public enum EncodeFlags
+    {
+        None = 0,
+        Package = 0b1,
+
+        All = int.MaxValue
     }
 }
