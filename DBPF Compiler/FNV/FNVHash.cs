@@ -41,5 +41,8 @@
 
             return true;
         }
+
+        public static string ToString(uint hash, bool sporeMasterStyle = false)
+            => (sporeMasterStyle ? "#" : "0x") + Convert.ToString(hash, 16).ToUpper();
     }
 }

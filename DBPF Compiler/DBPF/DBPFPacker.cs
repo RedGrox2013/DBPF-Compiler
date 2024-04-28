@@ -60,11 +60,7 @@ namespace DBPF_Compiler.DBPF
         {
             foreach (var resource in dbpf.ReadDBPFInfo())
             {
-                var key = new StringResourceKey(
-                    _regManager.GetName(resource.InstanceID, "file"),
-                    _regManager.GetName(resource.TypeID, "type"),
-                    _regManager.GetName(resource.GroupID, "file")
-                    );
+                var key = _regManager.GetStringResourceKey(resource);
                 var path = UnpackedDataDirectory.FullName + "\\" + key.GroupID;
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);

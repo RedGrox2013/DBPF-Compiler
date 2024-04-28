@@ -1,4 +1,6 @@
-﻿namespace DBPF_Compiler.FNV
+﻿using DBPF_Compiler.Types;
+
+namespace DBPF_Compiler.FNV
 {
     public class NameRegistryManager
     {
@@ -64,7 +66,7 @@
                 if (reg.Name != regName && reg.GetName(hash, out string name))
                     return name;
 
-            return "0x" + Convert.ToString(hash, 16).ToUpper();
+            return FNVHash.ToString(hash);
         }
 
         public uint GetHash(string name, string? regName = "all")
@@ -82,5 +84,10 @@
 
             return FNVHash.Compute(name);
         }
+
+        public StringResourceKey GetStringResourceKey(ResourceKey key) => new(
+            GetName(key.InstanceID, "file"),
+            GetName(key.TypeID, "type"),
+            GetName(key.GroupID, "file"));
     }
 }

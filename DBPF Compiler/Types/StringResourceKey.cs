@@ -1,4 +1,6 @@
-﻿namespace DBPF_Compiler.Types
+﻿using DBPF_Compiler.FNV;
+
+namespace DBPF_Compiler.Types
 {
     public struct StringResourceKey(string instanceID, string? typeID = null, string? groupID = null)
     {
@@ -6,10 +8,11 @@
         public string? TypeID { get; set; } = typeID;
         public string? GroupID { get; set; } = groupID;
 
-        public StringResourceKey(ResourceKey key) : this("0x" + Convert.ToString(key.InstanceID, 16),
-            key.TypeID != 0 ? "0x" + Convert.ToString(key.TypeID, 16) : null,
-            key.GroupID != 0 ? "0x" + Convert.ToString(key.GroupID, 16) : null)
-        { }
+        public StringResourceKey(ResourceKey key) : this(
+            FNVHash.ToString(key.InstanceID),
+            key.TypeID != 0 ? FNVHash.ToString(key.TypeID) : null,
+            key.GroupID != 0 ? FNVHash.ToString(key.GroupID) : null
+            ) { }
 
         public override readonly string ToString()
         {
