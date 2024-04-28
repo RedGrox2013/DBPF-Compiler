@@ -56,7 +56,6 @@ namespace DBPF_Compiler.DBPF
         private bool _indexWritten = false;
 
         public const uint HeaderSize = 96u;
-        public readonly uint HeaderOffset;
 
         private const uint COMPRESSED_OR = 0x80000000;
 
@@ -114,9 +113,8 @@ namespace DBPF_Compiler.DBPF
 
         public DatabasePackedFile(Stream stream)
         {
-            HeaderOffset = (uint)stream.Position;
             stream.Seek(HeaderSize, SeekOrigin.Current);
-            IndexOffset = HeaderOffset + HeaderSize;
+            IndexOffset = HeaderSize;
             IndexSize = _index.SizeWithoutEntries;
             _stream = stream;
         }
@@ -126,7 +124,7 @@ namespace DBPF_Compiler.DBPF
             if (_headerWritten)
                 return;
 
-            _stream.Position = HeaderOffset;
+            _stream.Position = 0;
             Task.Run(() => _onHeaderWriting?.Invoke(null));
 
             _stream.WriteUInt32(Magic);
@@ -263,7 +261,7 @@ namespace DBPF_Compiler.DBPF
         public ResourceKey[] ReadDBPFInfo()
         {
             Task.Run(() => _onHeaderReading?.Invoke(null));
-            _stream.Position = HeaderOffset;
+            _stream.Position = 0;
             using BinaryReader reader = new(_stream, Encoding.Default, true);
             var magic = reader.ReadUInt32();
             if (magic != Magic)
