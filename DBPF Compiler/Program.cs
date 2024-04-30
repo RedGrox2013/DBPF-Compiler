@@ -33,7 +33,7 @@ static void Pack(string inputPath, string outputPath, string? secretFolder = nul
     DBPFPacker packer = new(inputPath);
     Stopwatch stopwatch = Stopwatch.StartNew();
 
-    const string STR_DATA = "Я люблю кринжовник";
+    const string STR_DATA = "Со мной воюет сатана 😈";
     byte[] data = Encoding.Default.GetBytes(STR_DATA);
     uint dataID = FNVHash.Compute(STR_DATA);
 

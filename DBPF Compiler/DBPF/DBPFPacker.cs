@@ -86,9 +86,8 @@ namespace DBPF_Compiler.DBPF
     [Flags]
     public enum EncodeFlags
     {
+        All = -1,
         None = 0,
         Package = 0b1,
-
-        All = int.MaxValue
     }
 }
