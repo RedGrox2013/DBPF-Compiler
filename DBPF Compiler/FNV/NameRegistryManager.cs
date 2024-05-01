@@ -89,5 +89,16 @@ namespace DBPF_Compiler.FNV
             GetName(key.InstanceID, "file"),
             GetName(key.TypeID, "type"),
             GetName(key.GroupID, "file"));
+
+        public ResourceKey GetResourceKey(string instance, string? type = null, string? group = null)
+        {
+            ResourceKey key = new(GetHash(instance, "file"));
+            if (!string.IsNullOrWhiteSpace(group))
+                key.GroupID = GetHash(group, "file");
+            if (!string.IsNullOrWhiteSpace(type))
+                key.TypeID = GetHash(type, "type");
+
+            return key;
+        }
     }
 }

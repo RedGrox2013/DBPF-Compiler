@@ -41,11 +41,7 @@ namespace DBPF_Compiler.DBPF
                 foreach (var file in group.GetFiles())
                 {
                     string fileName = file.Name.Split('.')[0];
-                    ResourceKey key = new(
-                        _regManager.GetHash(fileName, "file"),
-                        _regManager.GetHash(file.Extension.Remove(0, 1), "type"),
-                        _regManager.GetHash(group.Name, "file")
-                        );
+                    ResourceKey key = _regManager.GetResourceKey(fileName, file.Extension.Remove(0, 1), group.Name);
 
                     using FileStream f = file.OpenRead();
                     output.CopyFromStream(f, key);
