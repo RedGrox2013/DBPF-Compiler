@@ -1,8 +1,10 @@
-﻿namespace DBPF_Compiler.FileTypes
+﻿using System.Xml;
+
+namespace DBPF_Compiler.FileTypes
 {
     public interface ISporeFile
     {
-        uint TypeID { get; }
+        TypeIDs TypeID { get; }
 
         /// <summary>
         /// Декодирует массив байтов
@@ -17,5 +19,7 @@
         /// <param name="stream">Куда будет записан файл</param>
         /// <returns>Размер записанных данных</returns>
         uint WriteToStream(Stream stream);
+
+        XmlDocument ToXml();
     }
 }

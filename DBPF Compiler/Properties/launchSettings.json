@@ -11,6 +11,10 @@
     "unpack": {
       "commandName": "Project",
       "commandLineArgs": "--unpack test.package test_unpacked"
+    },
+    "encode": {
+      "commandName": "Project",
+      "commandLineArgs": "--encode"
     }
   }
 }

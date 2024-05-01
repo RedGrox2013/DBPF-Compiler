@@ -1,8 +1,10 @@
 ﻿using DBPF_Compiler.DBPF;
+using DBPF_Compiler.FileTypes.Prop;
 using DBPF_Compiler.FNV;
 using DBPF_Compiler.Types;
 using System.Diagnostics;
 using System.Text;
+using System.Xml;
 
 Console.WriteLine("Spore Database Packed File Compiler");
 
@@ -22,11 +24,14 @@ if (args[0].Equals("--help") || args[0].Equals("-h"))
 --help, -h:                    show help
 --pack, -p <input> <output>:   pack the contents of a folder into DBPF
 --unpack, -u <input> <output>: unpack DBPF to a specified directory
+--encode, -e:                  encode file
 ");
 else if ((args[0].Equals("--pack") || args[0].Equals("-p")) && CheckArguments(args))
     Pack(args[1], args[2]);
 else if ((args[0].Equals("--unpack") || args[0].Equals("-u")) && CheckArguments(args))
     Unpack(args[1], args[2]);
+else if (args[0].Equals("--encode") || args[0].Equals("-e"))
+    Encode();
 
 static void Pack(string inputPath, string outputPath, string? secretFolder = null)
 {
@@ -70,6 +75,43 @@ static void Unpack(string inputPath, string outputPath)
     stopwatch.Stop();
     var ts = stopwatch.Elapsed;
     Console.WriteLine($"The file was unpacked in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
+}
+
+static void Encode()
+{
+    PropertyList prop = new();
+    prop.Add(new Property
+    {
+        Name = "Test",
+        PropertyType = PropertyType.@bool,
+        Value = true,
+    });
+    prop.Add(new Property
+    {
+        Name = "Test2",
+        PropertyType = PropertyType.int32,
+        Value = "1000-7",
+    });
+    prop.Add(new Property
+    {
+        Name = "Test3",
+        PropertyType = PropertyType.key,
+        Value = new StringResourceKey("instance", "type", "group"),
+    });
+    prop.Add(new Property
+    {
+        Name = "Test4",
+        PropertyType = PropertyType.string8,
+        Value = "Hello world!",
+    });
+    prop.Add(new Property
+    {
+        Name = "Test5",
+        PropertyType = PropertyType.string16,
+        Value = "Привет мир!",
+    });
+
+    prop.ToXml().Save("test.prop.xml");
 }
 
 static void DisplayDataWritingMessage(object? message)
