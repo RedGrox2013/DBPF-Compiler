@@ -60,32 +60,34 @@ namespace DBPF_Compiler.FileTypes.Prop
     public enum PropertyType
     {
         // Boolean
-        @bool = 0x10000,
+        @bool = 0x00010000,
 
         // Integer
-        int8 = 0x50000,
-        uint8 = 0x60000,
-        int16 = 0x70000,
-        uint16 = 0x80000,
-        int32 = 0x90000,
-        uint32 = 0xA00,
+        int8 = 0x00050000,
+        uint8 = 0x00060000,
+        int16 = 0x00070000,
+        uint16 = 0x00080000,
+        int32 = 0x00090000,
+        uint32 = 0x000A0000,
+        int64 = 0x000B0000,
+        uint64 = 0x000C0000,
 
         // Float
-        @float = 0xD00,
+        @float = 0x000D0000,
 
         // String
-        string8 = 0x1200,
-        string16 = 0x1300,
+        string8 = 0x00120000,
+        string16 = 0x00130000,
 
         // ResourceKey
-        key = 0x2000,
+        key = 0x00200000,
 
         // Vector
-        vector2 = 0x3000,
-        vector3 = 0x3100,
-        colorRGB = 0x3200,
-        vector4 = 0x3300,
-        colorRGBA = 0x3400,
+        vector2 = 0x00300000,
+        vector3 = 0x00310000,
+        colorRGB = 0x00320000,
+        vector4 = 0x00330000,
+        colorRGBA = 0x00340000,
 
         // LocalizedString
         //text = 
