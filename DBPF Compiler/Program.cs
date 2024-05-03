@@ -4,7 +4,9 @@ using DBPF_Compiler.FNV;
 using DBPF_Compiler.Types;
 using System.Diagnostics;
 using System.Text;
-using System.Xml;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 
 Console.WriteLine("Spore Database Packed File Compiler");
 
@@ -80,38 +82,34 @@ static void Unpack(string inputPath, string outputPath)
 static void Encode()
 {
     PropertyList prop = new();
-    prop.Add(new Property
+    prop.Add(new Property("Test")
     {
-        Name = "Test",
         PropertyType = PropertyType.@bool,
         Value = true,
     });
-    prop.Add(new Property
+    prop.Add(new Property("Test2")
     {
-        Name = "Test2",
         PropertyType = PropertyType.int32,
-        Value = "1000-7",
+        Value = 123,
     });
-    prop.Add(new Property
+    prop.Add(new Property("Test3")
     {
-        Name = "Test3",
         PropertyType = PropertyType.key,
         Value = new StringResourceKey("instance", "type", "group"),
     });
-    prop.Add(new Property
+    prop.Add(new Property("Test4")
     {
-        Name = "Test4",
         PropertyType = PropertyType.string8,
         Value = "Hello world!",
     });
-    prop.Add(new Property
+    prop.Add(new Property("Test5")
     {
-        Name = "Test5",
         PropertyType = PropertyType.string16,
         Value = "Привет мир!",
     });
 
-    prop.ToXml().Save("test.prop.xml");
+    //prop.ToXml().Save("test.prop.xml");
+    Console.WriteLine(JsonSerializer.Serialize(prop, typeof(PropertyList), new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic) }));
 }
 
 static void DisplayDataWritingMessage(object? message)

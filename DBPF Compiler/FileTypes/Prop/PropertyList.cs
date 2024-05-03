@@ -1,11 +1,15 @@
-﻿using System.Xml;
+﻿using System.Text.Json.Serialization;
+using System.Xml;
 
 namespace DBPF_Compiler.FileTypes.Prop
 {
+    [JsonSerializable(typeof(PropertyList))]
     public class PropertyList : ISporeFile
     {
+        [JsonIgnore]
         public TypeIDs TypeID => TypeIDs.prop;
 
+        [JsonInclude]
         public readonly List<Property> Properties = [];
 
         public bool Decode(byte[]? data)
@@ -34,7 +38,7 @@ namespace DBPF_Compiler.FileTypes.Prop
 
         public object? GetValue(string propertyName, PropertyType type)
             => Properties.Find(p
-                => p.Name.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase) && p.PropertyType == type).Value;
+                => p.Name.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase) && p.PropertyType == type)?.Value;
 
         public void Add(Property property) => Properties.Add(property);
     }

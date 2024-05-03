@@ -20,6 +20,6 @@ namespace DBPF_Compiler.FileTypes
         /// <returns>Размер записанных данных</returns>
         uint WriteToStream(Stream stream);
 
-        XmlDocument ToXml();
+        //XmlDocument ToXml();
     }
 }

@@ -1,16 +1,19 @@
 ﻿using DBPF_Compiler.FNV;
 using DBPF_Compiler.Types;
+using System.Text.Json.Serialization;
 using System.Xml;
 
 namespace DBPF_Compiler.FileTypes.Prop
 {
-    public struct Property
+    [JsonSerializable(typeof(Property))]
+    public class Property(string propertyName)
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = propertyName;
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public PropertyType PropertyType { get; set; }
-        public object Value { get; set; }
+        public object? Value { get; set; }
 
-        public readonly XmlElement ToXml(XmlDocument xml)
+        public XmlElement ToXml(XmlDocument xml)
         {
             XmlElement property = xml.CreateElement(PropertyType.ToString());
             XmlAttribute name = xml.CreateAttribute("name");
@@ -30,7 +33,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                     }
                     else
                     {
-                        instance.Value = Value.ToString();
+                        instance.Value = Value?.ToString();
                         key = new();
                     }
 
@@ -49,7 +52,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                     }
                     break;
                 default:
-                    property.InnerText = Value.ToString() ?? string.Empty;
+                    property.InnerText = Value?.ToString() ?? string.Empty;
                     break;
             }
 
