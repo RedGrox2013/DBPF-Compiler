@@ -90,6 +90,12 @@ namespace DBPF_Compiler.FileTypes.Prop
         colorRGBA = 0x00340000,
 
         // LocalizedString
-        //text = 
+        text = 0x00220000,
+
+        // BoundingBox
+        bbox = 0x00390000,
+
+        // Transform
+        transform = 00380000
     }
 }
