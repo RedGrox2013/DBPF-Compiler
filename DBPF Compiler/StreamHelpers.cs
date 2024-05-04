@@ -1,9 +1,25 @@
 ﻿using DBPF_Compiler.DBPF;
+using DBPF_Compiler.Types;
+using System.Text;
 
 namespace DBPF_Compiler
 {
     public static class StreamHelpers
     {
+        private static byte[]? _buffer = null;
+
+        private static byte[] ReadData(this Stream stream, int size, bool bigEndian)
+        {
+            if (_buffer == null || _buffer.Length < size)
+                _buffer = new byte[size];
+
+            stream.Read(_buffer, 0, size);
+            if (bigEndian)
+                Array.Reverse(_buffer, 0, size);
+
+            return _buffer;
+        }
+
         internal static void WriteUInt64(this Stream stream, ulong? value)
         {
             if (value != null)
@@ -34,6 +50,47 @@ namespace DBPF_Compiler
             else
                 stream.WriteByte(0);
         }
+
+        internal static short ReadInt16(this Stream stream, bool bigEndian = false)
+            => BitConverter.ToInt16(stream.ReadData(sizeof(short), bigEndian), 0);
+        internal static ushort ReadUInt16(this Stream stream, bool bigEndian = false)
+            => BitConverter.ToUInt16(stream.ReadData(sizeof(ushort), bigEndian), 0);
+        internal static int ReadInt32(this Stream stream, bool bigEndian = false)
+            => BitConverter.ToInt32(stream.ReadData(sizeof(int), bigEndian), 0);
+        internal static uint ReadUInt32(this Stream stream, bool bigEndian = false)
+            => BitConverter.ToUInt32(stream.ReadData(sizeof(uint), bigEndian), 0);
+        internal static long ReadInt64(this Stream stream, bool bigEndian = false)
+            => BitConverter.ToInt64(stream.ReadData(sizeof(long), bigEndian), 0);
+        internal static ulong ReadUInt64(this Stream stream, bool bigEndian = false)
+            => BitConverter.ToUInt64(stream.ReadData(sizeof(ulong), bigEndian), 0);
+
+        internal static float ReadFloat(this Stream stream, bool bigEndian = false)
+            => BitConverter.ToSingle(stream.ReadData(sizeof(float), bigEndian), 0);
+
+        internal static string ReadString8(this Stream stream, bool bigEndianLength = false)
+        {
+            int len = stream.ReadInt32(bigEndianLength);
+
+            return Encoding.ASCII.GetString(stream.ReadData(len, false), 0, len);
+        }
+        internal static string ReadString16(this Stream stream, bool bigEndianLength = false, bool bigEndianString = false)
+        {
+            int len = stream.ReadInt32(bigEndianLength) * 2;
+
+            return Encoding.Unicode.GetString(stream.ReadData(len, bigEndianString), 0, len);
+        }
+
+        internal static ResourceKey ReadResourceKey(this Stream stream, bool bigEndian = false)
+        {
+            ResourceKey key = new(stream.ReadUInt32(bigEndian), stream.ReadUInt32(bigEndian), stream.ReadUInt32(bigEndian));
+            stream.Seek(sizeof(uint), SeekOrigin.Current); // wildcard
+
+            return key;
+        }
+
+        internal static Vector4 ReadVector(this Stream stream, bool bigEndian = false)
+            => new(stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian));
+
 
         internal static void WriteIndexEntry(this Stream stream, IndexEntry entry)
         {

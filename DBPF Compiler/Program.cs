@@ -26,14 +26,17 @@ if (args[0].Equals("--help") || args[0].Equals("-h"))
 --help, -h:                    show help
 --pack, -p <input> <output>:   pack the contents of a folder into DBPF
 --unpack, -u <input> <output>: unpack DBPF to a specified directory
---encode, -e:                  encode file
+--encode, -e <input> <output>: encode file
+--decode, -d <input> <output>: decode file
 ");
 else if ((args[0].Equals("--pack") || args[0].Equals("-p")) && CheckArguments(args))
     Pack(args[1], args[2]);
 else if ((args[0].Equals("--unpack") || args[0].Equals("-u")) && CheckArguments(args))
     Unpack(args[1], args[2]);
 else if (args[0].Equals("--encode") || args[0].Equals("-e"))
-    Encode();
+    Encode(args[1]);
+else if (args[0].Equals("--decode") || args[0].Equals("-e") && CheckArguments(args))
+    Decode(args[1], args[2]);
 
 static void Pack(string inputPath, string outputPath, string? secretFolder = null)
 {
@@ -79,37 +82,26 @@ static void Unpack(string inputPath, string outputPath)
     Console.WriteLine($"The file was unpacked in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
 }
 
-static void Encode()
+static void Encode(string path)
 {
+    using FileStream stream = File.OpenRead(path);
     PropertyList prop = new();
-    prop.Add(new Property("Test")
-    {
-        PropertyType = PropertyType.@bool,
-        Value = true,
-    });
-    prop.Add(new Property("Test2")
-    {
-        PropertyType = PropertyType.int32,
-        Value = 123,
-    });
-    prop.Add(new Property("Test3")
-    {
-        PropertyType = PropertyType.key,
-        Value = new StringResourceKey("instance", "type", "group"),
-    });
-    prop.Add(new Property("Test4")
-    {
-        PropertyType = PropertyType.string8,
-        Value = "Hello world!",
-    });
-    prop.Add(new Property("Test5")
-    {
-        PropertyType = PropertyType.string16,
-        Value = "Привет мир!",
-    });
+    prop.Decode(stream);
 
     //prop.ToXml().Save("test.prop.xml");
     Console.WriteLine(JsonSerializer.Serialize(prop, typeof(PropertyList), new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic) }));
+}
+
+static void Decode(string inputPath, string outputPath)
+{
+    using FileStream stream = File.OpenRead(inputPath);
+    PropertyList prop = new();
+    prop.Decode(stream);
+
+    string json = JsonSerializer.Serialize(prop, typeof(PropertyList), new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic) });
+    Console.WriteLine(json);
+    using StreamWriter writer = File.CreateText(outputPath);
+    writer.Write(json);
 }
 
 static void DisplayDataWritingMessage(object? message)

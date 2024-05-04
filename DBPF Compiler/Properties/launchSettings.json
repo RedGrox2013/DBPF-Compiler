@@ -14,7 +14,11 @@
     },
     "encode": {
       "commandName": "Project",
-      "commandLineArgs": "--encode"
+      "commandLineArgs": "--encode test.prop"
+    },
+    "decode": {
+      "commandName": "Project",
+      "commandLineArgs": "--decode test.prop test.prop.json"
     }
   }
 }
