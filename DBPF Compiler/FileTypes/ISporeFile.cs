@@ -7,18 +7,20 @@ namespace DBPF_Compiler.FileTypes
         TypeIDs TypeID { get; }
 
         /// <summary>
-        /// Декодирует массив байтов
+        /// Декодирует данные
         /// </summary>
-        /// <param name="data">Исходные данные</param>
-        /// <returns><c>true</c>, если удалось декодировать, в противном случае <c>false</c></returns>
-        bool Decode(byte[]? data);
+        /// <param name="input">Поток данных</param>
+        /// <returns>
+        /// <c>true</c>, если удалось декодировать, в противном случае <c>false</c>
+        /// </returns>
+        bool Decode(Stream input);
 
         /// <summary>
         /// Кодирует файл и записывает в поток
         /// </summary>
-        /// <param name="stream">Куда будет записан файл</param>
+        /// <param name="output">Куда будет записан файл</param>
         /// <returns>Размер записанных данных</returns>
-        uint WriteToStream(Stream stream);
+        uint Encode(Stream output);
 
         //XmlDocument ToXml();
     }
