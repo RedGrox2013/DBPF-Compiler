@@ -27,7 +27,7 @@ namespace DBPF_Compiler
         }
         internal static void WriteUInt32(this Stream stream, uint? value)
         {
-            if (value !=  null)
+            if (value != null)
                 stream.Write(BitConverter.GetBytes((uint)value));
         }
         internal static void WriteInt32(this Stream stream, int? value)
@@ -88,25 +88,25 @@ namespace DBPF_Compiler
             return key;
         }
 
-        internal static bool[] ReadPropertyBoolArray(this Stream stream, bool bigEndianSize = false)
+        internal static bool[] ReadBoolArray(this Stream stream, bool bigEndianSize = false)
         {
-            var buffer = stream.ReadPropertyUInt8Array(bigEndianSize);
+            var buffer = stream.ReadUInt8Array(bigEndianSize);
             bool[] array = new bool[buffer.Length];
             for (int i = 0; i < buffer.Length; i++)
                 array[i] = buffer[i] == 1;
 
             return array;
         }
-        internal static byte[] ReadPropertyUInt8Array(this Stream stream, bool bigEndianSize = false)
+        internal static byte[] ReadUInt8Array(this Stream stream, bool bigEndianSize = false)
         {
             int size = stream.ReadInt32(bigEndianSize);
             int elementSize = stream.ReadInt32(bigEndianSize);
 
             return stream.ReadData(size * elementSize, false);
         }
-        internal static sbyte[] ReadPropertyInt8Array(this Stream stream, bool bigEndianSize = false)
+        internal static sbyte[] ReadInt8Array(this Stream stream, bool bigEndianSize = false)
         {
-            byte[] buffer = stream.ReadPropertyUInt8Array(bigEndianSize);
+            byte[] buffer = stream.ReadUInt8Array(bigEndianSize);
             sbyte[] array = new sbyte[buffer.Length];
             for (int i = 0; i < buffer.Length; i++)
                 array[i] = (sbyte)buffer[i];
@@ -114,9 +114,9 @@ namespace DBPF_Compiler
             return array;
         }
 
-        internal static short[] ReadPropertyInt16Array(this Stream stream, bool bigEndian = false)
+        internal static short[] ReadInt16Array(this Stream stream, bool bigEndian = false)
         {
-            byte[] buffer = stream.ReadPropertyUInt8Array(bigEndian);
+            byte[] buffer = stream.ReadUInt8Array(bigEndian);
             short[] array = new short[buffer.Length / sizeof(short)];
             for (int i = 0; i < array.Length; i++)
             {
@@ -129,9 +129,9 @@ namespace DBPF_Compiler
 
             return array;
         }
-        internal static ushort[] ReadPropertyUInt16Array(this Stream stream, bool bigEndian = false)
+        internal static ushort[] ReadUInt16Array(this Stream stream, bool bigEndian = false)
         {
-            byte[] buffer = stream.ReadPropertyUInt8Array(bigEndian);
+            byte[] buffer = stream.ReadUInt8Array(bigEndian);
             ushort[] array = new ushort[buffer.Length / sizeof(ushort)];
             for (int i = 0; i < array.Length; i++)
             {
@@ -144,9 +144,9 @@ namespace DBPF_Compiler
 
             return array;
         }
-        internal static int[] ReadPropertyInt32Array(this Stream stream, bool bigEndian = false)
+        internal static int[] ReadInt32Array(this Stream stream, bool bigEndian = false)
         {
-            byte[] buffer = stream.ReadPropertyUInt8Array(bigEndian);
+            byte[] buffer = stream.ReadUInt8Array(bigEndian);
             int[] array = new int[buffer.Length / sizeof(int)];
             for (int i = 0; i < array.Length; i++)
             {
@@ -159,9 +159,9 @@ namespace DBPF_Compiler
 
             return array;
         }
-        internal static uint[] ReadPropertyUInt32Array(this Stream stream, bool bigEndian = false)
+        internal static uint[] ReadUInt32Array(this Stream stream, bool bigEndian = false)
         {
-            byte[] buffer = stream.ReadPropertyUInt8Array(bigEndian);
+            byte[] buffer = stream.ReadUInt8Array(bigEndian);
             uint[] array = new uint[buffer.Length / sizeof(uint)];
             for (int i = 0; i < array.Length; i++)
             {
@@ -174,9 +174,9 @@ namespace DBPF_Compiler
 
             return array;
         }
-        internal static float[] ReadPropertyFloatArray(this Stream stream, bool bigEndian = false)
+        internal static float[] ReadFloatArray(this Stream stream, bool bigEndian = false)
         {
-            byte[] buffer = stream.ReadPropertyUInt8Array(bigEndian);
+            byte[] buffer = stream.ReadUInt8Array(bigEndian);
             float[] array = new float[buffer.Length / sizeof(float)];
             for (int i = 0; i < array.Length; i++)
             {
@@ -190,7 +190,7 @@ namespace DBPF_Compiler
             return array;
         }
 
-        internal static string[] ReadPropertyString8Array(this Stream stream, bool bigEndianLength = false)
+        internal static string[] ReadString8Array(this Stream stream, bool bigEndianLength = false)
         {
             string[] array = new string[stream.ReadInt32(bigEndianLength)];
             stream.Seek(4, SeekOrigin.Current);
@@ -199,7 +199,7 @@ namespace DBPF_Compiler
 
             return array;
         }
-        internal static string[] ReadPropertyString16Array(this Stream stream, bool bigEndianLength = false, bool bigEndianString = false)
+        internal static string[] ReadString16Array(this Stream stream, bool bigEndianLength = false, bool bigEndianString = false)
         {
             string[] array = new string[stream.ReadInt32(bigEndianLength)];
             stream.Seek(4, SeekOrigin.Current);
@@ -209,14 +209,73 @@ namespace DBPF_Compiler
             return array;
         }
 
-        internal static ResourceKey[] ReadPropertyResourceKeyArray(this Stream stream, bool bigEndianSize = false, bool bigEndian = false)
+        internal static ResourceKey[] ReadResourceKeyArray(this Stream stream, bool bigEndianSize = false, bool bigEndian = false)
         {
-            byte[] buffer = stream.ReadPropertyUInt8Array(bigEndianSize);
+            byte[] buffer = stream.ReadUInt8Array(bigEndianSize);
             ResourceKey[] array = new ResourceKey[buffer.Length / (sizeof(uint) * 3)];
             for (int i = 0, j = 0; i < array.Length; i++)
                 array[i] = new(BitConverter.ToUInt32(buffer, j++ * sizeof(uint)),
                     BitConverter.ToUInt32(buffer, j++ * sizeof(uint)),
                     BitConverter.ToUInt32(buffer, j++ * sizeof(uint)));
+
+            return array;
+        }
+
+        internal static Vector2[] ReadVector2Array(this Stream stream, bool bigEndian = false)
+        {
+            byte[] buffer = stream.ReadUInt8Array(bigEndian);
+            Vector2[] array = new Vector2[buffer.Length / (sizeof(float) * 2)];
+            for (int i = 0, j = 0; i < array.Length; i++)
+                array[i] = new(BitConverter.ToSingle(buffer, j++ * sizeof(float)),
+                    BitConverter.ToSingle(buffer, j++ * sizeof(float)));
+
+            return array;
+        }
+        internal static Vector3[] ReadVector3Array(this Stream stream, bool bigEndian = false)
+        {
+            byte[] buffer = stream.ReadUInt8Array(bigEndian);
+            Vector3[] array = new Vector3[buffer.Length / (sizeof(float) * 3)];
+            for (int i = 0, j = 0; i < array.Length; i++)
+                array[i] = new(BitConverter.ToSingle(buffer, j++ * sizeof(float)),
+                    BitConverter.ToSingle(buffer, j++ * sizeof(float)),
+                    BitConverter.ToSingle(buffer, j++ * sizeof(float)));
+
+            return array;
+        }
+        internal static Vector4[] ReadVector4Array(this Stream stream, bool bigEndian = false)
+        {
+            byte[] buffer = stream.ReadUInt8Array(bigEndian);
+            Vector4[] array = new Vector4[buffer.Length / (sizeof(float) * 4)];
+            for (int i = 0, j = 0; i < array.Length; i++)
+                array[i] = new(BitConverter.ToSingle(buffer, j++ * sizeof(float)),
+                    BitConverter.ToSingle(buffer, j++ * sizeof(float)),
+                    BitConverter.ToSingle(buffer, j++ * sizeof(float)),
+                    BitConverter.ToSingle(buffer, j++ * sizeof(float)));
+
+            return array;
+        }
+
+        internal static LocalizedString[] ReadLocalizedStringArray(this Stream stream, bool bigEndianSize = false, bool bigEndianKey = false)
+        {
+            byte[] buffer = stream.ReadUInt8Array(bigEndianSize);
+            LocalizedString[] array = new LocalizedString[buffer.Length / (LocalizedString.PLACEHOLDER_SIZE + sizeof(uint) * 2)];
+            for (int i = 0; i < array.Length; i++)
+            {
+                int bufferIndex = i * (LocalizedString.PLACEHOLDER_SIZE + sizeof(uint) * 2);
+                if (bigEndianKey)
+                {
+                    Array.Reverse(buffer, bufferIndex, sizeof(uint));
+                    Array.Reverse(buffer, bufferIndex + sizeof(uint), sizeof(uint));
+                }
+
+                uint tableID = BitConverter.ToUInt32(buffer, bufferIndex);
+                bufferIndex += sizeof(uint);
+                uint instanceID = BitConverter.ToUInt32(buffer, bufferIndex);
+                bufferIndex += sizeof(uint);
+                string placeholder = Encoding.Unicode.GetString(buffer, bufferIndex, LocalizedString.PLACEHOLDER_SIZE);
+
+                array[i] = new(tableID, instanceID, placeholder.TrimEnd('\0'));
+            }
 
             return array;
         }
