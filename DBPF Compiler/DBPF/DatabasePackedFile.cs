@@ -243,7 +243,7 @@ namespace DBPF_Compiler.DBPF
                 return;
 
             _stream.Position = SecretIndexOffset;
-            using BinaryWriter writer = new(_stream, Encoding.UTF8, true);
+            using BinaryWriter writer = new(_stream, Encoding.Unicode, true);
             writer.Write(_secretIndex.GroupName);
             writer.Write(_secretIndex.IndexCount);
             
@@ -257,6 +257,24 @@ namespace DBPF_Compiler.DBPF
         }
         public async Task WriteSecretIndexAsync()
             => await Task.Run(WriteSecretIndex);
+
+        public void WriteSecretData(byte[] data, StringResourceKey key)
+        {
+            _secretIndex ??= new();
+            Task.Run(() => _onDataWriting?.Invoke(key));
+            _headerWritten = _indexWritten = false;
+
+            var entry = new SecretIndexEntry
+            {
+                Key = key,
+                Offset = IndexOffset,
+                Size = (uint)data.LongLength
+            };
+            _secretIndex.Entries.Add(entry);
+            _stream.Write(data);
+
+            IndexOffset += entry.Size;
+        }
 
         public ResourceKey[] ReadDBPFInfo()
         {
@@ -339,7 +357,7 @@ namespace DBPF_Compiler.DBPF
                 return null;
 
             _stream.Position = SecretIndexOffset;
-            using BinaryReader reader = new(_stream, Encoding.UTF8, true);
+            using BinaryReader reader = new(_stream, Encoding.Unicode, true);
             _secretIndex = new(reader.ReadString());
             int count = reader.ReadInt32();
 
