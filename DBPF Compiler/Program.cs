@@ -35,8 +35,8 @@ else if ((args[0].Equals("--unpack") || args[0].Equals("-u")) && CheckArguments(
     Unpack(args[1], args[2]);
 else if (args[0].Equals("--encode") || args[0].Equals("-e"))
     Encode(args[1]);
-else if (args[0].Equals("--decode") || args[0].Equals("-e") && CheckArguments(args))
-    Decode(args[1], args[2]);
+else if (args[0].Equals("--decode") || args[0].Equals("-e"))
+    Decode(args[1], args.Length >= 3 ? args[2] : null);
 
 static void Pack(string inputPath, string outputPath, string? secretFolder = null)
 {
@@ -92,7 +92,7 @@ static void Encode(string path)
     Console.WriteLine(JsonSerializer.Serialize(prop, typeof(PropertyList), new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic) }));
 }
 
-static void Decode(string inputPath, string outputPath)
+static void Decode(string inputPath, string? outputPath)
 {
     using FileStream stream = File.OpenRead(inputPath);
     PropertyList prop = new();
@@ -100,7 +100,7 @@ static void Decode(string inputPath, string outputPath)
 
     string json = JsonSerializer.Serialize(prop, typeof(PropertyList), new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic) });
     Console.WriteLine(json);
-    using StreamWriter writer = File.CreateText(outputPath);
+    using StreamWriter writer = File.CreateText(outputPath ?? inputPath + ".json");
     writer.Write(json);
 }
 

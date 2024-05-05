@@ -87,8 +87,8 @@ namespace DBPF_Compiler.FNV
 
         public StringResourceKey GetStringResourceKey(ResourceKey key) => new(
             GetName(key.InstanceID, "file"),
-            GetName(key.TypeID, "type"),
-            GetName(key.GroupID, "file"));
+            key.TypeID != 0 ? GetName(key.TypeID, "type") : null,
+            key.GroupID != 0 ? GetName(key.GroupID, "file") : null);
 
         public ResourceKey GetResourceKey(string instance, string? type = null, string? group = null)
         {
