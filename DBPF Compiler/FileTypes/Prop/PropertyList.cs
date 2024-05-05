@@ -93,31 +93,31 @@ namespace DBPF_Compiler.FileTypes.Prop
                                          Select(NameRegistryManager.Instance.GetStringResourceKey);
                         break;
                     case PropertyType.vector2:
-                        property.Value = new Vector2(input.ReadVector(true));
+                        property.Value = new Vector2(input.ReadVector());
                         break;
                     case PropertyType.vector2s:
                         property.Value = input.ReadVector2Array(true);
                         break;
                     case PropertyType.vector3:
-                        property.Value = new Vector3(input.ReadVector(true));
+                        property.Value = new Vector3(input.ReadVector());
                         break;
                     case PropertyType.vector3s:
                         property.Value = input.ReadVector3Array(true);
                         break;
                     case PropertyType.colorRGB:
-                        property.Value = new ColorRGB(input.ReadVector(true));
+                        property.Value = new ColorRGB(input.ReadVector());
                         break;
                     case PropertyType.colorRGBs:
                         property.Value = input.ReadVector3Array(true).Select(v => new ColorRGB(v));
                         break;
                     case PropertyType.vector4:
-                        property.Value = input.ReadVector(true);
+                        property.Value = input.ReadVector();
                         break;
                     case PropertyType.vector4s:
                         property.Value = input.ReadVector4Array(true);
                         break;
                     case PropertyType.colorRGBA:
-                        property.Value = new ColorRGBA(input.ReadVector(true));
+                        property.Value = new ColorRGBA(input.ReadVector());
                         break;
                     case PropertyType.colorRGBAs:
                         property.Value = input.ReadVector4Array(true).Select(v => new ColorRGBA(v));
