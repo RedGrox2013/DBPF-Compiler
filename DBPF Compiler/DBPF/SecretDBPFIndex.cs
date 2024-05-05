@@ -4,7 +4,7 @@ namespace DBPF_Compiler.DBPF
 {
     internal class SecretDBPFIndex(string groupName)
     {
-        public int GroupNameLength => Encoding.UTF8.GetByteCount(GroupName);
+        public int GroupNameLength => Encoding.Unicode.GetByteCount(GroupName);
         public string GroupName { get; set; } = groupName;
         public int IndexCount => Entries.Count;
 

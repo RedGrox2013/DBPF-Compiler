@@ -5,9 +5,9 @@ namespace DBPF_Compiler.DBPF
 {
     internal class SecretIndexEntry
     {
-        public int NameLength => Encoding.UTF8.GetByteCount(Key.InstanceID);
+        public int NameLength => Encoding.Unicode.GetByteCount(Key.InstanceID);
         public StringResourceKey Key { get; set; }
-        public int TypeLength => Key.TypeID != null ? Encoding.UTF8.GetByteCount(Key.TypeID) : 0;
+        public int TypeLength => Key.TypeID != null ? Encoding.Unicode.GetByteCount(Key.TypeID) : 0;
         public uint Offset { get; set; }
         public uint Size { get; set; }
 
