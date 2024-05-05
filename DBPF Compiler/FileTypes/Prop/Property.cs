@@ -5,7 +5,6 @@ using System.Xml;
 
 namespace DBPF_Compiler.FileTypes.Prop
 {
-    //[JsonSerializable(typeof(Property))]
     public class Property(string propertyName)
     {
         public string Name { get; set; } = propertyName;
@@ -117,6 +116,7 @@ namespace DBPF_Compiler.FileTypes.Prop
         // BoundingBox
         bbox = 0x00390000,
         bboxes = 0x00390030,
+        bboxs = 0x00390030,
 
         // Transform
         transform = 00380000,
