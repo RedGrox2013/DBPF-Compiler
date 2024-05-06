@@ -14,12 +14,15 @@ namespace DBPF_Compiler.FileTypes.Prop
         [JsonInclude]
         public readonly List<Property> Properties = [];
 
+        [JsonIgnore]
+        private readonly NameRegistryManager _regManager = NameRegistryManager.Instance;
+
         public bool Decode(Stream input)
         {
             int count = input.ReadInt32(true);
             for (int i = 0; i < count; i++)
             {
-                Property property = new(NameRegistryManager.Instance.GetName(input.ReadUInt32(true), "property"))
+                Property property = new(_regManager.GetName(input.ReadUInt32(true), "property"))
                 {
                     PropertyType = (PropertyType)input.ReadInt32(true),
                 };
@@ -59,7 +62,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         property.Value = input.ReadInt32Array(true);
                         break;
                     case PropertyType.uint32:
-                        property.Value = input.ReadUInt32(true);
+                        property.Value = _regManager.GetName(input.ReadUInt32(true), "file");
                         break;
                     case PropertyType.int64:
                         property.Value = input.ReadInt64(true);
@@ -86,11 +89,11 @@ namespace DBPF_Compiler.FileTypes.Prop
                         property.Value = input.ReadString16Array(true);
                         break;
                     case PropertyType.key:
-                        property.Value = NameRegistryManager.Instance.GetStringResourceKey(input.ReadResourceKey());
+                        property.Value = _regManager.GetStringResourceKey(input.ReadResourceKey());
                         break;
                     case PropertyType.keys:
                         property.Value = input.ReadResourceKeyArray(true).
-                                         Select(NameRegistryManager.Instance.GetStringResourceKey);
+                                         Select(_regManager.GetStringResourceKey);
                         break;
                     case PropertyType.vector2:
                         property.Value = new Vector2(input.ReadVector());
@@ -124,12 +127,12 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.texts:
                         property.Value = input.ReadLocalizedStringArray(true).Select(t => new StringLocalizedString(
-                            NameRegistryManager.Instance.GetName(t.TableID, "file"),
+                            _regManager.GetName(t.TableID, "file"),
                             FNVHash.ToString(t.InstanceID), t.PlaceholderText));
                         break;
                     case PropertyType.bboxes:
                         break;
-                    case PropertyType.transform:
+                    case PropertyType.transforms:
                         break;
                     default:
                         break;
