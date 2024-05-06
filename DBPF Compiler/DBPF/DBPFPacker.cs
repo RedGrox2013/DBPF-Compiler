@@ -91,7 +91,7 @@ namespace DBPF_Compiler.DBPF
                     using StreamWriter writer = new(path + ".json");
                     writer.WriteLine(DecodeSporeFileToJson<PropertyList>(stream));
                     using FileStream file = File.Create(path);
-                    dbpf.CopyResourceTo(file, resource);
+                    file.Write(buffer);
                 }
                 else
                 {
