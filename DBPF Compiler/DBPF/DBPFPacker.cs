@@ -1,5 +1,10 @@
-﻿using DBPF_Compiler.FNV;
+﻿using DBPF_Compiler.FileTypes;
+using DBPF_Compiler.FileTypes.Prop;
+using DBPF_Compiler.FNV;
 using DBPF_Compiler.Types;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 
 namespace DBPF_Compiler.DBPF
 {
@@ -12,7 +17,13 @@ namespace DBPF_Compiler.DBPF
         public DBPFPacker(string unpackedDataPath)
             => UnpackedDataDirectory = new DirectoryInfo(unpackedDataPath);
 
-        private readonly NameRegistryManager _regManager = NameRegistryManager.Instance;
+        private readonly static JsonSerializerOptions _jsonSerializerOptions = new()
+        {
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.Create(/*UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic, */UnicodeRanges.All)
+        };
+
+    private readonly NameRegistryManager _regManager = NameRegistryManager.Instance;
 
         public void Pack(DatabasePackedFile output)
         {
@@ -57,7 +68,7 @@ namespace DBPF_Compiler.DBPF
             foreach (var resource in dbpf.ReadDBPFInfo())
             {
                 var key = _regManager.GetStringResourceKey(resource);
-                var path = UnpackedDataDirectory.FullName + "\\" + key.GroupID;
+                var path = UnpackedDataDirectory.FullName + "\\" + (key.GroupID ?? "animations~");
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
                 path += "\\" + key.InstanceID + "." + key.TypeID;
@@ -70,12 +81,32 @@ namespace DBPF_Compiler.DBPF
                     DatabasePackedFile package = new(stream);
                     unpacker.Unpack(package);
                 }
+                else if (resource.TypeID == (uint)TypeIDs.prop && flags.HasFlag(EncodeFlags.PropertyList))
+                {
+                    byte[]? buffer = dbpf.ReadResource(resource);
+                    if (buffer == null)
+                        continue;
+
+                    using MemoryStream stream = new(buffer);
+                    using StreamWriter writer = new(path + ".json");
+                    writer.WriteLine(DecodeSporeFileToJson<PropertyList>(stream));
+                    using FileStream file = File.Create(path);
+                    dbpf.CopyResourceTo(file, resource);
+                }
                 else
                 {
                     using FileStream file = File.Create(path);
                     dbpf.CopyResourceTo(file, resource);
                 }
             }
+        }
+
+        public static string DecodeSporeFileToJson<SporeFileType>(Stream sporeFileStream) where SporeFileType : ISporeFile, new()
+        {
+            SporeFileType file = new();
+            file.Decode(sporeFileStream);
+
+            return JsonSerializer.Serialize(file, _jsonSerializerOptions);
         }
     }
 
@@ -85,5 +116,6 @@ namespace DBPF_Compiler.DBPF
         All = -1,
         None = 0,
         Package = 0b1,
+        PropertyList = 0b10
     }
 }

@@ -95,10 +95,7 @@ static void Encode(string path)
 static void Decode(string inputPath, string? outputPath)
 {
     using FileStream stream = File.OpenRead(inputPath);
-    PropertyList prop = new();
-    prop.Decode(stream);
-
-    string json = JsonSerializer.Serialize(prop, typeof(PropertyList), new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic) });
+    string json = DBPFPacker.DecodeSporeFileToJson<PropertyList>(stream);
     Console.WriteLine(json);
     using StreamWriter writer = File.CreateText(outputPath ?? inputPath + ".json");
     writer.Write(json);
