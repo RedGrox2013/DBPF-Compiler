@@ -35,7 +35,7 @@ else if ((args[0].Equals("--unpack") || args[0].Equals("-u")) && CheckArguments(
     Unpack(args[1], args[2]);
 else if (args[0].Equals("--encode") || args[0].Equals("-e"))
     Encode(args[1]);
-else if (args[0].Equals("--decode") || args[0].Equals("-e"))
+else if (args[0].Equals("--decode") || args[0].Equals("-d"))
     Decode(args[1], args.Length >= 3 ? args[2] : null);
 
 static void Pack(string inputPath, string outputPath, string? secretFolder = null)
