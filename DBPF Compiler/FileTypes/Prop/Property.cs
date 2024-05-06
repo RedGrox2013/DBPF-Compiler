@@ -119,7 +119,7 @@ namespace DBPF_Compiler.FileTypes.Prop
         bboxs = 0x00390030,
 
         // Transform
-        transform = 00380000,
-        transforms = 00380030
+        transform = 0x00380000,
+        transforms = 0x00380030
     }
 }

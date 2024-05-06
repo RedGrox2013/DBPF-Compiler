@@ -138,6 +138,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         property.Value = input.ReadBBoxArray(true);
                         break;
                     case PropertyType.transforms:
+                        property.Value = input.ReadTransformArray(true);
                         break;
                     default:
                         break;

@@ -295,6 +295,49 @@ namespace DBPF_Compiler
             return array;
         }
 
+        internal static Transform[] ReadTransformArray(this Stream stream, bool bigEndianSize = false, bool bigEndian = false)
+        {
+            byte[] buffer = stream.ReadUInt8Array(bigEndianSize);
+            Transform[] array = new Transform[buffer.Length / Transform.SIZE];
+            for (int i = 0; i < array.Length; i++)
+            {
+                array[i] = new();
+                int bufferIndex = i * Transform.SIZE;
+                if (bigEndian)
+                {
+                    Array.Reverse(buffer, bufferIndex, sizeof(uint));
+                    Array.Reverse(buffer, bufferIndex + sizeof(uint), sizeof(float));
+                    Array.Reverse(buffer, bufferIndex + sizeof(uint) + sizeof(float), sizeof(float));
+                    Array.Reverse(buffer, bufferIndex + sizeof(uint) + sizeof(float) * 2, sizeof(float));
+                    Array.Reverse(buffer, bufferIndex + sizeof(uint) + sizeof(float) * 3, sizeof(float));
+                }
+
+                array[i].UnknownID = BitConverter.ToUInt32(buffer, bufferIndex);
+                bufferIndex += sizeof(uint);
+                float x = BitConverter.ToSingle(buffer, bufferIndex);
+                bufferIndex += sizeof(float);
+                float y = BitConverter.ToSingle(buffer, bufferIndex);
+                bufferIndex += sizeof(float);
+                float z = BitConverter.ToSingle(buffer, bufferIndex);
+                bufferIndex += sizeof(float);
+                array[i].Offset = new(x, y, z);
+                array[i].Scale = BitConverter.ToSingle(buffer, bufferIndex);
+                bufferIndex += sizeof(float);
+                array[i].UnknownData = new uint[9];
+
+                for (int j = 0; j < array[i].UnknownData.Length; j++)
+                {
+                    if (bigEndian)
+                        Array.Reverse(buffer, bufferIndex, sizeof(uint));
+
+                    array[i].UnknownData[j] = BitConverter.ToUInt32(buffer, bufferIndex);
+                    bufferIndex += sizeof(uint);
+                }
+            }
+
+            return array;
+        }
+
         internal static Vector4 ReadVector(this Stream stream, bool bigEndian = false)
             => new(stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian));
 
