@@ -277,6 +277,24 @@ namespace DBPF_Compiler
             return array;
         }
 
+        internal static BoundingBox[] ReadBBoxArray(this Stream stream, bool bigEndianSize = false)
+        {
+            byte[] buffer = stream.ReadUInt8Array(bigEndianSize);
+            BoundingBox[] array = new BoundingBox[buffer.Length / (sizeof(float) * 3 * 2)];
+            for (int i = 0, j = 0; i < array.Length; i++)
+                array[i] = new()
+                {
+                    Min = new(BitConverter.ToSingle(buffer, j++ * sizeof(float)),
+                    BitConverter.ToSingle(buffer, j++ * sizeof(float)),
+                    BitConverter.ToSingle(buffer, j++ * sizeof(float))),
+                    Max = new(BitConverter.ToSingle(buffer, j++ * sizeof(float)),
+                    BitConverter.ToSingle(buffer, j++ * sizeof(float)),
+                    BitConverter.ToSingle(buffer, j++ * sizeof(float)))
+                };
+
+            return array;
+        }
+
         internal static Vector4 ReadVector(this Stream stream, bool bigEndian = false)
             => new(stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian));
 

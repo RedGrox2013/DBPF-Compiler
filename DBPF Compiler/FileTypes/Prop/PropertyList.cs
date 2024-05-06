@@ -62,16 +62,11 @@ namespace DBPF_Compiler.FileTypes.Prop
                         property.Value = input.ReadInt32Array(true);
                         break;
                     case PropertyType.uint32:
-                        {
-                            var value = _regManager.GetName(input.ReadUInt32(true), "file");
-                            property.Value = value.StartsWith("0x") ? value : $"hash({value})";
-                        }
+                        property.Value = GetUInt32Name(input.ReadUInt32(true));
                         break;
                     case PropertyType.uint32s:
                     case PropertyType.uint32 + 0x9C:
-                        property.Value = from v in input.ReadUInt32Array(true)
-                                         let name = _regManager.GetName(v, "file")
-                                         select name.StartsWith("0x") ? name : $"hash({name})";
+                        property.Value = input.ReadUInt32Array(true).Select(GetUInt32Name);
                         break;
                     case PropertyType.int64:
                         property.Value = input.ReadInt64(true);
@@ -140,6 +135,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                             FNVHash.ToString(t.InstanceID), t.PlaceholderText));
                         break;
                     case PropertyType.bboxes:
+                        property.Value = input.ReadBBoxArray(true);
                         break;
                     case PropertyType.transforms:
                         break;
@@ -156,6 +152,15 @@ namespace DBPF_Compiler.FileTypes.Prop
         public uint Encode(Stream output)
         {
             throw new NotImplementedException();
+        }
+
+        private string GetUInt32Name(uint value)
+        {
+            var regFile = _regManager.GetRegistry("file");
+            if (regFile != null && regFile.GetName(value, out string name))
+                return $"hash({name})";
+
+            return FNVHash.ToString(value);
         }
 
         public XmlDocument ToXml()
