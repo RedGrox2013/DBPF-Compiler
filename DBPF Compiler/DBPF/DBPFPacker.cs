@@ -81,7 +81,8 @@ namespace DBPF_Compiler.DBPF
                     DatabasePackedFile package = new(stream);
                     unpacker.Unpack(package);
                 }
-                else if (resource.TypeID == (uint)TypeIDs.prop && flags.HasFlag(EncodeFlags.PropertyList))
+                else if ((resource.TypeID == (uint)TypeIDs.prop || resource.TypeID == (uint)TypeIDs.soundProp) &&
+                    flags.HasFlag(EncodeFlags.PropertyList))
                 {
                     byte[]? buffer = dbpf.ReadResource(resource);
                     if (buffer == null)
