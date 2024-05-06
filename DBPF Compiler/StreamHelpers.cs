@@ -6,18 +6,15 @@ namespace DBPF_Compiler
 {
     public static class StreamHelpers
     {
-        private static byte[]? _buffer = null;
-
         private static byte[] ReadData(this Stream stream, int size, bool bigEndian)
         {
-            if (_buffer == null || _buffer.Length < size)
-                _buffer = new byte[size];
+            var buffer = new byte[size];
 
-            stream.Read(_buffer, 0, size);
+            stream.Read(buffer, 0, size);
             if (bigEndian)
-                Array.Reverse(_buffer, 0, size);
+                Array.Reverse(buffer, 0, size);
 
-            return _buffer;
+            return buffer;
         }
 
         internal static void WriteUInt64(this Stream stream, ulong? value)

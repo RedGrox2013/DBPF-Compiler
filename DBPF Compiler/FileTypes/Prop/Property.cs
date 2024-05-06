@@ -7,9 +7,9 @@ namespace DBPF_Compiler.FileTypes.Prop
 {
     public class Property(string propertyName)
     {
-        public string Name { get; set; } = propertyName;
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public PropertyType PropertyType { get; set; }
+        public string Name { get; set; } = propertyName;
         public object? Value { get; set; }
 
         public XmlElement ToXml(XmlDocument xml)

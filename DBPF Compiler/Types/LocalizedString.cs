@@ -8,6 +8,9 @@
 
         public const int PLACEHOLDER_SIZE = 512;
 
+        public LocalizedString() : this(0xFFFFFFFF, 0xFFFFFFFF, null) { }
+        public LocalizedString(string placeholderText) : this(0xFFFFFFFF, 0xFFFFFFFF, placeholderText) { }
+
         public readonly override string ToString()
             => new StringLocalizedString(this).ToString();
     }

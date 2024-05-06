@@ -62,7 +62,16 @@ namespace DBPF_Compiler.FileTypes.Prop
                         property.Value = input.ReadInt32Array(true);
                         break;
                     case PropertyType.uint32:
-                        property.Value = _regManager.GetName(input.ReadUInt32(true), "file");
+                        {
+                            var value = _regManager.GetName(input.ReadUInt32(true), "file");
+                            property.Value = value.StartsWith("0x") ? value : $"hash({value})";
+                        }
+                        break;
+                    case PropertyType.uint32s:
+                    case PropertyType.uint32 + 0x9C:
+                        property.Value = from v in input.ReadUInt32Array(true)
+                                         let name = _regManager.GetName(v, "file")
+                                         select name.StartsWith("0x") ? name : $"hash({name})";
                         break;
                     case PropertyType.int64:
                         property.Value = input.ReadInt64(true);
@@ -92,8 +101,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         property.Value = _regManager.GetStringResourceKey(input.ReadResourceKey());
                         break;
                     case PropertyType.keys:
-                        property.Value = input.ReadResourceKeyArray(true).
-                                         Select(_regManager.GetStringResourceKey);
+                        property.Value = input.ReadResourceKeyArray(true).Select(_regManager.GetStringResourceKey);
                         break;
                     case PropertyType.vector2:
                         property.Value = new Vector2(input.ReadVector());
@@ -126,6 +134,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         property.Value = input.ReadVector4Array(true).Select(v => new ColorRGBA(v));
                         break;
                     case PropertyType.texts:
+                    case PropertyType.text + 0x1C:
                         property.Value = input.ReadLocalizedStringArray(true).Select(t => new StringLocalizedString(
                             _regManager.GetName(t.TableID, "file"),
                             FNVHash.ToString(t.InstanceID), t.PlaceholderText));
