@@ -53,7 +53,7 @@ namespace DBPF_Compiler.FNV
             AddRegistry(reg);
         }
 
-        public string GetName(uint hash, string? regName = "all")
+        public string GetName(uint hash, string? regName = "all", params string[]? ignoreRegNames)
         {
             if (regName != "all")
             {
@@ -63,8 +63,19 @@ namespace DBPF_Compiler.FNV
             }
 
             foreach (var reg in _regs)
-                if (reg.Name != regName && reg.GetName(hash, out string name))
+            {
+                bool ignore = false;
+                if (ignoreRegNames != null)
+                    foreach (var ignoreName in ignoreRegNames)
+                        if (reg.Name == ignoreName)
+                        {
+                            ignore = true;
+                            break;
+                        }
+
+                if (!ignore && reg.Name != regName && reg.GetName(hash, out string name))
                     return name;
+            }
 
             return FNVHash.ToString(hash);
         }
