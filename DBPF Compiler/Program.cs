@@ -28,6 +28,7 @@ if (args[0].Equals("--help") || args[0].Equals("-h"))
 --unpack, -u <input> <output>: unpack DBPF to a specified directory
 --encode, -e <input> <output>: encode file
 --decode, -d <input> <output>: decode file
+--hash <name> <registry>:      get hash by name
 ");
 else if ((args[0].Equals("--pack") || args[0].Equals("-p")) && CheckArguments(args))
     Pack(args[1], args[2]);
@@ -37,6 +38,18 @@ else if (args[0].Equals("--encode") || args[0].Equals("-e"))
     Encode(args[1]);
 else if (args[0].Equals("--decode") || args[0].Equals("-d"))
     Decode(args[1], args.Length >= 3 ? args[2] : null);
+else if (args[0].Equals("--hash"))
+{
+    string regName = args.Length >= 3 ? args[2] : "all";
+    if (regName.Equals("fnv"))
+    {
+        Console.WriteLine(FNVHash.ToString(FNVHash.Compute(args[0])));
+        return;
+    }
+
+    Console.WriteLine(FNVHash.ToString(NameRegistryManager.Instance.GetHash(args[1], regName)));
+}
+
 
 static void Pack(string inputPath, string outputPath, string? secretFolder = null)
 {
@@ -45,14 +58,13 @@ static void Pack(string inputPath, string outputPath, string? secretFolder = nul
 
     const string STR_DATA = "Со мной воюет сатана 😈";
     byte[] data = Encoding.Default.GetBytes(STR_DATA);
-    uint dataID = FNVHash.Compute(STR_DATA);
 
     using FileStream fs = File.Create(outputPath);
     using DatabasePackedFile dbpf = new(fs);
     dbpf.OnHeaderWriting += msg => Console.WriteLine("Writing header . . .");
     dbpf.OnDataWriting += DisplayDataWritingMessage;
     dbpf.OnIndexWriting += msg => Console.WriteLine("Writing index . . .");
-    dbpf.WriteData(data, new ResourceKey(dataID, FNVHash.Compute("txt"), dataID));
+    dbpf.WriteData(data, new ResourceKey(FNVHash.Compute(STR_DATA), 0x2B6CAB5F));
 
     //dbpf.WriteSecretData(Encoding.Default.GetBytes("Уууу секретики"), new("Секретик", "txt"));
 
