@@ -312,7 +312,7 @@ namespace DBPF_Compiler
                     Array.Reverse(buffer, bufferIndex + sizeof(uint) + sizeof(float) * 3, sizeof(float));
                 }
 
-                array[i].UnknownID = BitConverter.ToUInt32(buffer, bufferIndex);
+                array[i].UnknownValue = BitConverter.ToUInt32(buffer, bufferIndex);
                 bufferIndex += sizeof(uint);
                 float x = BitConverter.ToSingle(buffer, bufferIndex);
                 bufferIndex += sizeof(float);
@@ -323,7 +323,6 @@ namespace DBPF_Compiler
                 array[i].Offset = new(x, y, z);
                 array[i].Scale = BitConverter.ToSingle(buffer, bufferIndex);
                 bufferIndex += sizeof(float);
-                array[i].UnknownData = new uint[9];
 
                 for (int j = 0; j < array[i].UnknownData.Length; j++)
                 {

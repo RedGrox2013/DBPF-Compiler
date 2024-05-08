@@ -18,7 +18,7 @@
     },
     "decode": {
       "commandName": "Project",
-      "commandLineArgs": "--decode test.prop test.prop.json"
+      "commandLineArgs": "--decode \"D:\\Program Files\\SporeModder FX\\Projects\\proptest\\test\\test.prop\" test.prop.json"
     }
   }
 }
