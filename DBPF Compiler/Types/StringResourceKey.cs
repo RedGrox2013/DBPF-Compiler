@@ -1,4 +1,5 @@
-﻿using DBPF_Compiler.FNV;
+﻿using DBPF_Compiler.DBPF;
+using DBPF_Compiler.FNV;
 
 namespace DBPF_Compiler.Types
 {
@@ -13,6 +14,24 @@ namespace DBPF_Compiler.Types
             key.TypeID != 0 ? FNVHash.ToString(key.TypeID) : null,
             key.GroupID != 0 ? FNVHash.ToString(key.GroupID) : null
             ) { }
+
+        public static bool operator==(StringResourceKey left, StringResourceKey right)
+            => left.Equals(right);
+        public static bool operator !=(StringResourceKey left, StringResourceKey right)
+            => !left.Equals(right);
+
+        public override readonly bool Equals(object? obj)
+        {
+            if (obj is SecretIndexEntry entry)
+                return entry.Key.InstanceID == InstanceID && entry.Key.TypeID == TypeID;
+            if (obj is StringResourceKey key)
+                return key.InstanceID == InstanceID && key.GroupID == GroupID && key.TypeID == TypeID;
+
+            return false;
+        }
+
+        public override readonly int GetHashCode()
+            => base.GetHashCode();
 
         public override readonly string ToString()
         {
