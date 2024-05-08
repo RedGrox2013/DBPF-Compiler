@@ -20,15 +20,28 @@ namespace DBPF_Compiler.DBPF
         private readonly static JsonSerializerOptions _jsonSerializerOptions = new()
         {
             WriteIndented = true,
-            Encoder = JavaScriptEncoder.Create(/*UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic, */UnicodeRanges.All)
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
         };
 
     private readonly NameRegistryManager _regManager = NameRegistryManager.Instance;
 
-        public void Pack(DatabasePackedFile output)
+        public void Pack(DatabasePackedFile output, string? secretFolder = null)
         {
             foreach (var group in UnpackedDataDirectory.GetDirectories())
             {
+                if (group.Name == secretFolder)
+                {
+                    output.SecretGroupName = secretFolder;
+                    foreach (var secret in group.GetFiles())
+                    {
+                        StringResourceKey key = new(secret.Name, secret.Extension.Remove(0, 1));
+                        using FileStream f = secret.OpenRead();
+                        output.CopySecretDataFromStream(f, key);
+                    }
+
+                    continue;
+                }
+
                 foreach (var d in group.GetDirectories())
                 {
                     if (!d.Name.EndsWith(".package.unpacked"))
@@ -60,12 +73,13 @@ namespace DBPF_Compiler.DBPF
             }
 
             output.WriteIndex();
+            output.WriteSecretIndex();
             output.WriteHeader();
         }
 
-        public void Unpack(DatabasePackedFile dbpf, EncodeFlags flags = EncodeFlags.All)
+        public void Unpack(DatabasePackedFile input, EncodeFlags flags = EncodeFlags.All)
         {
-            foreach (var resource in dbpf.ReadDBPFInfo())
+            foreach (var resource in input.ReadDBPFInfo())
             {
                 var key = _regManager.GetStringResourceKey(resource);
                 var path = UnpackedDataDirectory.FullName + "\\" + (key.GroupID ?? "animations~");
@@ -77,14 +91,14 @@ namespace DBPF_Compiler.DBPF
                 {
                     DBPFPacker unpacker = new(path + ".unpacked");
                     using MemoryStream stream = new();
-                    dbpf.CopyResourceTo(stream, resource);
+                    input.CopyResourceTo(stream, resource);
                     DatabasePackedFile package = new(stream);
                     unpacker.Unpack(package);
                 }
                 else if ((resource.TypeID == (uint)TypeIDs.prop || resource.TypeID == (uint)TypeIDs.soundProp) &&
                     flags.HasFlag(EncodeFlags.PropertyList))
                 {
-                    byte[]? buffer = dbpf.ReadResource(resource);
+                    byte[]? buffer = input.ReadResource(resource);
                     if (buffer == null)
                         continue;
 
@@ -97,7 +111,7 @@ namespace DBPF_Compiler.DBPF
                 else
                 {
                     using FileStream file = File.Create(path);
-                    dbpf.CopyResourceTo(file, resource);
+                    input.CopyResourceTo(file, resource);
                 }
             }
         }
@@ -108,6 +122,29 @@ namespace DBPF_Compiler.DBPF
             file.Decode(sporeFileStream);
 
             return JsonSerializer.Serialize(file, _jsonSerializerOptions);
+        }
+
+        public bool UnpackSecret(DatabasePackedFile input)
+        {
+            var secrets = input.ReadSecretIndex();
+            if (secrets == null || secrets.Length == 0)
+                return false;
+
+            string outputPath = UnpackedDataDirectory.FullName + "\\" + secrets[0].GroupID + "\\";
+            if (!Directory.Exists(outputPath))
+                Directory.CreateDirectory(outputPath);
+
+            foreach (var secret in secrets)
+            {
+                string path = outputPath + secret.InstanceID;
+                if (!string.IsNullOrEmpty(secret.TypeID))
+                    path += "." + secret.TypeID;
+
+                using FileStream file = File.Create(path);
+                input.CopySecretDataTo(file, secret);
+            }
+
+            return true;
         }
     }
 

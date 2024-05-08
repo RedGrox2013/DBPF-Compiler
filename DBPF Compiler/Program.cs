@@ -23,15 +23,15 @@ if (regDir.Exists)
 
 if (args[0].Equals("--help") || args[0].Equals("-h"))
     Console.WriteLine(@"
---help, -h:                    show help
---pack, -p <input> <output>:   pack the contents of a folder into DBPF
---unpack, -u <input> <output>: unpack DBPF to a specified directory
---encode, -e <input> <output>: encode file
---decode, -d <input> <output>: decode file
---hash <name> <registry>:      get hash by name
+--help, -h:                             show help
+--pack, -p <input> <output>:            pack the contents of a folder into DBPF
+--unpack, -u <input> <output> <secret>: pack the contents of a folder into DBPF. <secret> - name of the folder whose contents are hidden in the DBPF
+--encode, -e <input> <output>:          encode file
+--decode, -d <input> <output>:          decode file
+--hash <name> <registry>:               get hash by name
 ");
 else if ((args[0].Equals("--pack") || args[0].Equals("-p")) && CheckArguments(args))
-    Pack(args[1], args[2]);
+    Pack(args[1], args[2], args.Length >= 4 ? args[3] : null);
 else if ((args[0].Equals("--unpack") || args[0].Equals("-u")) && CheckArguments(args))
     Unpack(args[1], args[2]);
 else if (args[0].Equals("--encode") || args[0].Equals("-e"))
@@ -66,7 +66,7 @@ static void Pack(string inputPath, string outputPath, string? secretFolder = nul
     dbpf.OnIndexWriting += msg => Console.WriteLine("Writing index . . .");
     dbpf.WriteData(data, new ResourceKey(FNVHash.Compute(STR_DATA), 0x2B6CAB5F));
 
-    //dbpf.WriteSecretData(Encoding.Default.GetBytes("Уууу секретики"), new("Секретик", "txt"));
+    dbpf.WriteSecretData(Encoding.Default.GetBytes("Уууу секретики"), new("Секретик", "txt"));
 
     packer.Pack(dbpf);
 
@@ -88,6 +88,7 @@ static void Unpack(string inputPath, string outputPath)
     DBPFPacker unpacker = new(outputPath);
 
     unpacker.Unpack(dbpf);
+    unpacker.UnpackSecret(dbpf);
 
     stopwatch.Stop();
     var ts = stopwatch.Elapsed;

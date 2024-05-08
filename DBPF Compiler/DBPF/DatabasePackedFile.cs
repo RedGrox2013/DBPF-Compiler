@@ -111,6 +111,16 @@ namespace DBPF_Compiler.DBPF
 
         private SecretDBPFIndex? _secretIndex = null;
 
+        public string? SecretGroupName
+        {
+            get => _secretIndex?.GroupName;
+            set
+            {
+                if (_secretIndex != null && !string.IsNullOrWhiteSpace(value))
+                    _secretIndex.GroupName = value;
+            }
+        }
+
         public DatabasePackedFile(Stream stream)
         {
             stream.Seek(HeaderSize, SeekOrigin.Current);
@@ -242,11 +252,14 @@ namespace DBPF_Compiler.DBPF
             if (_secretIndex == null)
                 return;
 
+            if (!_indexWritten)
+                WriteIndex();
+
             _stream.Position = SecretIndexOffset;
             using BinaryWriter writer = new(_stream, Encoding.Unicode, true);
             writer.Write(_secretIndex.GroupName);
             writer.Write(_secretIndex.IndexCount);
-            
+
             foreach (var entry in _secretIndex.Entries)
             {
                 writer.Write(entry.Key.InstanceID);
@@ -302,17 +315,11 @@ namespace DBPF_Compiler.DBPF
             ResourceKey[] keys = new ResourceKey[indexCount];
             _index.ValuesFlag = reader.ReadUInt32();
             if (_index.GetFlagAt(0))
-            {
                 _index.TypeID = reader.ReadUInt32();
-            }
             if (_index.GetFlagAt(1))
-            {
                 _index.GroupID = reader.ReadUInt32();
-            }
             if (_index.GetFlagAt(2))
-            {
                 _index.UnknownID = reader.ReadUInt32();
-            }
 
             for (int i = 0; i < indexCount; i++)
             {
@@ -329,7 +336,7 @@ namespace DBPF_Compiler.DBPF
                 else entry.GroupID = _index.GroupID;
                 if (!_index.GetFlagAt(2))
                     _stream.Seek(sizeof(uint), SeekOrigin.Begin);
-                
+
                 entry.InstanceID = reader.ReadUInt32();
                 entry.Offset = reader.ReadUInt32();
                 entry.CompressedSize = reader.ReadUInt32();
@@ -364,17 +371,77 @@ namespace DBPF_Compiler.DBPF
             StringResourceKey[] keys = new StringResourceKey[count];
             for (int i = 0; i < count; i++)
             {
-                keys[i] = new(instanceID: reader.ReadString(), typeID: reader.ReadString());
+                keys[i] = new(instanceID: reader.ReadString(), typeID: reader.ReadString(), _secretIndex.GroupName);
                 SecretIndexEntry entry = new()
                 {
                     Key = keys[i],
                     Offset = reader.ReadUInt32(),
                     Size = reader.ReadUInt32()
                 };
+                _secretIndex.Entries.Add(entry);
             }
 
             return keys;
         }
+
+        public byte[]? ReadSecretData(StringResourceKey key)
+        {
+            if (_secretIndex == null)
+                return null;
+
+            Task.Run(() => _onDataReading?.Invoke(key));
+            foreach (var entry in _secretIndex.Entries)
+            {
+                if (!key.Equals(entry))
+                    continue;
+
+                byte[] data = new byte[entry.Size];
+                var oldPosition = _stream.Position;
+                _stream.Position = entry.Offset;
+                _stream.Read(data);
+                _stream.Position = oldPosition;
+
+                return data;
+            }
+
+            return null;
+        }
+        public async Task<byte[]?> ReadSecretDataAsync(StringResourceKey key)
+            => await Task.Run(() => ReadSecretData(key));
+
+        public bool CopySecretDataTo(Stream destination, StringResourceKey key)
+        {
+            var buffer = ReadSecretData(key);
+            if (buffer != null)
+            {
+                destination.Write(buffer);
+                return true;
+            }
+
+            return false;
+        }
+        public async Task<bool> CopySecretDataToAsync(Stream destination, StringResourceKey key)
+            => await Task.Run(() => CopySecretDataTo(destination, key));
+
+        public void CopySecretDataFromStream(Stream input, StringResourceKey key)
+        {
+            _secretIndex ??= new();
+            Task.Run(() => _onDataWriting?.Invoke(key));
+            _headerWritten = _indexWritten = false;
+
+            var entry = new SecretIndexEntry
+            {
+                Key = key,
+                Offset = IndexOffset,
+                Size = (uint)input.Length
+            };
+            _secretIndex.Entries.Add(entry);
+            input.CopyTo(_stream);
+
+            IndexOffset += entry.Size;
+        }
+        public async Task CopySecretDataFromStreamAsync(Stream input, StringResourceKey key)
+            => await Task.Run(() => CopySecretDataFromStream(input, key));
 
         public byte[]? ReadResource(ResourceKey key, bool decompress = true)
         {
