@@ -12,6 +12,8 @@ namespace DBPF_Compiler.FileTypes.Prop
         public string Name { get; set; } = propertyName;
         public object? Value { get; set; }
 
+        public Property() : this("0x00000000") { }
+
         public XmlElement ToXml(XmlDocument xml)
         {
             XmlElement property = xml.CreateElement(PropertyType.ToString());
@@ -57,6 +59,9 @@ namespace DBPF_Compiler.FileTypes.Prop
 
             return property;
         }
+
+        public override string ToString()
+            => $"{PropertyType} {Name} {Value}";
     }
 
     public enum PropertyType

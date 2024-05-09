@@ -1,21 +1,30 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Text;
+using System.Text.Json.Serialization;
 using System.Xml;
 using DBPF_Compiler.FNV;
 using DBPF_Compiler.Types;
 
 namespace DBPF_Compiler.FileTypes.Prop
 {
-    //[JsonSerializable(typeof(PropertyList))]
     public class PropertyList : ISporeFile
     {
         [JsonIgnore]
         public TypeIDs TypeID => TypeIDs.prop;
 
         [JsonInclude]
-        public readonly List<Property> Properties = [];
+        public List<Property> Properties { get; set; }
 
         [JsonIgnore]
         private readonly NameRegistryManager _regManager = NameRegistryManager.Instance;
+
+        public PropertyList()
+        {
+            Properties = [];
+        }
+        public PropertyList(IEnumerable<Property> properties)
+        {
+            Properties = new List<Property>(properties);
+        }
 
         public bool Decode(Stream input)
         {
@@ -183,5 +192,17 @@ namespace DBPF_Compiler.FileTypes.Prop
                 => p.Name.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase) && p.PropertyType == type)?.Value;
 
         public void Add(Property property) => Properties.Add(property);
+
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            foreach (var prop in Properties)
+            {
+                sb.Append(prop);
+                sb.Append('\n');
+            }
+
+            return sb.ToString();
+        }
     }
 }

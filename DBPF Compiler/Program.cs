@@ -95,14 +95,17 @@ static void Unpack(string inputPath, string outputPath)
     Console.WriteLine($"The file was unpacked in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
 }
 
-static void Encode(string path)
+static void Encode(string filePath)
 {
-    using FileStream stream = File.OpenRead(path);
-    PropertyList prop = new();
-    prop.Decode(stream);
+    var prop = JsonSerializer.Deserialize<PropertyList>(File.ReadAllText(filePath),
+        new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+        });
 
-    //prop.ToXml().Save("test.prop.xml");
-    Console.WriteLine(JsonSerializer.Serialize(prop, typeof(PropertyList), new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic) }));
+    Console.WriteLine(prop);
+    Console.WriteLine(prop?.GetValue("test", PropertyType.transforms));
 }
 
 static void Decode(string inputPath, string? outputPath)
