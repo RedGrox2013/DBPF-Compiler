@@ -1,6 +1,4 @@
-﻿using System.Xml;
-
-namespace DBPF_Compiler.FileTypes
+﻿namespace DBPF_Compiler.FileTypes
 {
     public interface ISporeFile
     {
@@ -21,7 +19,5 @@ namespace DBPF_Compiler.FileTypes
         /// <param name="output">Куда будет записан файл</param>
         /// <returns>Размер записанных данных</returns>
         uint Encode(Stream output);
-
-        //XmlDocument ToXml();
     }
 }

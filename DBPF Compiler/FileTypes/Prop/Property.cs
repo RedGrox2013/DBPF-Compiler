@@ -1,7 +1,4 @@
-﻿using DBPF_Compiler.FNV;
-using DBPF_Compiler.Types;
-using System.Text.Json.Serialization;
-using System.Xml;
+﻿using System.Text.Json.Serialization;
 
 namespace DBPF_Compiler.FileTypes.Prop
 {
@@ -13,52 +10,6 @@ namespace DBPF_Compiler.FileTypes.Prop
         public object? Value { get; set; }
 
         public Property() : this("0x00000000") { }
-
-        public XmlElement ToXml(XmlDocument xml)
-        {
-            XmlElement property = xml.CreateElement(PropertyType.ToString());
-            XmlAttribute name = xml.CreateAttribute("name");
-            name.Value = Name;
-            property.Attributes.Append(name);
-
-            switch (PropertyType)
-            {
-                case PropertyType.key:
-                    XmlAttribute instance = xml.CreateAttribute("instanceid");
-                    if (Value is StringResourceKey key)
-                        instance.Value = key.InstanceID;
-                    else if (Value is ResourceKey rk)
-                    {
-                        key = NameRegistryManager.Instance.GetStringResourceKey(rk);
-                        instance.Value = key.InstanceID;
-                    }
-                    else
-                    {
-                        instance.Value = Value?.ToString();
-                        key = new();
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(key.GroupID))
-                    {
-                        XmlAttribute group = xml.CreateAttribute("groupid");
-                        group.Value = key.GroupID;
-                        property.Attributes.Append(group);
-                    }
-                    property.Attributes.Append(instance);
-                    if (!string.IsNullOrWhiteSpace(key.TypeID))
-                    {
-                        XmlAttribute type = xml.CreateAttribute("typeid");
-                        type.Value = key.TypeID;
-                        property.Attributes.Append(type);
-                    }
-                    break;
-                default:
-                    property.InnerText = Value?.ToString() ?? string.Empty;
-                    break;
-            }
-
-            return property;
-        }
 
         public override string ToString()
             => $"{PropertyType} {Name} {Value}";

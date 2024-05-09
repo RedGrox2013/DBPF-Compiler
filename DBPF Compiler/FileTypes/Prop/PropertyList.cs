@@ -1,8 +1,7 @@
-﻿using System.Text;
-using System.Text.Json.Serialization;
-using System.Xml;
-using DBPF_Compiler.FNV;
+﻿using DBPF_Compiler.FNV;
 using DBPF_Compiler.Types;
+using System.Text;
+using System.Text.Json.Serialization;
 
 namespace DBPF_Compiler.FileTypes.Prop
 {
@@ -171,20 +170,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                 return $"hash({name})";
 
             return FNVHash.ToString(value);
-        }
-
-        public XmlDocument ToXml()
-        {
-            XmlDocument xml = new();
-            var declaration = xml.CreateXmlDeclaration("1.0", "utf-8", null);
-            xml.AppendChild(declaration);
-            XmlElement root = xml.CreateElement("properties");
-            xml.AppendChild(root);
-
-            foreach (var property in Properties)
-                root.AppendChild(property.ToXml(xml));
-
-            return xml;
         }
 
         public object? GetValue(string propertyName, PropertyType type)
