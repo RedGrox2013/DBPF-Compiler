@@ -15,7 +15,7 @@
                     _matrix[i, j] = other[i, j];
         }
 
-        public readonly Vector3 ToDegreesRotation() => new(
+        public readonly Vector3 ToEulerDegrees() => new(
             (float)(180 / Math.PI * Math.Atan2(_matrix[2, 1], _matrix[2, 2])),
             (float)(180 / Math.PI * -Math.Asin(_matrix[2, 0])),
             (float)(180 / Math.PI * Math.Atan2(_matrix[1, 0], _matrix[0, 0]))

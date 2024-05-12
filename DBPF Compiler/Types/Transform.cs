@@ -9,7 +9,7 @@
         internal Matrix Rotate { get; set; }
         public readonly Vector3 RotateXYZ
         {
-            get => Rotate.ToDegreesRotation();
+            get => Rotate.ToEulerDegrees();
             set => Rotate.Rotate(value);
         }
 
