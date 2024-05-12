@@ -17,25 +17,49 @@ namespace DBPF_Compiler
             return buffer;
         }
 
-        internal static void WriteUInt64(this Stream stream, ulong? value)
+        internal static void WriteUInt64(this Stream stream, ulong? value, bool bigEndian = false)
         {
-            if (value != null)
-                stream.Write(BitConverter.GetBytes((ulong)value));
+            if (value == null)
+                return;
+
+            var buffer = BitConverter.GetBytes((ulong)value);
+            if (bigEndian)
+                Array.Reverse(buffer);
+
+            stream.Write(buffer);
         }
-        internal static void WriteUInt32(this Stream stream, uint? value)
+        internal static void WriteUInt32(this Stream stream, uint? value, bool bigEndian = false)
         {
-            if (value != null)
-                stream.Write(BitConverter.GetBytes((uint)value));
+            if (value == null)
+                return;
+
+            var buffer = BitConverter.GetBytes((uint)value);
+            if (bigEndian)
+                Array.Reverse(buffer);
+
+            stream.Write(buffer);
         }
-        internal static void WriteInt32(this Stream stream, int? value)
+        internal static void WriteInt32(this Stream stream, int? value, bool bigEndian = false)
         {
-            if (value != null)
-                stream.Write(BitConverter.GetBytes((uint)value));
+            if (value == null)
+                return;
+
+            var buffer = BitConverter.GetBytes((int)value);
+            if (bigEndian)
+                Array.Reverse(buffer);
+
+            stream.Write(buffer);
         }
-        internal static void WriteUInt16(this Stream stream, ushort? value)
+        internal static void WriteUInt16(this Stream stream, ushort? value, bool bigEndian = false)
         {
-            if (value != null)
-                stream.Write(BitConverter.GetBytes((ushort)value));
+            if (value == null)
+                return;
+
+            var buffer = BitConverter.GetBytes((ushort)value);
+            if (bigEndian)
+                Array.Reverse(buffer);
+
+            stream.Write(buffer);
         }
         internal static void WriteBoolean(this Stream stream, bool? value)
         {
