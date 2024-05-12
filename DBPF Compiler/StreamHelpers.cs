@@ -206,7 +206,7 @@ namespace DBPF_Compiler
             return array;
         }
 
-        internal static ResourceKey[] ReadResourceKeyArray(this Stream stream, bool bigEndianSize = false, bool bigEndian = false)
+        internal static ResourceKey[] ReadResourceKeyArray(this Stream stream, bool bigEndianSize = false)
         {
             byte[] buffer = stream.ReadUInt8Array(bigEndianSize);
             ResourceKey[] array = new ResourceKey[buffer.Length / (sizeof(uint) * 3)];
@@ -297,48 +297,34 @@ namespace DBPF_Compiler
 
         internal static Transform[] ReadTransformArray(this Stream stream, bool bigEndianSize = false, bool bigEndian = false)
         {
-            byte[] buffer = stream.ReadUInt8Array(bigEndianSize);
-            Transform[] array = new Transform[buffer.Length / Transform.SIZE];
-            for (int i = 0; i < array.Length; i++)
-            {
-                array[i] = new();
-                int bufferIndex = i * Transform.SIZE;
-                if (bigEndian)
+            int count = stream.ReadInt32(bigEndianSize);
+            stream.Seek(sizeof(int), SeekOrigin.Current); // element size
+            Transform[] array = new Transform[count];
+            for (int i = 0; i < count; i++)
+                array[i] = new Transform
                 {
-                    Array.Reverse(buffer, bufferIndex, sizeof(uint));
-                    Array.Reverse(buffer, bufferIndex + sizeof(uint), sizeof(float));
-                    Array.Reverse(buffer, bufferIndex + sizeof(uint) + sizeof(float), sizeof(float));
-                    Array.Reverse(buffer, bufferIndex + sizeof(uint) + sizeof(float) * 2, sizeof(float));
-                    Array.Reverse(buffer, bufferIndex + sizeof(uint) + sizeof(float) * 3, sizeof(float));
-                }
-
-                array[i].UnknownValue = BitConverter.ToUInt32(buffer, bufferIndex);
-                bufferIndex += sizeof(uint);
-                float x = BitConverter.ToSingle(buffer, bufferIndex);
-                bufferIndex += sizeof(float);
-                float y = BitConverter.ToSingle(buffer, bufferIndex);
-                bufferIndex += sizeof(float);
-                float z = BitConverter.ToSingle(buffer, bufferIndex);
-                bufferIndex += sizeof(float);
-                array[i].Offset = new(x, y, z);
-                array[i].Scale = BitConverter.ToSingle(buffer, bufferIndex);
-                bufferIndex += sizeof(float);
-
-                for (int j = 0; j < array[i].UnknownData.Length; j++)
-                {
-                    if (bigEndian)
-                        Array.Reverse(buffer, bufferIndex, sizeof(uint));
-
-                    array[i].UnknownData[j] = BitConverter.ToUInt32(buffer, bufferIndex);
-                    bufferIndex += sizeof(uint);
-                }
-            }
+                    Flags = stream.ReadInt16(bigEndian),
+                    TransformCount = stream.ReadInt16(bigEndian),
+                    Offset = new(stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian)),
+                    Scale = stream.ReadFloat(bigEndian),
+                    Rotate = stream.ReadMatrix(bigEndian),
+                };
 
             return array;
         }
 
         internal static Vector4 ReadVector(this Stream stream, bool bigEndian = false)
             => new(stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian));
+
+        internal static Matrix ReadMatrix(this Stream stream, bool bigEndian = false)
+        {
+            Matrix matrix = new();
+            for (int i = 0; i < Matrix.SIZE; i++)
+                for (int j = 0; j < Matrix.SIZE; j++)
+                    matrix[i, j] = stream.ReadFloat(bigEndian);
+
+            return matrix;
+        }
 
 
         internal static void WriteIndexEntry(this Stream stream, IndexEntry entry)

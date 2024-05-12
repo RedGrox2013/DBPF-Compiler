@@ -2,18 +2,24 @@
 {
     public struct Transform
     {
-        public uint UnknownValue { get; set; }
+        public short Flags { get; set; }
+        public short TransformCount { get; set; }
         public Vector3 Offset { get; set; }
         public float Scale { get; set; }
-        public uint[] UnknownData { get; set; }
+        internal Matrix Rotate { get; set; }
+        public readonly Vector3 RotateXYZ
+        {
+            get => Rotate.ToDegreesRotation();
+            set => Rotate.Rotate(value);
+        }
 
         public const int SIZE = 56;
 
         public Transform()
         {
-            UnknownData = new uint[9];
-            Offset = new Vector3();
+            Offset = new();
             Scale = 1.0f;
+            Rotate = new();
         }
     }
 }
