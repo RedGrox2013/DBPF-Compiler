@@ -97,15 +97,20 @@ static void Unpack(string inputPath, string outputPath)
 
 static void Encode(string filePath)
 {
-    var prop = JsonSerializer.Deserialize<PropertyList>(File.ReadAllText(filePath),
-        new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
-        });
+    var prop = new PropertyList();
+    var options = new JsonSerializerOptions
+    {
+        WriteIndented = true,
+        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
+        //UnknownTypeHandling = System.Text.Json.Serialization.JsonUnknownTypeHandling.JsonNode
+    };
+    prop.DeserializeFromJson(File.ReadAllText(filePath), options);
 
-    Console.WriteLine(prop);
-    Console.WriteLine(prop?.GetValue("test", PropertyType.transforms));
+    Console.WriteLine(prop.SerializeToJson(options));
+    var transfroms = (prop.GetValue("test", PropertyType.transforms) as IEnumerable<Transform>)?.ToArray();
+    if (transfroms != null)
+        foreach (var t in transfroms)
+            Console.WriteLine("-offset " + t.Offset + " -scale " + t.Scale + " -rotateXYZ " + t.RotateXYZ);
 }
 
 static void Decode(string inputPath, string? outputPath)

@@ -1,6 +1,7 @@
 ﻿using DBPF_Compiler.FNV;
 using DBPF_Compiler.Types;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace DBPF_Compiler.FileTypes.Prop
@@ -163,6 +164,106 @@ namespace DBPF_Compiler.FileTypes.Prop
             throw new NotImplementedException();
         }
 
+        public string SerializeToJson(JsonSerializerOptions? options = null)
+            => JsonSerializer.Serialize(this, options);
+
+        public bool DeserializeFromJson(string json, JsonSerializerOptions? options = null)
+        {
+            var prop = JsonSerializer.Deserialize<PropertyList>(json, options);
+            if (prop == null)
+                return false;
+
+            _properties = prop._properties;
+            for (int i = 0; i < _properties.Count; i++)
+            {
+                if (_properties[i].Value is not JsonElement element)
+                    continue;
+
+                switch (_properties[i].PropertyType)
+                {
+                    case PropertyType.bboxes:
+                        _properties[i].Value = element.Deserialize<IEnumerable<BoundingBox>>(options);
+                        break;
+                    case PropertyType.transforms:
+                        _properties[i].Value = element.Deserialize<IEnumerable<Transform>>(options);
+                        break;
+                    case PropertyType.bools:
+                        _properties[i].Value = element.Deserialize<IEnumerable<bool>>(options);
+                        break;
+                    case PropertyType.int8s:
+                        _properties[i].Value = element.Deserialize<IEnumerable<sbyte>>(options);
+                        break;
+                    case PropertyType.uint8s:
+                        _properties[i].Value = element.Deserialize<IEnumerable<byte>>(options);
+                        break;
+                    case PropertyType.int16s:
+                        _properties[i].Value = element.Deserialize<IEnumerable<short>>(options);
+                        break;
+                    case PropertyType.uint16s:
+                        _properties[i].Value = element.Deserialize<IEnumerable<ushort>>(options);
+                        break;
+                    case PropertyType.int32s:
+                        _properties[i].Value = element.Deserialize<IEnumerable<int>>(options);
+                        break;
+                    case PropertyType.int64s:
+                        _properties[i].Value = element.Deserialize<IEnumerable<long>>(options);
+                        break;
+                    case PropertyType.uint64s:
+                        _properties[i].Value = element.Deserialize<IEnumerable<ulong>>(options);
+                        break;
+                    case PropertyType.floats:
+                        _properties[i].Value = element.Deserialize<IEnumerable<float>>(options);
+                        break;
+                    case PropertyType.string8s:
+                    case PropertyType.string16s:
+                    case PropertyType.uint32s:
+                        _properties[i].Value = element.Deserialize<IEnumerable<string>>(options);
+                        break;
+                    case PropertyType.key:
+                        _properties[i].Value = element.Deserialize<StringResourceKey>(options);
+                        break;
+                    case PropertyType.keys:
+                        _properties[i].Value = element.Deserialize<IEnumerable<StringResourceKey>>(options);
+                        break;
+                    case PropertyType.vector2:
+                        _properties[i].Value = element.Deserialize<Vector2>(options);
+                        break;
+                    case PropertyType.vector2s:
+                        _properties[i].Value = element.Deserialize<IEnumerable<Vector2>>(options);
+                        break;
+                    case PropertyType.vector3:
+                        _properties[i].Value = element.Deserialize<Vector3>(options);
+                        break;
+                    case PropertyType.vector3s:
+                        _properties[i].Value = element.Deserialize<IEnumerable<Vector3>>(options);
+                        break;
+                    case PropertyType.colorRGB:
+                        _properties[i].Value = element.Deserialize<ColorRGB>(options);
+                        break;
+                    case PropertyType.colorRGBs:
+                        _properties[i].Value = element.Deserialize<IEnumerable<ColorRGB>>(options);
+                        break;
+                    case PropertyType.vector4:
+                        _properties[i].Value = element.Deserialize<Vector4>(options);
+                        break;
+                    case PropertyType.vector4s:
+                        _properties[i].Value = element.Deserialize<IEnumerable<Vector4>>(options);
+                        break;
+                    case PropertyType.colorRGBA:
+                        _properties[i].Value = element.Deserialize<ColorRGBA>(options);
+                        break;
+                    case PropertyType.colorRGBAs:
+                        _properties[i].Value = element.Deserialize<IEnumerable<ColorRGBA>>(options);
+                        break;
+                    case PropertyType.texts:
+                        _properties[i].Value = element.Deserialize<IEnumerable<StringLocalizedString>>(options);
+                        break;
+                }
+            }
+
+            return true;
+        }
+
         private string GetUInt32Name(uint value)
         {
             var regFile = _regManager.GetRegistry("file");
@@ -177,17 +278,5 @@ namespace DBPF_Compiler.FileTypes.Prop
                 => p.Name.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase) && p.PropertyType == type)?.Value;
 
         public void Add(Property property) => _properties.Add(property);
-
-        public override string ToString()
-        {
-            StringBuilder sb = new();
-            foreach (var prop in _properties)
-            {
-                sb.Append(prop);
-                sb.Append('\n');
-            }
-
-            return sb.ToString();
-        }
     }
 }

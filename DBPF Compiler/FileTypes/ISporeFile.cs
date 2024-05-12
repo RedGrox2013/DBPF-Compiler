@@ -1,4 +1,6 @@
-﻿namespace DBPF_Compiler.FileTypes
+﻿using System.Text.Json;
+
+namespace DBPF_Compiler.FileTypes
 {
     public interface ISporeFile
     {
@@ -19,5 +21,9 @@
         /// <param name="output">Куда будет записан файл</param>
         /// <returns>Размер записанных данных</returns>
         uint Encode(Stream output);
+
+        string SerializeToJson(JsonSerializerOptions? options = null);
+
+        bool DeserializeFromJson(string json, JsonSerializerOptions? options = null);
     }
 }

@@ -20,7 +20,8 @@ namespace DBPF_Compiler.DBPF
         private readonly static JsonSerializerOptions _jsonSerializerOptions = new()
         {
             WriteIndented = true,
-            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
+            UnknownTypeHandling = System.Text.Json.Serialization.JsonUnknownTypeHandling.JsonNode
         };
 
     private readonly NameRegistryManager _regManager = NameRegistryManager.Instance;
@@ -121,7 +122,7 @@ namespace DBPF_Compiler.DBPF
             SporeFileType file = new();
             file.Decode(sporeFileStream);
 
-            return JsonSerializer.Serialize(file, _jsonSerializerOptions);
+            return file.SerializeToJson(_jsonSerializerOptions);
         }
 
         public bool UnpackSecret(DatabasePackedFile input)
