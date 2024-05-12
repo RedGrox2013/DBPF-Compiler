@@ -68,7 +68,7 @@ static void Pack(string inputPath, string outputPath, string? secretFolder = nul
 
     dbpf.WriteSecretData(Encoding.Default.GetBytes("Уууу секретики"), new("Секретик", "txt"));
 
-    packer.Pack(dbpf);
+    packer.Pack(dbpf, secretFolder);
 
     stopwatch.Stop();
     var ts = stopwatch.Elapsed;
