@@ -11,19 +11,19 @@ namespace DBPF_Compiler.FileTypes.Prop
         public TypeIDs TypeID => TypeIDs.prop;
 
         [JsonInclude]
-        public List<Property> Properties { get; set; }
+        public List<Property> Properties
+        {
+            get => _properties;
+            set => _properties = new List<Property>(value);
+        }
+        private List<Property> _properties;
 
         [JsonIgnore]
         private readonly NameRegistryManager _regManager = NameRegistryManager.Instance;
 
-        public PropertyList()
-        {
-            Properties = [];
-        }
+        public PropertyList() => _properties = [];
         public PropertyList(IEnumerable<Property> properties)
-        {
-            Properties = new List<Property>(properties);
-        }
+            => _properties = new List<Property>(properties);
 
         public bool Decode(Stream input)
         {
@@ -173,15 +173,15 @@ namespace DBPF_Compiler.FileTypes.Prop
         }
 
         public object? GetValue(string propertyName, PropertyType type)
-            => Properties.Find(p
+            => _properties.Find(p
                 => p.Name.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase) && p.PropertyType == type)?.Value;
 
-        public void Add(Property property) => Properties.Add(property);
+        public void Add(Property property) => _properties.Add(property);
 
         public override string ToString()
         {
             StringBuilder sb = new();
-            foreach (var prop in Properties)
+            foreach (var prop in _properties)
             {
                 sb.Append(prop);
                 sb.Append('\n');

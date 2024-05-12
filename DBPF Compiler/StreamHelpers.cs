@@ -331,7 +331,7 @@ namespace DBPF_Compiler
                     TransformCount = stream.ReadInt16(bigEndian),
                     Offset = new(stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian)),
                     Scale = stream.ReadFloat(bigEndian),
-                    Rotate = stream.ReadMatrix(bigEndian),
+                    Rotate = Matrix.ReadMatrix(stream, bigEndian),
                 };
 
             return array;
@@ -339,16 +339,6 @@ namespace DBPF_Compiler
 
         internal static Vector4 ReadVector(this Stream stream, bool bigEndian = false)
             => new(stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian));
-
-        internal static Matrix ReadMatrix(this Stream stream, bool bigEndian = false)
-        {
-            Matrix matrix = new();
-            for (int i = 0; i < Matrix.SIZE; i++)
-                for (int j = 0; j < Matrix.SIZE; j++)
-                    matrix[i, j] = stream.ReadFloat(bigEndian);
-
-            return matrix;
-        }
 
 
         internal static void WriteIndexEntry(this Stream stream, IndexEntry entry)

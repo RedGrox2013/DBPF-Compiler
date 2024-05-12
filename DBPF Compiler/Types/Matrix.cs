@@ -53,10 +53,25 @@
             _matrix[2, 2] = (float)(cosy * cosx);
         }
 
-        public readonly float this[int row, int column]
+        public static Matrix CreateIdentity()
         {
-            get => _matrix[row, column];
-            set => _matrix[row, column] = value;
+            Matrix matrix = new();
+            for (int i = 0; i < SIZE; i++)
+                matrix._matrix[i, i] = 1.0f;
+
+            return matrix;
         }
+
+        public static Matrix ReadMatrix(Stream stream, bool bigEndian = false)
+        {
+            Matrix matrix = new();
+            for (int i = 0; i < SIZE; i++)
+                for (int j = 0; j < SIZE; j++)
+                    matrix._matrix[i, j] = stream.ReadFloat(bigEndian);
+
+            return matrix;
+        }
+
+        public readonly float this[int row, int column] => _matrix[row, column];
     }
 }

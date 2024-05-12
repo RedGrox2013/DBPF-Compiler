@@ -2,8 +2,8 @@
 {
     public struct Transform
     {
-        public short Flags { get; set; }
-        public short TransformCount { get; set; }
+        internal short Flags { get; set; }
+        internal short TransformCount { get; set; }
         public Vector3 Offset { get; set; }
         public float Scale { get; set; }
         internal Matrix Rotate { get; set; }
