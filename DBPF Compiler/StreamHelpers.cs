@@ -61,6 +61,17 @@ namespace DBPF_Compiler
 
             stream.Write(buffer);
         }
+        internal static void WriteInt16(this Stream stream, short? value, bool bigEndian = false)
+        {
+            if (value == null)
+                return;
+
+            var buffer = BitConverter.GetBytes((short)value);
+            if (bigEndian)
+                Array.Reverse(buffer);
+
+            stream.Write(buffer);
+        }
         internal static void WriteBoolean(this Stream stream, bool? value)
         {
             if (value == null)
