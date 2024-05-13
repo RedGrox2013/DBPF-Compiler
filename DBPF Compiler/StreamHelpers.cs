@@ -325,14 +325,26 @@ namespace DBPF_Compiler
             stream.Seek(sizeof(int), SeekOrigin.Current); // element size
             Transform[] array = new Transform[count];
             for (int i = 0; i < count; i++)
+            {
                 array[i] = new Transform
                 {
-                    Flags = stream.ReadInt16(bigEndian),
-                    TransformCount = stream.ReadInt16(bigEndian),
-                    Offset = new(stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian)),
-                    Scale = stream.ReadFloat(bigEndian),
-                    Rotate = Matrix.ReadMatrix(stream, bigEndian),
+                    Flags = (TransformFlags)stream.ReadInt16(bigEndian),
+                    TransformCount = stream.ReadInt16(bigEndian)
                 };
+
+                if (array[i].Flags.HasFlag(TransformFlags.Offset))
+                    array[i].Offset = new(stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian));
+                else
+                    stream.Seek(sizeof(float) * 3, SeekOrigin.Current);
+                if (array[i].Flags.HasFlag(TransformFlags.Scale))
+                    array[i].Scale = stream.ReadFloat(bigEndian);
+                else
+                    stream.Seek(sizeof(float), SeekOrigin.Current);
+                if (array[i].Flags.HasFlag(TransformFlags.Rotate))
+                    array[i].Rotate = Matrix.ReadMatrix(stream, bigEndian);
+                else
+                    stream.Seek(sizeof(float) * Matrix.SIZE * Matrix.SIZE, SeekOrigin.Current);
+            }
 
             return array;
         }
