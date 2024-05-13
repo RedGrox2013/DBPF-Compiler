@@ -1,6 +1,5 @@
 ﻿using DBPF_Compiler.FNV;
 using DBPF_Compiler.Types;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -161,7 +160,179 @@ namespace DBPF_Compiler.FileTypes.Prop
 
         public uint Encode(Stream output)
         {
-            throw new NotImplementedException();
+            output.WriteInt32(_properties.Count, true);
+            uint size = sizeof(int);
+
+            foreach (var p in _properties)
+            {
+                output.WriteUInt32(_regManager.GetHash(p.Name, "property"));
+                output.WriteInt32((int)p.PropertyType);
+                switch (p.PropertyType)
+                {
+                    case PropertyType.@bool:
+                        output.WriteBoolean(p.Value as bool?);
+                        ++size;
+                        break;
+                    case PropertyType.bools:
+                        {
+                            var arr = p.Value as IEnumerable<bool>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.WriteInt32(sizeof(bool), true);
+                            size += (uint)count + sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                    output.WriteBoolean(i);
+                        }
+                        break;
+                    case PropertyType.int8s:
+                        {
+                            var arr = p.Value as IEnumerable<byte>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.WriteInt32(sizeof(byte), true);
+                            size += (uint)count + sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                    output.WriteByte(i);
+                        }
+                        break;
+                    case PropertyType.uint8:
+                    case PropertyType.int8:
+                        output.WriteByte((byte)(p.Value ?? 0));
+                        ++size;
+                        break;
+                    case PropertyType.uint8s:
+                        {
+                            var arr = p.Value as IEnumerable<sbyte>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.WriteInt32(sizeof(sbyte), true);
+                            size += (uint)count + sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                    output.WriteByte((byte)i);
+                        }
+                        break;
+                    case PropertyType.int16s:
+                        {
+                            var arr = p.Value as IEnumerable<short>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.WriteInt32(sizeof(short), true);
+                            size += (uint)count * sizeof(short) + sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                    output.WriteInt16(i, true);
+                        }
+                        break;
+                    case PropertyType.uint16:
+                    case PropertyType.int16:
+                        output.WriteUInt16((ushort)(p.Value ?? 0), true);
+                        size += sizeof(ushort);
+                        break;
+                    case PropertyType.uint16s:
+                        {
+                            var arr = p.Value as IEnumerable<ushort>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.WriteInt32(sizeof(ushort), true);
+                            size += (uint)count * sizeof(ushort) + sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                    output.WriteUInt16(i, true);
+                        }
+                        break;
+                    case PropertyType.int32:
+                        output.WriteInt32((int)(p.Value ?? 0), true);
+                        break;
+                    case PropertyType.int32s:
+                        {
+                            var arr = p.Value as IEnumerable<int>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.WriteInt32(sizeof(int), true);
+                            size += (uint)count * sizeof(int) + sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                    output.WriteInt32(i, true);
+                        }
+                        break;
+                    case PropertyType.uint32:
+                        {
+                            uint? value = p.Value as uint?;
+                            if (value != null)
+                                output.WriteUInt32((uint)value, true);
+                            else
+                                output.WriteUInt32(ParseUInt32Name(p.Value?.ToString()), true);
+                            size += sizeof(uint);
+                        }
+                        break;
+                    //case PropertyType.uint32s:
+                    //    break;
+                    //case PropertyType.int64:
+                    //    break;
+                    //case PropertyType.int64s:
+                    //    break;
+                    //case PropertyType.uint64:
+                    //    break;
+                    //case PropertyType.uint64s:
+                    //    break;
+                    //case PropertyType.@float:
+                    //    break;
+                    //case PropertyType.floats:
+                    //    break;
+                    //case PropertyType.string8:
+                    //    break;
+                    //case PropertyType.string8s:
+                    //    break;
+                    //case PropertyType.string16:
+                    //    break;
+                    //case PropertyType.string16s:
+                    //    break;
+                    //case PropertyType.key:
+                    //    break;
+                    //case PropertyType.keys:
+                    //    break;
+                    //case PropertyType.vector2:
+                    //    break;
+                    //case PropertyType.vector2s:
+                    //    break;
+                    //case PropertyType.vector3:
+                    //    break;
+                    //case PropertyType.vector3s:
+                    //    break;
+                    //case PropertyType.colorRGB:
+                    //    break;
+                    //case PropertyType.colorRGBs:
+                    //    break;
+                    //case PropertyType.vector4:
+                    //    break;
+                    //case PropertyType.vector4s:
+                    //    break;
+                    //case PropertyType.colorRGBA:
+                    //    break;
+                    //case PropertyType.colorRGBAs:
+                    //    break;
+                    //case PropertyType.text:
+                    //    break;
+                    //case PropertyType.texts:
+                    //    break;
+                    //case PropertyType.bbox:
+                    //    break;
+                    //case PropertyType.bboxes:
+                    //    break;
+                    //case PropertyType.transform:
+                    //    break;
+                    //case PropertyType.transforms:
+                    //    break;
+                    default:
+                        throw new NotImplementedException();
+                        //break;
+                }
+            }
+
+            return size;
         }
 
         public string SerializeToJson(JsonSerializerOptions? options = null)
@@ -271,6 +442,18 @@ namespace DBPF_Compiler.FileTypes.Prop
                 return $"hash({name})";
 
             return FNVHash.ToString(value);
+        }
+
+        private uint ParseUInt32Name(string? name)
+        {
+            if (FNVHash.TryParse(name, out uint hash))
+                return hash;
+
+            name = name?.TrimEnd(')');
+            if (name != null && (name.StartsWith("hash(") || name.StartsWith('$')))
+                return _regManager.GetHash(name.Replace("hash(", null).Replace("$", null), "file");
+
+            return 0;
         }
 
         public object? GetValue(string propertyName, PropertyType type)
