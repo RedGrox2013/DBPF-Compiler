@@ -268,8 +268,30 @@ namespace DBPF_Compiler.FileTypes.Prop
                             size += sizeof(uint);
                         }
                         break;
-                    //case PropertyType.uint32s:
-                    //    break;
+                    case PropertyType.uint32s:
+                        {
+                            if (p.Value is IEnumerable<uint> uintArr)
+                            {
+                                var count = uintArr.Count();
+                                output.WriteInt32(count, true);
+                                output.WriteInt32(sizeof(uint), true);
+                                size += (uint)count * sizeof(uint) + sizeof(int) * 2;
+                                foreach (var i in uintArr)
+                                    output.WriteUInt32(i, true);
+                            }
+                            else
+                            {
+                                var arr = p.Value as IEnumerable<string>;
+                                var count = arr?.Count() ?? 0;
+                                output.WriteInt32(count, true);
+                                output.WriteInt32(sizeof(uint), true);
+                                size += (uint)count * sizeof(uint) + sizeof(int) * 2;
+                                if (arr != null)
+                                    foreach (var i in arr)
+                                        output.WriteUInt32(ParseUInt32Name(i), true);
+                            }
+                        }
+                        break;
                     //case PropertyType.int64:
                     //    break;
                     //case PropertyType.int64s:
