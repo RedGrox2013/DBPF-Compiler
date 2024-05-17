@@ -335,8 +335,10 @@ namespace DBPF_Compiler.FileTypes.Prop
                     //    break;
                     //case PropertyType.uint64s:
                     //    break;
-                    //case PropertyType.@float:
-                    //    break;
+                    case PropertyType.@float:
+                        output.WriteFloat((float)(p.Value ?? 0), true);
+                        size += sizeof(float);
+                        break;
                     //case PropertyType.floats:
                     //    break;
                     //case PropertyType.string8:
@@ -384,8 +386,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                     //case PropertyType.transforms:
                     //    break;
                     default:
-                        throw new NotImplementedException();
-                        //break;
+                        throw new NotSupportedException(p.PropertyType + " not supported");
                 }
             }
 

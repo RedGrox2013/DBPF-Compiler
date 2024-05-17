@@ -82,6 +82,17 @@ namespace DBPF_Compiler
             else
                 stream.WriteByte(0);
         }
+        internal static void WriteFloat(this Stream stream, float? value, bool bigEndian = false)
+        {
+            if (value == null)
+                return;
+
+            var buffer = BitConverter.GetBytes((short)value);
+            if (bigEndian)
+                Array.Reverse(buffer);
+
+            stream.Write(buffer);
+        }
 
         internal static short ReadInt16(this Stream stream, bool bigEndian = false)
             => BitConverter.ToInt16(stream.ReadData(sizeof(short), bigEndian), 0);
