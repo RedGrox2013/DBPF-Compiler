@@ -21,9 +21,5 @@ namespace DBPF_Compiler.FileTypes
         /// <param name="output">Куда будет записан файл</param>
         /// <returns>Размер записанных данных</returns>
         uint Encode(Stream output);
-
-        string SerializeToJson(JsonSerializerOptions? options = null);
-
-        bool DeserializeFromJson(string json, JsonSerializerOptions? options = null);
     }
 }

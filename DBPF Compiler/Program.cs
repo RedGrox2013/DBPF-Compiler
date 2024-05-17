@@ -116,7 +116,7 @@ static void Encode(string filePath)
 static void Decode(string inputPath, string? outputPath)
 {
     using FileStream stream = File.OpenRead(inputPath);
-    string json = DBPFPacker.DecodeSporeFileToJson<PropertyList>(stream);
+    string json = DBPFPacker.DecodePropertyListToJson(stream);
     Console.WriteLine(json);
     using StreamWriter writer = File.CreateText(outputPath ?? inputPath + ".json");
     writer.Write(json);

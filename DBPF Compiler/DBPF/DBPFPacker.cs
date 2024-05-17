@@ -105,7 +105,7 @@ namespace DBPF_Compiler.DBPF
 
                     using MemoryStream stream = new(buffer);
                     using StreamWriter writer = new(path + ".json");
-                    writer.WriteLine(DecodeSporeFileToJson<PropertyList>(stream));
+                    writer.WriteLine(DecodePropertyListToJson(stream));
                     using FileStream file = File.Create(path);
                     file.Write(buffer);
                 }
@@ -117,12 +117,12 @@ namespace DBPF_Compiler.DBPF
             }
         }
 
-        public static string DecodeSporeFileToJson<SporeFileType>(Stream sporeFileStream) where SporeFileType : ISporeFile, new()
+        public static string DecodePropertyListToJson(Stream sporeFileStream)
         {
-            SporeFileType file = new();
-            file.Decode(sporeFileStream);
+            PropertyList prop = new();
+            prop.Decode(sporeFileStream);
 
-            return file.SerializeToJson(_jsonSerializerOptions);
+            return prop.SerializeToJson(_jsonSerializerOptions);
         }
 
         public bool UnpackSecret(DatabasePackedFile input)
