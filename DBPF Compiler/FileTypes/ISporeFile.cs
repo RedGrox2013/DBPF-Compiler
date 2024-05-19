@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace DBPF_Compiler.FileTypes
+﻿namespace DBPF_Compiler.FileTypes
 {
     public interface ISporeFile
     {
