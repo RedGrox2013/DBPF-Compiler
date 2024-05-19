@@ -1,5 +1,6 @@
 ﻿using DBPF_Compiler.FNV;
 using DBPF_Compiler.Types;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -339,14 +340,26 @@ namespace DBPF_Compiler.FileTypes.Prop
                         output.WriteFloat((float)(p.Value ?? 0), true);
                         size += sizeof(float);
                         break;
-                    //case PropertyType.floats:
-                    //    break;
-                    //case PropertyType.string8:
-                    //    break;
+                    case PropertyType.floats:
+                        {
+                            var arr = p.Value as IEnumerable<float>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.WriteInt32(sizeof(uint), true);
+                            size += (uint)count * sizeof(float) + sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                    output.WriteFloat(i, true);
+                        }
+                        break;
+                    case PropertyType.string8:
+                        size += output.WriteString(p.Value as string, Encoding.ASCII, true);
+                        break;
                     //case PropertyType.string8s:
                     //    break;
-                    //case PropertyType.string16:
-                    //    break;
+                    case PropertyType.string16:
+                        size += output.WriteString(p.Value as string, Encoding.Unicode, true);
+                        break;
                     //case PropertyType.string16s:
                     //    break;
                     //case PropertyType.key:

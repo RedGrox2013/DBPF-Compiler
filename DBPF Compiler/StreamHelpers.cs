@@ -94,6 +94,18 @@ namespace DBPF_Compiler
             stream.Write(buffer);
         }
 
+        internal static uint WriteString(this Stream stream, string? value, Encoding encoding, bool bigEndianLength = false, bool bigEndian = false)
+        {
+            var buffer = encoding.GetBytes(value ?? string.Empty);
+            if (bigEndian)
+                Array.Reverse(buffer);
+
+            stream.WriteInt32(buffer.Length, bigEndianLength);
+            stream.Write(buffer);
+
+            return (uint)(sizeof(int) + buffer.Length);
+        }
+
         internal static short ReadInt16(this Stream stream, bool bigEndian = false)
             => BitConverter.ToInt16(stream.ReadData(sizeof(short), bigEndian), 0);
         internal static ushort ReadUInt16(this Stream stream, bool bigEndian = false)
