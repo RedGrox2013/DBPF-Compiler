@@ -20,7 +20,7 @@ namespace DBPF_Compiler.FileTypes.Prop
         private List<Property> _properties;
 
         [JsonIgnore]
-        private readonly NameRegistryManager _regManager = NameRegistryManager.Instance;
+        private static readonly NameRegistryManager _regManager = NameRegistryManager.Instance;
 
         public PropertyList() => _properties = [];
         public PropertyList(IEnumerable<Property> properties)
@@ -355,17 +355,39 @@ namespace DBPF_Compiler.FileTypes.Prop
                     case PropertyType.string8:
                         size += output.WriteString(p.Value as string, Encoding.ASCII, true);
                         break;
-                    //case PropertyType.string8s:
-                    //    break;
+                    case PropertyType.string8s:
+                    case PropertyType.string16s:
+                        {
+                            var arr = p.Value as IEnumerable<string>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.Write([0, 0, 0, 10]);
+                            Encoding encoding = p.PropertyType == PropertyType.string8 ? Encoding.ASCII : Encoding.Unicode;
+                            size += sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                    size += output.WriteString(i, encoding, true);
+                        }
+                        break;
                     case PropertyType.string16:
                         size += output.WriteString(p.Value as string, Encoding.Unicode, true);
                         break;
-                    //case PropertyType.string16s:
-                    //    break;
-                    //case PropertyType.key:
-                    //    break;
-                    //case PropertyType.keys:
-                    //    break;
+                    case PropertyType.key:
+                        output.WriteResourceKey(GetResourceKey(p.Value));
+                        size += sizeof(uint) * 4;
+                        break;
+                    case PropertyType.keys:
+                        {
+                            var arr = p.Value as IEnumerable<object>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.WriteInt32(sizeof(uint), true);
+                            size += (uint)count * (sizeof(uint) * 4) + sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                    output.WriteResourceKey(GetResourceKey(i));
+                        }
+                        break;
                     //case PropertyType.vector2:
                     //    break;
                     //case PropertyType.vector2s:
@@ -515,7 +537,7 @@ namespace DBPF_Compiler.FileTypes.Prop
             return FNVHash.ToString(value);
         }
 
-        private uint ParseUInt32Name(string? name)
+        private static uint ParseUInt32Name(string? name)
         {
             if (FNVHash.TryParse(name, out uint hash))
                 return hash;
@@ -525,6 +547,18 @@ namespace DBPF_Compiler.FileTypes.Prop
                 return _regManager.GetHash(name.Replace("hash(", null).Replace("$", null), "file");
 
             return 0;
+        }
+
+        private static ResourceKey GetResourceKey(object? obj)
+        {
+            var key = obj as ResourceKey?;
+            if (key == null)
+            {
+                StringResourceKey stringKey = (obj as StringResourceKey?) ?? new();
+                key = _regManager.GetResourceKey(stringKey);
+            }
+
+            return (ResourceKey)key;
         }
 
         public object? GetValue(string propertyName, PropertyType type)

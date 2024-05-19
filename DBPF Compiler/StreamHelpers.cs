@@ -106,6 +106,14 @@ namespace DBPF_Compiler
             return (uint)(sizeof(int) + buffer.Length);
         }
 
+        internal static void WriteResourceKey(this Stream stream, ResourceKey value, bool bigEndian = false)
+        {
+            stream.WriteUInt32(value.InstanceID, bigEndian);
+            stream.WriteUInt32(value.TypeID, bigEndian);
+            stream.WriteUInt32(value.GroupID, bigEndian);
+            stream.Write([0, 0, 0, 0]); // wildcard
+        }
+
         internal static short ReadInt16(this Stream stream, bool bigEndian = false)
             => BitConverter.ToInt16(stream.ReadData(sizeof(short), bigEndian), 0);
         internal static ushort ReadUInt16(this Stream stream, bool bigEndian = false)
