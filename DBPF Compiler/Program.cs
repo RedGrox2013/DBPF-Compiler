@@ -98,19 +98,16 @@ static void Unpack(string inputPath, string outputPath)
 static void Encode(string filePath)
 {
     var prop = new PropertyList();
-    var options = new JsonSerializerOptions
-    {
-        WriteIndented = true,
-        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
-        //UnknownTypeHandling = System.Text.Json.Serialization.JsonUnknownTypeHandling.JsonNode
-    };
-    prop.DeserializeFromJson(File.ReadAllText(filePath), options);
+    //var options = new JsonSerializerOptions
+    //{
+    //    WriteIndented = true,
+    //    Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
+    //    //UnknownTypeHandling = System.Text.Json.Serialization.JsonUnknownTypeHandling.JsonNode
+    //};
+    prop.DeserializeFromJson(File.ReadAllText(filePath)/*, options*/);
 
-    Console.WriteLine(prop.SerializeToJson(options));
-    var transfroms = (prop.GetValue("test", PropertyType.transforms) as IEnumerable<Transform>)?.ToArray();
-    if (transfroms != null)
-        foreach (var t in transfroms)
-            Console.WriteLine("-offset " + t.Offset + " -scale " + t.Scale + " -rotateXYZ " + t.RotateXYZ);
+    using FileStream stream = File.Create("output.prop");
+    prop.Encode(stream);
 }
 
 static void Decode(string inputPath, string? outputPath)
