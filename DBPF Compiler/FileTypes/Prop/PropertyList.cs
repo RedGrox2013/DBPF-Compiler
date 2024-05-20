@@ -202,8 +202,8 @@ namespace DBPF_Compiler.FileTypes.Prop
             // Переписать это говно (но мне будет лень)
             foreach (var p in _properties)
             {
-                output.WriteUInt32(_regManager.GetHash(p.Name, "property"));
-                output.WriteInt32((int)p.PropertyType);
+                output.WriteUInt32(_regManager.GetHash(p.Name, "property"), true);
+                output.WriteInt32((int)p.PropertyType, true);
                 switch (p.PropertyType)
                 {
                     case PropertyType.@bool:
@@ -437,11 +437,19 @@ namespace DBPF_Compiler.FileTypes.Prop
                         }
                         break;
                     case PropertyType.vector2:
+                        output.WriteVector(p.Value as Vector2? ?? new());
+                        break;
                     case PropertyType.vector3:
+                        output.WriteVector(p.Value as Vector3? ?? new());
+                        break;
                     case PropertyType.colorRGB:
+                        output.WriteVector(p.Value as ColorRGB? ?? new());
+                        break;
                     case PropertyType.vector4:
+                        output.WriteVector(p.Value as Vector4? ?? new());
+                        break;
                     case PropertyType.colorRGBA:
-                        output.WriteVector((Vector4)(p.Value ?? new Vector4()));
+                        output.WriteVector(p.Value as ColorRGBA? ?? new());
                         break;
                     case PropertyType.vector4s:
                         {

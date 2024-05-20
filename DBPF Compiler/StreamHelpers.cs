@@ -87,7 +87,7 @@ namespace DBPF_Compiler
             if (value == null)
                 return;
 
-            var buffer = BitConverter.GetBytes((short)value);
+            var buffer = BitConverter.GetBytes((float)value);
             if (bigEndian)
                 Array.Reverse(buffer);
 
