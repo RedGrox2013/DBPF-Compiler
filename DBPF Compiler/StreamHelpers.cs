@@ -114,6 +114,14 @@ namespace DBPF_Compiler
             stream.Write([0, 0, 0, 0]); // wildcard
         }
 
+        internal static void WriteVector(this Stream stream, Vector4 value, bool bigEndian = false)
+        {
+            stream.WriteFloat(value.X, bigEndian);
+            stream.WriteFloat(value.Y, bigEndian);
+            stream.WriteFloat(value.Z, bigEndian);
+            stream.WriteFloat(value.A, bigEndian);
+        }
+
         internal static short ReadInt16(this Stream stream, bool bigEndian = false)
             => BitConverter.ToInt16(stream.ReadData(sizeof(short), bigEndian), 0);
         internal static ushort ReadUInt16(this Stream stream, bool bigEndian = false)

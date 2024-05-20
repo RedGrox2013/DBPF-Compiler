@@ -11,7 +11,9 @@
         public float G { readonly get => _color.Y; set => _color.Y = value; }
         public float B { readonly get => _color.Z; set => _color.Z = value; }
 
-        public readonly override string ToString()
-            => $"({R}, {G}, {B})";
+        public readonly override string ToString() => $"({R}, {G}, {B})";
+
+        public static implicit operator Vector3(ColorRGB color) => color._color;
+        public static implicit operator Vector4(ColorRGB color) => (Vector4)color._color;
     }
 }

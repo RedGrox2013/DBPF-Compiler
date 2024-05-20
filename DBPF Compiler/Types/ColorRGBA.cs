@@ -12,7 +12,9 @@
         public float B { readonly get => _color.Z; set => _color.Z = value; }
         public float A { readonly get => _color.A; set => _color.A = value; }
 
-        public readonly override string ToString()
-            => $"({R}, {G}, {B}, {A})";
+        public readonly override string ToString() => $"({R}, {G}, {B}, {A})";
+
+        public static implicit operator Vector3(ColorRGBA color) => (Vector3)color._color;
+        public static implicit operator Vector4(ColorRGBA color) => color._color;
     }
 }

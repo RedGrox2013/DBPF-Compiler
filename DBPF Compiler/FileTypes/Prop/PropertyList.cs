@@ -388,24 +388,31 @@ namespace DBPF_Compiler.FileTypes.Prop
                                     output.WriteResourceKey(GetResourceKey(i));
                         }
                         break;
-                    //case PropertyType.vector2:
-                    //    break;
                     //case PropertyType.vector2s:
-                    //    break;
-                    //case PropertyType.vector3:
                     //    break;
                     //case PropertyType.vector3s:
                     //    break;
-                    //case PropertyType.colorRGB:
-                    //    break;
                     //case PropertyType.colorRGBs:
                     //    break;
-                    //case PropertyType.vector4:
-                    //    break;
-                    //case PropertyType.vector4s:
-                    //    break;
-                    //case PropertyType.colorRGBA:
-                    //    break;
+                    case PropertyType.vector2:
+                    case PropertyType.vector3:
+                    case PropertyType.colorRGB:
+                    case PropertyType.vector4:
+                    case PropertyType.colorRGBA:
+                        output.WriteVector((Vector4)(p.Value ?? new Vector4()));
+                        break;
+                    case PropertyType.vector4s:
+                        {
+                            var arr = p.Value as IEnumerable<Vector4>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.WriteInt32(sizeof(uint), true);
+                            size += (uint)count * (sizeof(float) * 4) + sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                    output.WriteVector(i);
+                        }
+                        break;
                     //case PropertyType.colorRGBAs:
                     //    break;
                     //case PropertyType.text:
