@@ -199,6 +199,7 @@ namespace DBPF_Compiler.FileTypes.Prop
             output.WriteInt32(_properties.Count, true);
             uint size = sizeof(int);
 
+            // Переписать это говно (но мне будет лень)
             foreach (var p in _properties)
             {
                 output.WriteUInt32(_regManager.GetHash(p.Name, "property"));
@@ -388,12 +389,53 @@ namespace DBPF_Compiler.FileTypes.Prop
                                     output.WriteResourceKey(GetResourceKey(i));
                         }
                         break;
-                    //case PropertyType.vector2s:
-                    //    break;
-                    //case PropertyType.vector3s:
-                    //    break;
-                    //case PropertyType.colorRGBs:
-                    //    break;
+                    case PropertyType.vector2s:
+                        {
+                            var arr = p.Value as IEnumerable<Vector2>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.WriteInt32(sizeof(uint), true);
+                            size += (uint)count * (sizeof(float) * 2) + sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                {
+                                    output.WriteFloat(i.X);
+                                    output.WriteFloat(i.Y);
+                                }
+                        }
+                        break;
+                    case PropertyType.vector3s:
+                        {
+                            var arr = p.Value as IEnumerable<Vector3>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.WriteInt32(sizeof(uint), true);
+                            size += (uint)count * (sizeof(float) * 3) + sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                {
+                                    output.WriteFloat(i.X);
+                                    output.WriteFloat(i.Y);
+                                    output.WriteFloat(i.Z);
+                                }
+                        }
+                        break;
+                    case PropertyType.colorRGBs:
+                        {
+                            var arr = p.Value as IEnumerable<ColorRGB>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.WriteInt32(sizeof(uint), true);
+                            size += (uint)count * (sizeof(float) * 3) + sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                {
+                                    output.WriteFloat(i.R);
+                                    output.WriteFloat(i.G);
+                                    output.WriteFloat(i.B);
+                                }
+                        }
+                        break;
                     case PropertyType.vector2:
                     case PropertyType.vector3:
                     case PropertyType.colorRGB:
@@ -413,8 +455,23 @@ namespace DBPF_Compiler.FileTypes.Prop
                                     output.WriteVector(i);
                         }
                         break;
-                    //case PropertyType.colorRGBAs:
-                    //    break;
+                    case PropertyType.colorRGBAs:
+                        {
+                            var arr = p.Value as IEnumerable<ColorRGBA>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.WriteInt32(sizeof(uint), true);
+                            size += (uint)count * (sizeof(float) * 4) + sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                {
+                                    output.WriteFloat(i.R);
+                                    output.WriteFloat(i.G);
+                                    output.WriteFloat(i.B);
+                                    output.WriteFloat(i.A);
+                                }
+                        }
+                        break;
                     //case PropertyType.text:
                     //    break;
                     //case PropertyType.texts:
