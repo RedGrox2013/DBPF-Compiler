@@ -346,7 +346,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var arr = p.Value as IEnumerable<float>;
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
-                            output.WriteInt32(sizeof(uint), true);
+                            output.WriteInt32(sizeof(float), true);
                             size += (uint)count * sizeof(float) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
@@ -382,7 +382,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var arr = p.Value as IEnumerable<object>;
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
-                            output.WriteInt32(sizeof(uint), true);
+                            output.WriteInt32(sizeof(uint) * 3, true);
                             size += (uint)count * (sizeof(uint) * 4) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
@@ -394,7 +394,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var arr = p.Value as IEnumerable<Vector2>;
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
-                            output.WriteInt32(sizeof(uint), true);
+                            output.WriteInt32(sizeof(uint) * 2, true);
                             size += (uint)count * (sizeof(float) * 2) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
@@ -409,7 +409,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var arr = p.Value as IEnumerable<Vector3>;
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
-                            output.WriteInt32(sizeof(uint), true);
+                            output.WriteInt32(sizeof(uint) * 3, true);
                             size += (uint)count * (sizeof(float) * 3) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
@@ -425,7 +425,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var arr = p.Value as IEnumerable<ColorRGB>;
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
-                            output.WriteInt32(sizeof(uint), true);
+                            output.WriteInt32(sizeof(uint) * 3, true);
                             size += (uint)count * (sizeof(float) * 3) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
@@ -456,7 +456,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var arr = p.Value as IEnumerable<Vector4>;
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
-                            output.WriteInt32(sizeof(uint), true);
+                            output.WriteInt32(sizeof(uint) * 4, true);
                             size += (uint)count * (sizeof(float) * 4) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
@@ -468,7 +468,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var arr = p.Value as IEnumerable<ColorRGBA>;
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
-                            output.WriteInt32(sizeof(uint), true);
+                            output.WriteInt32(sizeof(uint) * 4, true);
                             size += (uint)count * (sizeof(float) * 4) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
@@ -482,8 +482,21 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     //case PropertyType.text:
                     //    break;
-                    //case PropertyType.texts:
-                    //    break;
+                    case PropertyType.texts:
+                        {
+                            var arr = p.Value as IEnumerable<StringLocalizedString>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.WriteInt32(sizeof(uint) * 2 + LocalizedString.PLACEHOLDER_SIZE, true);
+                            size += (uint)count * (sizeof(uint) * 2 + LocalizedString.PLACEHOLDER_SIZE) + sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                    output.WriteLocalizedString(new(
+                                        _regManager.GetHash(i.TableID, "file"),
+                                        _regManager.GetHash(i.InstanceID),
+                                        i.PlaceholderText));
+                        }
+                        break;
                     //case PropertyType.bbox:
                     //    break;
                     //case PropertyType.bboxes:

@@ -106,6 +106,20 @@ namespace DBPF_Compiler
             return (uint)(sizeof(int) + buffer.Length);
         }
 
+        internal static void WriteLocalizedString(this Stream stream, LocalizedString value, bool bigEndian = false)
+        {
+            stream.WriteUInt32(value.TableID, bigEndian);
+            stream.WriteUInt32(value.InstanceID, bigEndian);
+
+            var placeholder = Encoding.Unicode.GetBytes(value.PlaceholderText ?? string.Empty);
+            stream.Write(placeholder);
+            if (placeholder.Length == LocalizedString.PLACEHOLDER_SIZE)
+                return;
+
+            stream.Seek(LocalizedString.PLACEHOLDER_SIZE - 1 - placeholder.Length, SeekOrigin.Current);
+            stream.WriteByte(0);
+        }
+
         internal static void WriteResourceKey(this Stream stream, ResourceKey value, bool bigEndian = false)
         {
             stream.WriteUInt32(value.InstanceID, bigEndian);
