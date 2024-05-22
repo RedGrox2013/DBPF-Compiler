@@ -363,25 +363,37 @@ namespace DBPF_Compiler.DBPF
             if (SecretIndexOffset >= _stream.Length)
                 return null;
 
+            var oldPosition = _stream.Position;
             _stream.Position = SecretIndexOffset;
             using BinaryReader reader = new(_stream, Encoding.Unicode, true);
-            _secretIndex = new(reader.ReadString());
-            int count = reader.ReadInt32();
-
-            StringResourceKey[] keys = new StringResourceKey[count];
-            for (int i = 0; i < count; i++)
+            try
             {
-                keys[i] = new(instanceID: reader.ReadString(), typeID: reader.ReadString(), _secretIndex.GroupName);
-                SecretIndexEntry entry = new()
-                {
-                    Key = keys[i],
-                    Offset = reader.ReadUInt32(),
-                    Size = reader.ReadUInt32()
-                };
-                _secretIndex.Entries.Add(entry);
-            }
+                _secretIndex = new(reader.ReadString());
+                int count = reader.ReadInt32();
 
-            return keys;
+                StringResourceKey[] keys = new StringResourceKey[count];
+                for (int i = 0; i < count; i++)
+                {
+                    keys[i] = new(instanceID: reader.ReadString(), typeID: reader.ReadString(), _secretIndex.GroupName);
+                    SecretIndexEntry entry = new()
+                    {
+                        Key = keys[i],
+                        Offset = reader.ReadUInt32(),
+                        Size = reader.ReadUInt32()
+                    };
+                    _secretIndex.Entries.Add(entry);
+                }
+
+                _stream.Position = oldPosition;
+
+                return keys;
+            }
+            catch
+            {
+                _secretIndex = null;
+                _stream.Position = oldPosition;
+                return null;
+            }
         }
 
         public byte[]? ReadSecretData(StringResourceKey key)
