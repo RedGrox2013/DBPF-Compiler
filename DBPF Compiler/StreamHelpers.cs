@@ -120,6 +120,16 @@ namespace DBPF_Compiler
             stream.WriteByte(0);
         }
 
+        internal static void WriteBBox(this Stream stream, BoundingBox value, bool bigEndian = false)
+        {
+            stream.WriteFloat(value.Min.X, bigEndian);
+            stream.WriteFloat(value.Min.Y, bigEndian);
+            stream.WriteFloat(value.Min.Z, bigEndian);
+            stream.WriteFloat(value.Max.X, bigEndian);
+            stream.WriteFloat(value.Max.Y, bigEndian);
+            stream.WriteFloat(value.Max.Z, bigEndian);
+        }
+
         internal static void WriteResourceKey(this Stream stream, ResourceKey value, bool bigEndian = false)
         {
             stream.WriteUInt32(value.InstanceID, bigEndian);

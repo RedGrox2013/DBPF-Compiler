@@ -97,23 +97,16 @@ static void Unpack(string inputPath, string outputPath)
 
 static void Encode(string filePath)
 {
-    var prop = new PropertyList();
-    //var options = new JsonSerializerOptions
-    //{
-    //    WriteIndented = true,
-    //    Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
-    //    //UnknownTypeHandling = System.Text.Json.Serialization.JsonUnknownTypeHandling.JsonNode
-    //};
-    prop.DeserializeFromJson(File.ReadAllText(filePath)/*, options*/);
+    var prop = PropertyListJsonSerializer.Deserialize(File.ReadAllText(filePath));
 
-    using FileStream stream = File.Create("output.prop");
-    prop.Encode(stream);
+    using FileStream stream = File.Create(Path.GetFileNameWithoutExtension(filePath));
+    Console.WriteLine(prop.Encode(stream));
 }
 
 static void Decode(string inputPath, string? outputPath)
 {
     using FileStream stream = File.OpenRead(inputPath);
-    string json = DBPFPacker.DecodePropertyListToJson(stream);
+    string json = PropertyListJsonSerializer.DecodePropertyListToJson(stream);
     Console.WriteLine(json);
     using StreamWriter writer = File.CreateText(outputPath ?? inputPath + ".json");
     writer.Write(json);

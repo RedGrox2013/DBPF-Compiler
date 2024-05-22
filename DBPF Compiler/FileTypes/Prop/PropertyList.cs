@@ -204,6 +204,7 @@ namespace DBPF_Compiler.FileTypes.Prop
             {
                 output.WriteUInt32(_regManager.GetHash(p.Name, "property"), true);
                 output.WriteInt32((int)p.PropertyType, true);
+                size += sizeof(int) + sizeof(uint);
                 switch (p.PropertyType)
                 {
                     case PropertyType.@bool:
@@ -499,8 +500,18 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     //case PropertyType.bbox:
                     //    break;
-                    //case PropertyType.bboxes:
-                    //    break;
+                    case PropertyType.bboxes:
+                        {
+                            var arr = p.Value as IEnumerable<BoundingBox>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.WriteInt32(sizeof(float) * 6, true);
+                            size += (uint)count * (sizeof(float) * 6) + sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                    output.WriteBBox(i);
+                        }
+                        break;
                     //case PropertyType.transform:
                     //    break;
                     case PropertyType.transforms:

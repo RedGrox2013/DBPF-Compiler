@@ -17,14 +17,7 @@ namespace DBPF_Compiler.DBPF
         public DBPFPacker(string unpackedDataPath)
             => UnpackedDataDirectory = new DirectoryInfo(unpackedDataPath);
 
-        private readonly static JsonSerializerOptions _jsonSerializerOptions = new()
-        {
-            WriteIndented = true,
-            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
-            UnknownTypeHandling = System.Text.Json.Serialization.JsonUnknownTypeHandling.JsonNode
-        };
-
-    private readonly NameRegistryManager _regManager = NameRegistryManager.Instance;
+        private readonly NameRegistryManager _regManager = NameRegistryManager.Instance;
 
         public void Pack(DatabasePackedFile output, string? secretFolder = null)
         {
@@ -65,11 +58,22 @@ namespace DBPF_Compiler.DBPF
 
                 foreach (var file in group.GetFiles())
                 {
-                    string fileName = file.Name.Split('.')[0];
-                    ResourceKey key = _regManager.GetResourceKey(fileName, file.Extension.Remove(0, 1), group.Name);
+                    string[] splitFileName = file.Name.Split('.');
+                    string fileName = splitFileName[0];
+                    string extension = splitFileName.Length > 1 ? splitFileName[1] : string.Empty;
+                    ResourceKey key = _regManager.GetResourceKey(fileName, extension, group.Name);
 
-                    using FileStream f = file.OpenRead();
-                    output.CopyFromStream(f, key);
+                    if (file.Name.EndsWith(".prop.json", StringComparison.InvariantCultureIgnoreCase) ||
+                        file.Name.EndsWith(".soundProp.json", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        PropertyList prop = PropertyListJsonSerializer.Deserialize(File.ReadAllText(file.FullName));
+                        output.WriteSporeFile(prop, key);
+                    }
+                    else
+                    {
+                        using FileStream f = file.OpenRead();
+                        output.CopyFromStream(f, key);
+                    }
                 }
             }
 
@@ -105,9 +109,7 @@ namespace DBPF_Compiler.DBPF
 
                     using MemoryStream stream = new(buffer);
                     using StreamWriter writer = new(path + ".json");
-                    writer.WriteLine(DecodePropertyListToJson(stream));
-                    using FileStream file = File.Create(path);
-                    file.Write(buffer);
+                    writer.WriteLine(PropertyListJsonSerializer.DecodePropertyListToJson(stream));
                 }
                 else
                 {
@@ -115,14 +117,6 @@ namespace DBPF_Compiler.DBPF
                     input.CopyResourceTo(file, resource);
                 }
             }
-        }
-
-        public static string DecodePropertyListToJson(Stream sporeFileStream)
-        {
-            PropertyList prop = new();
-            prop.Decode(sporeFileStream);
-
-            return prop.SerializeToJson(_jsonSerializerOptions);
         }
 
         public bool UnpackSecret(DatabasePackedFile input)
