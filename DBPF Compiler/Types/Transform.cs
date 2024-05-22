@@ -2,7 +2,7 @@
 {
     public struct Transform
     {
-        internal TransformFlags Flags { get; set; }
+        internal TransformFlags Flags { get; private set; }
         internal short TransformCount { get; set; }
         private Vector3 _offset;
         public Vector3 Offset

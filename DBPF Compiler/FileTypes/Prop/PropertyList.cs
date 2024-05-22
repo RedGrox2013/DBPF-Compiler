@@ -503,8 +503,18 @@ namespace DBPF_Compiler.FileTypes.Prop
                     //    break;
                     //case PropertyType.transform:
                     //    break;
-                    //case PropertyType.transforms:
-                    //    break;
+                    case PropertyType.transforms:
+                        {
+                            var arr = p.Value as IEnumerable<Transform>;
+                            var count = arr?.Count() ?? 0;
+                            output.WriteInt32(count, true);
+                            output.WriteInt32(Transform.SIZE, true);
+                            size += (uint)count * Transform.SIZE + sizeof(int) * 2;
+                            if (arr != null)
+                                foreach (var i in arr)
+                                    output.WriteTransform(i);
+                        }
+                        break;
                     default:
                         throw new NotSupportedException(p.PropertyType + " not supported");
                 }

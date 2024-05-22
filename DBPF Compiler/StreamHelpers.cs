@@ -136,6 +136,20 @@ namespace DBPF_Compiler
             stream.WriteFloat(value.A, bigEndian);
         }
 
+        internal static void WriteTransform(this Stream stream, Transform value, bool bigEndian = false)
+        {
+            stream.WriteInt16((short)value.Flags, bigEndian);
+            stream.WriteInt16(value.TransformCount, bigEndian);
+            stream.WriteFloat(value.Offset.X, bigEndian);
+            stream.WriteFloat(value.Offset.Y, bigEndian);
+            stream.WriteFloat(value.Offset.Z, bigEndian);
+            stream.WriteFloat(value.Scale, bigEndian);
+
+            for (int i = 0; i < Matrix.SIZE; i++)
+                for (int j = 0; j < Matrix.SIZE; j++)
+                    stream.WriteFloat(value.Rotate[i, j]);
+        }
+
         internal static short ReadInt16(this Stream stream, bool bigEndian = false)
             => BitConverter.ToInt16(stream.ReadData(sizeof(short), bigEndian), 0);
         internal static ushort ReadUInt16(this Stream stream, bool bigEndian = false)
@@ -390,21 +404,22 @@ namespace DBPF_Compiler
             Transform[] array = new Transform[count];
             for (int i = 0; i < count; i++)
             {
+                var flags = (TransformFlags)stream.ReadInt16(bigEndian);
                 array[i] = new Transform
                 {
-                    Flags = (TransformFlags)stream.ReadInt16(bigEndian),
+                    //Flags = (TransformFlags)stream.ReadInt16(bigEndian),
                     TransformCount = stream.ReadInt16(bigEndian)
                 };
 
-                if (array[i].Flags.HasFlag(TransformFlags.Offset))
+                if (flags.HasFlag(TransformFlags.Offset))
                     array[i].Offset = new(stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian), stream.ReadFloat(bigEndian));
                 else
                     stream.Seek(sizeof(float) * 3, SeekOrigin.Current);
-                if (array[i].Flags.HasFlag(TransformFlags.Scale))
+                if (flags.HasFlag(TransformFlags.Scale))
                     array[i].Scale = stream.ReadFloat(bigEndian);
                 else
                     stream.Seek(sizeof(float), SeekOrigin.Current);
-                if (array[i].Flags.HasFlag(TransformFlags.Rotate))
+                if (flags.HasFlag(TransformFlags.Rotate))
                     array[i].Rotate = Matrix.ReadMatrix(stream, bigEndian);
                 else
                     stream.Seek(sizeof(float) * Matrix.SIZE * Matrix.SIZE, SeekOrigin.Current);
