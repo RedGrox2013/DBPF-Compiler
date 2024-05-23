@@ -7,9 +7,10 @@ namespace Easy_Package_Packer
             InitializeComponent();
         }
 
-        private void progressBar1_Click(object sender, EventArgs e)
-        {
+        private void unpackedPathTextBox_TextChanged(object sender, EventArgs e)
+            => packBtn.Enabled = !string.IsNullOrWhiteSpace(unpackedPathTextBox.Text);
 
-        }
+        private void packedPathTextBox_TextChanged(object sender, EventArgs e)
+            => unpackBtn.Enabled = !string.IsNullOrWhiteSpace(packedPathTextBox.Text);
     }
 }
