@@ -69,7 +69,7 @@
             packedPathTextBox.Name = "packedPathTextBox";
             packedPathTextBox.Size = new Size(385, 23);
             packedPathTextBox.TabIndex = 2;
-            packedPathTextBox.TextChanged += packedPathTextBox_TextChanged;
+            packedPathTextBox.TextChanged += unpackedPathTextBox_TextChanged;
             // 
             // label1
             // 
@@ -94,7 +94,7 @@
             // progressBar
             // 
             progressBar.Dock = DockStyle.Bottom;
-            progressBar.Location = new Point(0, 93);
+            progressBar.Location = new Point(0, 94);
             progressBar.Margin = new Padding(3, 2, 3, 2);
             progressBar.Name = "progressBar";
             progressBar.Size = new Size(634, 22);
@@ -104,7 +104,7 @@
             // 
             unpackBtn.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             unpackBtn.Enabled = false;
-            unpackBtn.Location = new Point(416, 67);
+            unpackBtn.Location = new Point(416, 68);
             unpackBtn.Margin = new Padding(3, 2, 3, 2);
             unpackBtn.Name = "unpackBtn";
             unpackBtn.Size = new Size(102, 22);
@@ -116,13 +116,14 @@
             // 
             packBtn.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             packBtn.Enabled = false;
-            packBtn.Location = new Point(523, 67);
+            packBtn.Location = new Point(523, 68);
             packBtn.Margin = new Padding(3, 2, 3, 2);
             packBtn.Name = "packBtn";
             packBtn.Size = new Size(102, 22);
             packBtn.TabIndex = 8;
             packBtn.Text = "Запаковать";
             packBtn.UseVisualStyleBackColor = true;
+            packBtn.Click += packBtn_Click;
             // 
             // unpackedPathTextBox
             // 
@@ -138,7 +139,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(634, 115);
+            ClientSize = new Size(634, 116);
             Controls.Add(packBtn);
             Controls.Add(unpackBtn);
             Controls.Add(progressBar);
@@ -149,7 +150,7 @@
             Controls.Add(unpackedPathBrowseBtn);
             Controls.Add(unpackedPathTextBox);
             Margin = new Padding(3, 2, 3, 2);
-            MinimumSize = new Size(650, 122);
+            MinimumSize = new Size(650, 155);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Database Packed File Compiler";
