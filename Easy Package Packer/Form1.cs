@@ -23,9 +23,16 @@ namespace Easy_Package_Packer
 
         private void Pack(object? sender, DoWorkEventArgs e)
         {
-            using FileStream stream = File.Create(unpackedPathTextBox.Text);
-            using DatabasePackedFile dbpf = new(stream);
-            // доделать
+            try
+            {
+                using FileStream stream = File.Create(e.Argument as string ?? string.Empty);
+                using DatabasePackedFile dbpf = new(stream);
+                // доделать запаковку, изменение прогресса
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void ProgressChanged(object? sender, ProgressChangedEventArgs e)
@@ -34,9 +41,11 @@ namespace Easy_Package_Packer
         private void packBtn_Click(object sender, EventArgs e)
         {
             DisableElements();
+            progressBar.Maximum = GetFilesCount(new(unpackedPathTextBox.Text), true);
+
             _bgWorker.DoWork += Pack;
             _bgWorker.RunWorkerCompleted += PackCompleted;
-            _bgWorker.RunWorkerAsync();
+            _bgWorker.RunWorkerAsync(packedPathTextBox.Text);
         }
 
         private void PackCompleted(object? sender, RunWorkerCompletedEventArgs e)
@@ -65,6 +74,17 @@ namespace Easy_Package_Packer
             packBtn.Enabled = true;
 
             progressBar.Value = 0;
+        }
+
+        private static int GetFilesCount(DirectoryInfo dir, bool onlySubdirectories = false)
+        {
+            int count = onlySubdirectories ? 0 : dir.GetFiles().Length;
+
+            foreach (var subdir in dir.GetDirectories())
+                if (subdir.Name.EndsWith(".package.unpacked", StringComparison.InvariantCultureIgnoreCase))
+                    count += GetFilesCount(subdir);
+
+            return count;
         }
     }
 }
