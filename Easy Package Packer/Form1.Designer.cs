@@ -49,6 +49,7 @@
             unpackedPathBrowseBtn.TabIndex = 1;
             unpackedPathBrowseBtn.Text = "Обзор";
             unpackedPathBrowseBtn.UseVisualStyleBackColor = true;
+            unpackedPathBrowseBtn.Click += unpackedPathBrowseBtn_Click;
             // 
             // packedPathBrowseBtn
             // 
@@ -60,6 +61,7 @@
             packedPathBrowseBtn.TabIndex = 3;
             packedPathBrowseBtn.Text = "Обзор";
             packedPathBrowseBtn.UseVisualStyleBackColor = true;
+            packedPathBrowseBtn.Click += packedPathBrowseBtn_Click;
             // 
             // packedPathTextBox
             // 
@@ -111,6 +113,7 @@
             unpackBtn.TabIndex = 7;
             unpackBtn.Text = "Распаковать";
             unpackBtn.UseVisualStyleBackColor = true;
+            unpackBtn.Click += unpackBtn_Click;
             // 
             // packBtn
             // 
