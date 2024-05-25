@@ -1,21 +1,20 @@
 using DBPF_Compiler.DBPF;
+using DBPF_Compiler.Types;
 using System.ComponentModel;
 
 namespace Easy_Package_Packer
 {
     public partial class Form1 : Form
     {
-        private readonly BackgroundWorker _bgWorker;
+        private readonly BackgroundWorker _packWorker;
 
         public Form1()
         {
             InitializeComponent();
 
-            _bgWorker = new()
-            {
-                WorkerReportsProgress = true,
-            };
-            _bgWorker.ProgressChanged += ProgressChanged;
+            _packWorker = new();
+            _packWorker.DoWork += Pack;
+            _packWorker.RunWorkerCompleted += PackCompleted;
         }
 
         private void unpackedPathTextBox_TextChanged(object sender, EventArgs e)
@@ -25,9 +24,15 @@ namespace Easy_Package_Packer
         {
             try
             {
-                using FileStream stream = File.Create(e.Argument as string ?? string.Empty);
+                if (e.Argument is not WorkerPackArgument args)
+                    throw new ArgumentException(null, nameof(e));
+
+                DBPFPacker packer = new(args.UnpackedPath);
+                packer.PackHandler += ProgressChanged;
+
+                using FileStream stream = File.Create(args.PackagePath);
                 using DatabasePackedFile dbpf = new(stream);
-                // доделать запаковку, изменение прогресса
+                packer.Pack(dbpf);
             }
             catch (Exception ex)
             {
@@ -35,17 +40,15 @@ namespace Easy_Package_Packer
             }
         }
 
-        private void ProgressChanged(object? sender, ProgressChangedEventArgs e)
-            => progressBar.Value = e.ProgressPercentage;
+        private void ProgressChanged(object? sender, StringResourceKey key)
+            => ++progressBar.Value;
 
         private void packBtn_Click(object sender, EventArgs e)
         {
             DisableElements();
             progressBar.Maximum = GetFilesCount(new(unpackedPathTextBox.Text), true);
 
-            _bgWorker.DoWork += Pack;
-            _bgWorker.RunWorkerCompleted += PackCompleted;
-            _bgWorker.RunWorkerAsync(packedPathTextBox.Text);
+            _packWorker.RunWorkerAsync(new WorkerPackArgument(unpackedPathTextBox.Text, packedPathTextBox.Text));
         }
 
         private void PackCompleted(object? sender, RunWorkerCompletedEventArgs e)
@@ -81,8 +84,7 @@ namespace Easy_Package_Packer
             int count = onlySubdirectories ? 0 : dir.GetFiles().Length;
 
             foreach (var subdir in dir.GetDirectories())
-                if (subdir.Name.EndsWith(".package.unpacked", StringComparison.InvariantCultureIgnoreCase))
-                    count += GetFilesCount(subdir);
+                count += GetFilesCount(subdir);
 
             return count;
         }
