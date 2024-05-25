@@ -103,6 +103,8 @@ namespace DBPF_Compiler.FileTypes.Prop
                         property.Value = input.ReadFloatArray(true);
                         break;
                     case PropertyType.string8:
+                    case PropertyType.string8 + 0xD:
+                        property.PropertyType = PropertyType.string8;
                         property.Value = input.ReadString8(true);
                         break;
                     case PropertyType.string8s:
@@ -111,6 +113,8 @@ namespace DBPF_Compiler.FileTypes.Prop
                         property.Value = input.ReadString8Array(true);
                         break;
                     case PropertyType.string16:
+                    case PropertyType.string16 + 0xD:
+                        property.PropertyType = PropertyType.string16;
                         property.Value = input.ReadString16(true);
                         break;
                     case PropertyType.string16s:
