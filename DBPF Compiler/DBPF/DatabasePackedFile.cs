@@ -184,7 +184,8 @@ namespace DBPF_Compiler.DBPF
             Task.Run(() => _onDataWriting?.Invoke(key));
             _headerWritten = _indexWritten = false;
 
-            uint size = file.Encode(_stream);
+            file.Encode(_stream);
+            uint size = (uint)(_stream.Position - IndexOffset);
             var entry = new IndexEntry
             {
                 TypeID = key.TypeID,

@@ -212,7 +212,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                 switch (p.PropertyType)
                 {
                     case PropertyType.@bool:
-                        output.WriteBoolean(p.Value as bool?);
+                        output.WriteBoolean((bool)(p.Value ?? false));
                         ++size;
                         break;
                     case PropertyType.bools:
@@ -555,6 +555,24 @@ namespace DBPF_Compiler.FileTypes.Prop
 
                 switch (_properties[i].PropertyType)
                 {
+                    case PropertyType.@bool:
+                        _properties[i].Value = element.Deserialize<bool>(options);
+                        break;
+                    case PropertyType.int32:
+                        _properties[i].Value = element.Deserialize<int>(options);
+                        break;
+                    case PropertyType.uint32:
+                        _properties[i].Value = element.Deserialize<string>(options);
+                        break;
+                    case PropertyType.int8:
+                        _properties[i].Value = element.Deserialize<sbyte>(options);
+                        break;
+                    case PropertyType.uint8:
+                        _properties[i].Value = element.Deserialize<byte>(options);
+                        break;
+                    case PropertyType.@float:
+                        _properties[i].Value = element.Deserialize<float>(options);
+                        break;
                     case PropertyType.bboxes:
                         _properties[i].Value = element.Deserialize<IEnumerable<BoundingBox>>(options);
                         break;
