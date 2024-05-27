@@ -43,7 +43,7 @@ else if (args[0].Equals("--hash"))
     string regName = args.Length >= 3 ? args[2] : "all";
     if (regName.Equals("fnv"))
     {
-        Console.WriteLine(FNVHash.ToString(FNVHash.Compute(args[0])));
+        Console.WriteLine(FNVHash.ToString(FNVHash.Compute(args[1])));
         return;
     }
 
