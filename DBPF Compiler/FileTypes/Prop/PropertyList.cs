@@ -198,22 +198,20 @@ namespace DBPF_Compiler.FileTypes.Prop
             return true;
         }
 
-        public uint Encode(Stream output)
+        public void Encode(Stream output)
         {
+            _properties.Sort();
             output.WriteInt32(_properties.Count, true);
-            uint size = sizeof(int);
 
             // Переписать это говно (но мне будет лень)
             foreach (var p in _properties)
             {
-                output.WriteUInt32(_regManager.GetHash(p.Name, "property"), true);
+                output.WriteUInt32(p.Id, true);
                 output.WriteInt32((int)p.PropertyType, true);
-                size += sizeof(int) + sizeof(uint);
                 switch (p.PropertyType)
                 {
                     case PropertyType.@bool:
                         output.WriteBoolean((bool)(p.Value ?? false));
-                        ++size;
                         break;
                     case PropertyType.bools:
                         {
@@ -221,7 +219,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
                             output.WriteInt32(sizeof(bool), true);
-                            size += (uint)count + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
                                     output.WriteBoolean(i);
@@ -233,7 +230,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
                             output.WriteInt32(sizeof(byte), true);
-                            size += (uint)count + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
                                     output.WriteByte(i);
@@ -242,7 +238,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                     case PropertyType.uint8:
                     case PropertyType.int8:
                         output.WriteByte((byte)(p.Value ?? 0));
-                        ++size;
                         break;
                     case PropertyType.uint8s:
                         {
@@ -250,7 +245,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
                             output.WriteInt32(sizeof(sbyte), true);
-                            size += (uint)count + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
                                     output.WriteByte((byte)i);
@@ -262,7 +256,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
                             output.WriteInt32(sizeof(short), true);
-                            size += (uint)count * sizeof(short) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
                                     output.WriteInt16(i, true);
@@ -271,7 +264,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                     case PropertyType.uint16:
                     case PropertyType.int16:
                         output.WriteUInt16((ushort)(p.Value ?? 0), true);
-                        size += sizeof(ushort);
                         break;
                     case PropertyType.uint16s:
                         {
@@ -279,7 +271,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
                             output.WriteInt32(sizeof(ushort), true);
-                            size += (uint)count * sizeof(ushort) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
                                     output.WriteUInt16(i, true);
@@ -294,7 +285,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
                             output.WriteInt32(sizeof(int), true);
-                            size += (uint)count * sizeof(int) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
                                     output.WriteInt32(i, true);
@@ -307,7 +297,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                                 output.WriteUInt32((uint)value, true);
                             else
                                 output.WriteUInt32(ParseUInt32Name(p.Value?.ToString()), true);
-                            size += sizeof(uint);
                         }
                         break;
                     case PropertyType.uint32s:
@@ -317,7 +306,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                                 var count = uintArr.Count();
                                 output.WriteInt32(count, true);
                                 output.WriteInt32(sizeof(uint), true);
-                                size += (uint)count * sizeof(uint) + sizeof(int) * 2;
                                 foreach (var i in uintArr)
                                     output.WriteUInt32(i, true);
                             }
@@ -327,7 +315,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                                 var count = arr?.Count() ?? 0;
                                 output.WriteInt32(count, true);
                                 output.WriteInt32(sizeof(uint), true);
-                                size += (uint)count * sizeof(uint) + sizeof(int) * 2;
                                 if (arr != null)
                                     foreach (var i in arr)
                                         output.WriteUInt32(ParseUInt32Name(i), true);
@@ -344,7 +331,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                     //    break;
                     case PropertyType.@float:
                         output.WriteFloat((float)(p.Value ?? 0), true);
-                        size += sizeof(float);
                         break;
                     case PropertyType.floats:
                         {
@@ -352,14 +338,13 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
                             output.WriteInt32(sizeof(float), true);
-                            size += (uint)count * sizeof(float) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
                                     output.WriteFloat(i, true);
                         }
                         break;
                     case PropertyType.string8:
-                        size += output.WriteString(p.Value as string, Encoding.ASCII, true);
+                        output.WriteString(p.Value as string, Encoding.ASCII, true);
                         break;
                     case PropertyType.string8s:
                     case PropertyType.string16s:
@@ -369,18 +354,16 @@ namespace DBPF_Compiler.FileTypes.Prop
                             output.WriteInt32(count, true);
                             output.Write([0, 0, 0, 10]);
                             Encoding encoding = p.PropertyType == PropertyType.string8 ? Encoding.ASCII : Encoding.Unicode;
-                            size += sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
-                                    size += output.WriteString(i, encoding, true);
+                                    output.WriteString(i, encoding, true);
                         }
                         break;
                     case PropertyType.string16:
-                        size += output.WriteString(p.Value as string, Encoding.Unicode, true);
+                        output.WriteString(p.Value as string, Encoding.Unicode, true);
                         break;
                     case PropertyType.key:
                         output.WriteResourceKey(GetResourceKey(p.Value));
-                        size += sizeof(uint) * 4;
                         break;
                     case PropertyType.keys:
                         {
@@ -388,7 +371,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
                             output.WriteInt32(sizeof(uint) * 3, true);
-                            size += (uint)count * (sizeof(uint) * 4) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
                                     output.WriteResourceKey(GetResourceKey(i));
@@ -400,7 +382,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
                             output.WriteInt32(sizeof(uint) * 2, true);
-                            size += (uint)count * (sizeof(float) * 2) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
                                 {
@@ -415,7 +396,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
                             output.WriteInt32(sizeof(uint) * 3, true);
-                            size += (uint)count * (sizeof(float) * 3) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
                                 {
@@ -431,7 +411,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
                             output.WriteInt32(sizeof(uint) * 3, true);
-                            size += (uint)count * (sizeof(float) * 3) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
                                 {
@@ -462,7 +441,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
                             output.WriteInt32(sizeof(uint) * 4, true);
-                            size += (uint)count * (sizeof(float) * 4) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
                                     output.WriteVector(i);
@@ -474,7 +452,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
                             output.WriteInt32(sizeof(uint) * 4, true);
-                            size += (uint)count * (sizeof(float) * 4) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
                                 {
@@ -493,7 +470,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
                             output.WriteInt32(sizeof(uint) * 2 + LocalizedString.PLACEHOLDER_SIZE, true);
-                            size += (uint)count * (sizeof(uint) * 2 + LocalizedString.PLACEHOLDER_SIZE) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
                                     output.WriteLocalizedString(new(
@@ -510,7 +486,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
                             output.WriteInt32(sizeof(float) * 6, true);
-                            size += (uint)count * (sizeof(float) * 6) + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
                                     output.WriteBBox(i);
@@ -524,7 +499,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                             var count = arr?.Count() ?? 0;
                             output.WriteInt32(count, true);
                             output.WriteInt32(Transform.SIZE, true);
-                            size += (uint)count * Transform.SIZE + sizeof(int) * 2;
                             if (arr != null)
                                 foreach (var i in arr)
                                     output.WriteTransform(i);
@@ -534,8 +508,6 @@ namespace DBPF_Compiler.FileTypes.Prop
                         throw new NotSupportedException(p.PropertyType + " not supported");
                 }
             }
-
-            return size;
         }
 
         public string SerializeToJson(JsonSerializerOptions? options = null)

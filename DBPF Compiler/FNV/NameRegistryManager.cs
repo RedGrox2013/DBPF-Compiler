@@ -105,9 +105,15 @@ namespace DBPF_Compiler.FNV
             => GetResourceKey(key.InstanceID, key.TypeID, key.GroupID);
         public ResourceKey GetResourceKey(string instance, string? type = null, string? group = null)
         {
-            ResourceKey key = new(instance.EndsWith('~') ? GetHash(instance, "file") : FNVHash.Compute(instance));
-            if (!string.IsNullOrWhiteSpace(group))
+            if (!FNVHash.TryParse(instance, out var hash))
+                hash = instance.EndsWith('~') ? GetHash(instance, "file") : FNVHash.Compute(instance);
+            ResourceKey key = new(hash);
+
+            if (FNVHash.TryParse(group, out hash))
+                key.GroupID = hash;
+            else if (!string.IsNullOrWhiteSpace(group))
                 key.GroupID = group.EndsWith('~') ? GetHash(group, "file") : FNVHash.Compute(group);
+
             if (!string.IsNullOrWhiteSpace(type))
                 key.TypeID = GetHash(type, "type");
 

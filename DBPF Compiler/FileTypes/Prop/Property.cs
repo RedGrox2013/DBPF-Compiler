@@ -1,18 +1,58 @@
-﻿using System.Text.Json.Serialization;
+﻿using DBPF_Compiler.FNV;
+using System.Text.Json.Serialization;
 
 namespace DBPF_Compiler.FileTypes.Prop
 {
-    public class Property(string propertyName)
+    public class Property(string propertyName) : IComparable
     {
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public PropertyType PropertyType { get; set; }
-        public string Name { get; set; } = propertyName;
+        private string _name = propertyName;
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                _id = null;
+            }
+        }
+        private uint? _id = null;
+        [JsonIgnore]
+        public uint Id
+            => _id ??= NameRegistryManager.Instance.GetHash(_name, "property");
         public object? Value { get; set; }
 
         public Property() : this("0x00000000") { }
 
         public override string ToString()
             => $"{PropertyType} {Name} {Value}";
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is Property prop)
+                return Id == prop.Id;
+            return false;
+        }
+
+        public override int GetHashCode() => base.GetHashCode();
+
+        public int CompareTo(object? obj)
+        {
+            if (obj is Property prop)
+                return Id.CompareTo(prop.Id);
+            return -1;
+        }
+
+        public static bool operator <(Property left, Property right)
+            => left.Id < right.Id;
+        public static bool operator >(Property left, Property right)
+            => left.Id > right.Id;
+
+        public static bool operator ==(Property left, Property right)
+            => left.Id == right.Id;
+        public static bool operator !=(Property left, Property right)
+            => left.Id != right.Id;
     }
 
     public enum PropertyType

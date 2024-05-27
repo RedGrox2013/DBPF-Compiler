@@ -17,7 +17,6 @@
         /// Кодирует файл и записывает в поток
         /// </summary>
         /// <param name="output">Куда будет записан файл</param>
-        /// <returns>Размер записанных данных</returns>
-        uint Encode(Stream output);
+        void Encode(Stream output);
     }
 }

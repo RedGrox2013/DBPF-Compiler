@@ -100,7 +100,7 @@ static void Encode(string filePath)
     var prop = PropertyListJsonSerializer.Deserialize(File.ReadAllText(filePath));
 
     using FileStream stream = File.Create(Path.GetFileNameWithoutExtension(filePath));
-    Console.WriteLine(prop.Encode(stream));
+    prop.Encode(stream);
 }
 
 static void Decode(string inputPath, string? outputPath)
