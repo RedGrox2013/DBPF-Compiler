@@ -2,8 +2,8 @@
 {
     public static class FNVHash
     {
-        private const uint FNV_32_PRIME = 0x01000193;
-        private const uint FNV_BASIS = 0x811c9dc5;
+        public const uint FNV_32_PRIME = 0x01000193;
+        public const uint FNV_BASIS = 0x811c9dc5;
 
         public static uint Compute(string input)
         {
@@ -42,7 +42,6 @@
             return true;
         }
 
-        public static string ToString(uint hash, bool sporeMasterStyle = false)
-            => (sporeMasterStyle ? "#" : "0x") + Convert.ToString(hash, 16).ToUpper();
+        public static string ToString(uint hash) => $"0x{hash:X08}";
     }
 }
