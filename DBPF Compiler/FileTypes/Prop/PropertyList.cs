@@ -344,7 +344,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         }
                         break;
                     case PropertyType.string8:
-                        output.WriteString(p.Value as string, Encoding.ASCII, true);
+                        output.WriteString((string?)p.Value, Encoding.ASCII, true);
                         break;
                     case PropertyType.string8s:
                     case PropertyType.string16s:
@@ -360,7 +360,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         }
                         break;
                     case PropertyType.string16:
-                        output.WriteString(p.Value as string, Encoding.Unicode, true);
+                        output.WriteString((string?)p.Value, Encoding.Unicode, true);
                         break;
                     case PropertyType.key:
                         output.WriteResourceKey(GetResourceKey(p.Value));
@@ -534,6 +534,8 @@ namespace DBPF_Compiler.FileTypes.Prop
                         _properties[i].Value = element.Deserialize<int>(options);
                         break;
                     case PropertyType.uint32:
+                    case PropertyType.string8:
+                    case PropertyType.string16:
                         _properties[i].Value = element.Deserialize<string>(options);
                         break;
                     case PropertyType.int8:

@@ -94,16 +94,14 @@ namespace DBPF_Compiler
             stream.Write(buffer);
         }
 
-        internal static uint WriteString(this Stream stream, string? value, Encoding encoding, bool bigEndianLength = false, bool bigEndian = false)
+        internal static void WriteString(this Stream stream, string? value, Encoding encoding, bool bigEndianLength = false, bool bigEndian = false)
         {
             var buffer = encoding.GetBytes(value ?? string.Empty);
             if (bigEndian)
                 Array.Reverse(buffer);
 
-            stream.WriteInt32(buffer.Length, bigEndianLength);
+            stream.WriteInt32(value?.Length ?? 0, bigEndianLength);
             stream.Write(buffer);
-
-            return (uint)(sizeof(int) + buffer.Length);
         }
 
         internal static void WriteLocalizedString(this Stream stream, LocalizedString value, bool bigEndian = false)

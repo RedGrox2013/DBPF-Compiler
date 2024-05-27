@@ -9,8 +9,7 @@ namespace DBPF_Compiler.FileTypes.Prop
         private readonly static JsonSerializerOptions _jsonSerializerOptions = new()
         {
             WriteIndented = true,
-            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
-            UnknownTypeHandling = System.Text.Json.Serialization.JsonUnknownTypeHandling.JsonNode
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
         };
 
         public static string DecodePropertyListToJson(Stream propListStream)
@@ -24,7 +23,7 @@ namespace DBPF_Compiler.FileTypes.Prop
         public static PropertyList Deserialize(string json)
         {
             PropertyList prop = new();
-            prop.DeserializeFromJson(json);
+            prop.DeserializeFromJson(json, _jsonSerializerOptions);
 
             return prop;
         }
