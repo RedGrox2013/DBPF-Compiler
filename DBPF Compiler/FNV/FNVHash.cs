@@ -31,7 +31,7 @@
 
             try
             {
-                hash = Convert.ToUInt32(input, 16);
+                hash = Convert.ToUInt32(input.TrimStart('#'), 16);
             }
             catch
             {
