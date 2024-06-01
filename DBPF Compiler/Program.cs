@@ -4,9 +4,6 @@ using DBPF_Compiler.FNV;
 using DBPF_Compiler.Types;
 using System.Diagnostics;
 using System.Text;
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Unicode;
 
 Console.WriteLine("Spore Database Packed File Compiler");
 
@@ -35,7 +32,7 @@ else if ((args[0].Equals("--pack") || args[0].Equals("-p")) && CheckArguments(ar
 else if ((args[0].Equals("--unpack") || args[0].Equals("-u")) && CheckArguments(args))
     Unpack(args[1], args[2]);
 else if (args[0].Equals("--encode") || args[0].Equals("-e"))
-    Encode(args[1]);
+    Encode(args[1], args.Length >= 3 ? args[2] : null);
 else if (args[0].Equals("--decode") || args[0].Equals("-d"))
     Decode(args[1], args.Length >= 3 ? args[2] : null);
 else if (args[0].Equals("--hash"))
@@ -59,57 +56,85 @@ static void Pack(string inputPath, string outputPath, string? secretFolder = nul
     const string STR_DATA = "Со мной воюет сатана 😈";
     byte[] data = Encoding.Default.GetBytes(STR_DATA);
 
-    using FileStream fs = File.Create(outputPath);
-    using DatabasePackedFile dbpf = new(fs);
-    dbpf.OnHeaderWriting += msg => Console.WriteLine("Writing header . . .");
-    dbpf.OnDataWriting += DisplayDataWritingMessage;
-    dbpf.OnIndexWriting += msg => Console.WriteLine("Writing index . . .");
-    dbpf.WriteData(data, new ResourceKey(FNVHash.Compute(STR_DATA), 0x2B6CAB5F));
+    try
+    {
+        using FileStream fs = File.Create(outputPath);
+        using DatabasePackedFile dbpf = new(fs);
+        dbpf.OnHeaderWriting += msg => Console.WriteLine("Writing header . . .");
+        dbpf.OnDataWriting += DisplayDataWritingMessage;
+        dbpf.OnIndexWriting += msg => Console.WriteLine("Writing index . . .");
+        dbpf.WriteData(data, new ResourceKey(FNVHash.Compute(STR_DATA), 0x2B6CAB5F));
 
-    dbpf.WriteSecretData(Encoding.Default.GetBytes("Уууу секретики"), new("Секретик", "txt"));
+        dbpf.WriteSecretData(Encoding.Default.GetBytes("Уууу секретики"), new("Секретик", "txt"));
 
-    packer.Pack(dbpf, secretFolder);
+        packer.Pack(dbpf, secretFolder);
 
-    stopwatch.Stop();
-    var ts = stopwatch.Elapsed;
-    Console.WriteLine($"The file was packed in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
+        stopwatch.Stop();
+        var ts = stopwatch.Elapsed;
+        Console.WriteLine($"The file was packed in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
+    }
+    catch (Exception ex)
+    {
+        PrintError(ex.Message);
+    }
 }
 
 static void Unpack(string inputPath, string outputPath)
 {
-    Stopwatch stopwatch = Stopwatch.StartNew();
-    using FileStream fs = new(inputPath, FileMode.Open, FileAccess.Read);
-    using DatabasePackedFile dbpf = new(fs);
+    try
+    {
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        using FileStream fs = new(inputPath, FileMode.Open, FileAccess.Read);
+        using DatabasePackedFile dbpf = new(fs);
 
-    dbpf.OnHeaderReading += msg => Console.WriteLine("Reading header . . .");
-    dbpf.OnDataReading += DisplayDataReadingMessage;
-    dbpf.OnIndexReading += msg => Console.WriteLine("Reading index . . . Index offset: " + (msg as uint?));
+        dbpf.OnHeaderReading += msg => Console.WriteLine("Reading header . . .");
+        dbpf.OnDataReading += DisplayDataReadingMessage;
+        dbpf.OnIndexReading += msg => Console.WriteLine("Reading index . . . Index offset: " + (msg as uint?));
 
-    DBPFPacker unpacker = new(outputPath);
+        DBPFPacker unpacker = new(outputPath);
 
-    unpacker.Unpack(dbpf);
-    unpacker.UnpackSecret(dbpf);
+        unpacker.Unpack(dbpf);
+        unpacker.UnpackSecret(dbpf);
 
-    stopwatch.Stop();
-    var ts = stopwatch.Elapsed;
-    Console.WriteLine($"The file was unpacked in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
+        stopwatch.Stop();
+        var ts = stopwatch.Elapsed;
+        Console.WriteLine($"The file was unpacked in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
+    }
+    catch (Exception ex)
+    {
+        PrintError(ex.Message);
+    }
 }
 
-static void Encode(string filePath)
+static void Encode(string inputPath, string? outputPath)
 {
-    var prop = PropertyListJsonSerializer.Deserialize(File.ReadAllText(filePath));
+    try
+    {
+        var prop = PropertyListJsonSerializer.Deserialize(File.ReadAllText(inputPath));
 
-    using FileStream stream = File.Create(Path.GetFileNameWithoutExtension(filePath));
-    prop.Encode(stream);
+        using FileStream stream = File.Create(outputPath + "\\" + Path.GetFileNameWithoutExtension(inputPath));
+        prop.Encode(stream);
+    }
+    catch (Exception ex)
+    {
+        PrintError(ex.Message);
+    }
 }
 
 static void Decode(string inputPath, string? outputPath)
 {
-    using FileStream stream = File.OpenRead(inputPath);
-    string json = PropertyListJsonSerializer.DecodePropertyListToJson(stream);
-    Console.WriteLine(json);
-    using StreamWriter writer = File.CreateText(outputPath ?? inputPath + ".json");
-    writer.Write(json);
+    try
+    {
+        using FileStream stream = File.OpenRead(inputPath);
+        string json = PropertyListJsonSerializer.DecodePropertyListToJson(stream);
+        Console.WriteLine(json);
+        using StreamWriter writer = File.CreateText(outputPath ?? inputPath + ".json");
+        writer.Write(json);
+    }
+    catch (Exception ex)
+    {
+        PrintError(ex.Message);
+    }
 }
 
 static void DisplayDataWritingMessage(object? message)
@@ -127,14 +152,22 @@ static bool CheckArguments(string[] args)
 {
     if (args.Length == 1)
     {
-        Console.WriteLine("Missing <input> and <output> arguments.");
+        PrintError("Missing <input> and <output> arguments.");
         return false;
     }
     if (args.Length == 2)
     {
-        Console.WriteLine("Missing <output> argument.");
+        PrintError("Missing <output> argument.");
         return false;
     }
 
     return true;
+}
+
+static void PrintError(string message)
+{
+    var oldColor = Console.ForegroundColor;
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine(message);
+    Console.ForegroundColor = oldColor;
 }

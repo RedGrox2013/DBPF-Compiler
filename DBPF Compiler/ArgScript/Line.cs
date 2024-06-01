@@ -10,9 +10,12 @@
         public Line(IEnumerable<string> arguments) : this(arguments.ToArray()) { }
 
         public int Find(string argumentName)
+            => Find(a => a.Equals(argumentName, StringComparison.InvariantCultureIgnoreCase));
+
+        public int Find(Predicate<string> predicate)
         {
-            for (int i = 0; i < _args.Length; i++)
-                if (argumentName.Equals(_args[i], StringComparison.InvariantCultureIgnoreCase))
+            for (int i = 0; i < _args.Length; ++i)
+                if (predicate(_args[i]))
                     return i;
 
             return -1;

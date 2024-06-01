@@ -295,10 +295,10 @@ namespace DBPF_Compiler.DBPF
             Task.Run(() => _onHeaderReading?.Invoke(null));
             _stream.Position = 0;
             using BinaryReader reader = new(_stream, Encoding.Default, true);
-            var magic = reader.ReadUInt32();
-            if (magic != Magic)
-                throw new NotSupportedException(Encoding.ASCII.GetString(BitConverter.GetBytes(magic)) +
-                    " is not supported.");
+            var magic = reader.ReadBytes(sizeof(uint));
+            if (BitConverter.ToUInt32(magic) != Magic)
+                throw new NotSupportedException("\"" + Encoding.ASCII.GetString(magic) +
+                    "\" (" + BitConverter.ToString(magic) + ") is not supported.");
 
             MajorVersion = reader.ReadInt32();
             _stream.Seek(7 * sizeof(int), SeekOrigin.Current);
