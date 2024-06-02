@@ -1,0 +1,52 @@
+{
+    "Properties": [
+        {
+            "PropertyType": "key",
+            "Name": "parent",
+            "Value": {
+                "GroupID": "PaletteItems",
+                "InstanceID": "TemplateFixedObjectAudioMusic",
+                "TypeID": "prop"
+            }
+        },
+        {
+            "PropertyType": "uint32",
+            "Name": "adventureMusicId",
+            "Value": "hash(Бебринало)"
+        },
+        {
+            "PropertyType": "key",
+            "Name": "modelMeshLOD0",
+            "Value": {
+                "GroupID": "EP1_TerrainIcons",
+                "InstanceID": "ep1_audioicon_default2",
+                "TypeID": "rw4"
+            }
+        },
+        {
+            "PropertyType": "key",
+            "Name": "paletteItemPlacedAsset",
+            "Value": {
+                "GroupID": "civicobjects",
+                "InstanceID": "ep1_audioobject_music",
+                "TypeID": "cPlaceableSound"
+            }
+        },
+        {
+            "PropertyType": "texts",
+            "Name": "sporepediaName",
+            "Value": [
+                {
+                    "TableID": "DBPFC_music",
+                    "InstanceID": "0x1",
+                    "PlaceholderText": "Бебринало"
+                }
+            ]
+        },
+        {
+            "PropertyType": "bool",
+            "Name": "sporepediaShow",
+            "Value": true
+        }
+    ]
+}
