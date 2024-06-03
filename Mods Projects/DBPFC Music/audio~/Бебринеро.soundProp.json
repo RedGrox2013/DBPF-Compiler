@@ -1,0 +1,35 @@
+{
+    "Properties": [
+        {
+            "PropertyType": "float",
+            "Name": "gain",
+            "Value": 0.8
+        },
+        {
+            "PropertyType": "bool",
+            "Name": "islooped",
+            "Value": true
+        },
+        {
+            "PropertyType": "key",
+            "Name": "musicTemplate",
+            "Value": {
+                "InstanceID": "0x869DB904"
+            }
+        },
+        {
+            "PropertyType": "keys",
+            "Name": "samples",
+            "Value": [
+                {
+                    "InstanceID": "Бебринеро"
+                }
+            ]
+        },
+        {
+            "PropertyType": "uint32",
+            "Name": "codec",
+            "Value": "0x5"
+        }
+    ]
+}
