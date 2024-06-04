@@ -42,6 +42,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.bools:
                     case PropertyType.@bool + 0x9C:
+                    case PropertyType.@bool + 0x1C:
                         property.PropertyType = PropertyType.bools;
                         property.Value = input.ReadBoolArray(true);
                         break;
@@ -50,6 +51,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.int8s:
                     case PropertyType.int8 + 0x9C:
+                    case PropertyType.int8 + 0x1C:
                         property.PropertyType = PropertyType.int8s;
                         property.Value = input.ReadInt8Array(true);
                         break;
@@ -58,6 +60,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.uint8s:
                     case PropertyType.uint8 + 0x9C:
+                    case PropertyType.uint8 + 0x1C:
                         property.PropertyType = PropertyType.uint8s;
                         property.Value = input.ReadUInt8Array(true);
                         break;
@@ -66,6 +69,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.int16s:
                     case PropertyType.int16 + 0x9C:
+                    case PropertyType.int16 + 0x1C:
                         property.PropertyType = PropertyType.int16s;
                         property.Value = input.ReadInt16Array(true);
                         break;
@@ -77,6 +81,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.int32s:
                     case PropertyType.int32 + 0x9C:
+                    case PropertyType.int32 + 0x1C:
                         property.PropertyType = PropertyType.int32s;
                         property.Value = input.ReadInt32Array(true);
                         break;
@@ -85,6 +90,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.uint32s:
                     case PropertyType.uint32 + 0x9C:
+                    case PropertyType.uint32 + 0x1C:
                         property.PropertyType = PropertyType.uint32s;
                         property.Value = input.ReadUInt32Array(true).Select(GetUInt32Name);
                         break;
@@ -99,6 +105,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.floats:
                     case PropertyType.@float + 0x9C:
+                    case PropertyType.@float + 0x1C:
                         property.PropertyType = PropertyType.floats;
                         property.Value = input.ReadFloatArray(true);
                         break;
@@ -109,6 +116,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.string8s:
                     case PropertyType.string8 + 0x9C:
+                    case PropertyType.string8 + 0x1C:
                         property.PropertyType = PropertyType.string8s;
                         property.Value = input.ReadString8Array(true);
                         break;
@@ -119,6 +127,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.string16s:
                     case PropertyType.string16 + 0x9C:
+                    case PropertyType.string16 + 0x1C:
                         property.PropertyType = PropertyType.string16s;
                         property.Value = input.ReadString16Array(true);
                         break;
@@ -127,6 +136,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.keys:
                     case PropertyType.key + 0x9C:
+                    case PropertyType.key + 0x1C:
                         property.PropertyType = PropertyType.keys;
                         property.Value = input.ReadResourceKeyArray(true).Select(_regManager.GetStringResourceKey);
                         break;
@@ -135,6 +145,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.vector2s:
                     case PropertyType.vector2 + 0x9C:
+                    case PropertyType.vector2 + 0x1C:
                         property.PropertyType = PropertyType.vector2s;
                         property.Value = input.ReadVector2Array(true);
                         break;
@@ -143,6 +154,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.vector3s:
                     case PropertyType.vector3 + 0x9C:
+                    case PropertyType.vector3 + 0x1C:
                         property.PropertyType = PropertyType.vector3s;
                         property.Value = input.ReadVector3Array(true);
                         break;
@@ -151,6 +163,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.colorRGBs:
                     case PropertyType.colorRGB + 0x9C:
+                    case PropertyType.colorRGB + 0x1C:
                         property.PropertyType = PropertyType.colorRGBs;
                         property.Value = input.ReadVector3Array(true).Select(v => new ColorRGB(v));
                         break;
@@ -159,6 +172,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.vector4s:
                     case PropertyType.vector4 + 0x9C:
+                    case PropertyType.vector4 + 0x1C:
                         property.PropertyType = PropertyType.vector4s;
                         property.Value = input.ReadVector4Array(true);
                         break;
@@ -167,6 +181,7 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.colorRGBAs:
                     case PropertyType.colorRGBA + 0x9C:
+                    case PropertyType.colorRGBA + 0x1C:
                         property.PropertyType = PropertyType.colorRGBAs;
                         property.Value = input.ReadVector4Array(true).Select(v => new ColorRGBA(v));
                         break;
@@ -180,11 +195,13 @@ namespace DBPF_Compiler.FileTypes.Prop
                         break;
                     case PropertyType.bboxes:
                     case PropertyType.bbox + 0x9C:
+                    case PropertyType.bbox + 0x1C:
                         property.PropertyType = PropertyType.bboxs;
                         property.Value = input.ReadBBoxArray(true);
                         break;
                     case PropertyType.transforms:
                     case PropertyType.transform + 0x9C:
+                    case PropertyType.transform + 0x1C:
                         property.PropertyType = PropertyType.transforms;
                         property.Value = input.ReadTransformArray(true);
                         break;
