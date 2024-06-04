@@ -42,7 +42,7 @@
             // unpackedPathBrowseBtn
             // 
             unpackedPathBrowseBtn.Anchor = AnchorStyles.Top;
-            unpackedPathBrowseBtn.Location = new Point(542, 9);
+            unpackedPathBrowseBtn.Location = new Point(539, 11);
             unpackedPathBrowseBtn.Margin = new Padding(3, 2, 3, 2);
             unpackedPathBrowseBtn.Name = "unpackedPathBrowseBtn";
             unpackedPathBrowseBtn.Size = new Size(82, 22);
@@ -54,7 +54,7 @@
             // packedPathBrowseBtn
             // 
             packedPathBrowseBtn.Anchor = AnchorStyles.Top;
-            packedPathBrowseBtn.Location = new Point(542, 34);
+            packedPathBrowseBtn.Location = new Point(539, 36);
             packedPathBrowseBtn.Margin = new Padding(3, 2, 3, 2);
             packedPathBrowseBtn.Name = "packedPathBrowseBtn";
             packedPathBrowseBtn.Size = new Size(82, 22);
@@ -66,7 +66,7 @@
             // packedPathTextBox
             // 
             packedPathTextBox.Anchor = AnchorStyles.Top;
-            packedPathTextBox.Location = new Point(153, 34);
+            packedPathTextBox.Location = new Point(150, 36);
             packedPathTextBox.Margin = new Padding(3, 2, 3, 2);
             packedPathTextBox.Name = "packedPathTextBox";
             packedPathTextBox.Size = new Size(385, 23);
@@ -77,7 +77,7 @@
             // 
             label1.Anchor = AnchorStyles.Top;
             label1.AutoSize = true;
-            label1.Location = new Point(1, 12);
+            label1.Location = new Point(5, 14);
             label1.Name = "label1";
             label1.Size = new Size(134, 15);
             label1.TabIndex = 4;
@@ -87,7 +87,7 @@
             // 
             label2.Anchor = AnchorStyles.Top;
             label2.AutoSize = true;
-            label2.Location = new Point(57, 36);
+            label2.Location = new Point(54, 38);
             label2.Name = "label2";
             label2.Size = new Size(85, 15);
             label2.TabIndex = 5;
@@ -99,14 +99,14 @@
             progressBar.Location = new Point(0, 94);
             progressBar.Margin = new Padding(3, 2, 3, 2);
             progressBar.Name = "progressBar";
-            progressBar.Size = new Size(634, 22);
+            progressBar.Size = new Size(629, 22);
             progressBar.TabIndex = 6;
             // 
             // unpackBtn
             // 
             unpackBtn.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             unpackBtn.Enabled = false;
-            unpackBtn.Location = new Point(416, 68);
+            unpackBtn.Location = new Point(411, 68);
             unpackBtn.Margin = new Padding(3, 2, 3, 2);
             unpackBtn.Name = "unpackBtn";
             unpackBtn.Size = new Size(102, 22);
@@ -119,7 +119,7 @@
             // 
             packBtn.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             packBtn.Enabled = false;
-            packBtn.Location = new Point(523, 68);
+            packBtn.Location = new Point(519, 68);
             packBtn.Margin = new Padding(3, 2, 3, 2);
             packBtn.Name = "packBtn";
             packBtn.Size = new Size(102, 22);
@@ -131,7 +131,7 @@
             // unpackedPathTextBox
             // 
             unpackedPathTextBox.Anchor = AnchorStyles.Top;
-            unpackedPathTextBox.Location = new Point(153, 9);
+            unpackedPathTextBox.Location = new Point(150, 11);
             unpackedPathTextBox.Margin = new Padding(3, 2, 3, 2);
             unpackedPathTextBox.Name = "unpackedPathTextBox";
             unpackedPathTextBox.Size = new Size(385, 23);
@@ -142,7 +142,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(634, 116);
+            ClientSize = new Size(629, 116);
             Controls.Add(packBtn);
             Controls.Add(unpackBtn);
             Controls.Add(progressBar);
@@ -152,9 +152,10 @@
             Controls.Add(packedPathTextBox);
             Controls.Add(unpackedPathBrowseBtn);
             Controls.Add(unpackedPathTextBox);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
             Margin = new Padding(3, 2, 3, 2);
             MaximizeBox = false;
-            MinimumSize = new Size(650, 155);
+            MinimumSize = new Size(645, 155);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Database Packed File Compiler";
