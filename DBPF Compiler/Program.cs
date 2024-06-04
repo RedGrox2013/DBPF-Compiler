@@ -26,6 +26,7 @@ if (args[0].Equals("--help") || args[0].Equals("-h"))
 --encode, -e <input> <output>:        encode file
 --decode, -d <input> <output>:        decode file
 --hash <name> <registry>:             get hash by name
+--name-by-hash <name> <registry>:     get name by hash
 ");
 else if ((args[0].Equals("--pack") || args[0].Equals("-p")) && CheckArguments(args))
     Pack(args[1], args[2], args.Length >= 4 ? args[3] : null);
@@ -36,16 +37,9 @@ else if (args[0].Equals("--encode") || args[0].Equals("-e"))
 else if (args[0].Equals("--decode") || args[0].Equals("-d"))
     Decode(args[1], args.Length >= 3 ? args[2] : null);
 else if (args[0].Equals("--hash"))
-{
-    string regName = args.Length >= 3 ? args[2] : "all";
-    if (regName.Equals("fnv"))
-    {
-        Console.WriteLine(FNVHash.ToString(FNVHash.Compute(args[1])));
-        return;
-    }
-
-    Console.WriteLine(FNVHash.ToString(NameRegistryManager.Instance.GetHash(args[1], regName)));
-}
+    Hash(args[1], args.Length >= 3 ? args[2] : "all");
+else if (args[0].Equals("--name-by-hash"))
+    NameByHash(args[1], args.Length >= 3 ? args[2] : "all");
 
 
 static void Pack(string inputPath, string outputPath, string? secretFolder = null)
@@ -137,6 +131,52 @@ static void Decode(string inputPath, string? outputPath)
     }
 }
 
+static void Hash(string name, string regName)
+{
+    if (regName.Equals("fnv", StringComparison.InvariantCultureIgnoreCase))
+    {
+        Console.WriteLine(FNVHash.ToString(FNVHash.Compute(name)));
+        return;
+    }
+
+    Console.WriteLine(FNVHash.ToString(NameRegistryManager.Instance.GetHash(name, regName)));
+}
+
+static void NameByHash(string strHash, string regName)
+{
+    if (!FNVHash.TryParse(strHash, out var hash))
+    {
+        PrintError($"\"{strHash}\" is not hash.");
+        return;
+    }
+
+    string name;
+    if (regName.Equals("all", StringComparison.InvariantCultureIgnoreCase))
+    {
+        name = NameRegistryManager.Instance.GetName(hash);
+        if (name.StartsWith("0x"))
+            Console.WriteLine($"\"{strHash}\" not found.");
+        else
+            Console.WriteLine(name);
+
+        return;
+    }
+
+    var reg = NameRegistryManager.Instance.GetRegistry(regName);
+    if (reg == null)
+    {
+        PrintError($"\"{regName}\" not found.");
+        return;
+    }
+    if (!reg.GetName(hash, out name))
+    {
+        PrintError($"\"{strHash}\" not found.");
+        return;
+    }
+
+    Console.WriteLine(name);
+}
+
 static void DisplayDataWritingMessage(object? message)
 {
     if (message is ResourceKey key)
@@ -168,6 +208,6 @@ static void PrintError(string message)
 {
     var oldColor = Console.ForegroundColor;
     Console.ForegroundColor = ConsoleColor.Red;
-    Console.WriteLine(message);
+    Console.Error.WriteLine(message);
     Console.ForegroundColor = oldColor;
 }
