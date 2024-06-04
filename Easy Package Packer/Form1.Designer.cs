@@ -153,6 +153,7 @@
             Controls.Add(unpackedPathBrowseBtn);
             Controls.Add(unpackedPathTextBox);
             Margin = new Padding(3, 2, 3, 2);
+            MaximizeBox = false;
             MinimumSize = new Size(650, 155);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
