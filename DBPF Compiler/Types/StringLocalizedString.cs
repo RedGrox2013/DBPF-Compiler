@@ -4,8 +4,8 @@ namespace DBPF_Compiler.Types
 {
     public struct StringLocalizedString
     {
-        public string TableID { get; set; }
-        public string InstanceID { get; set; }
+        public string? TableID { get; set; }
+        public string? InstanceID { get; set; }
         private string? _placeholderText;
         public string? PlaceholderText
         {
@@ -22,8 +22,10 @@ namespace DBPF_Compiler.Types
         public const int PLACEHOLDER_SIZE = LocalizedString.PLACEHOLDER_SIZE;
 
         public StringLocalizedString(LocalizedString text)
-            : this(FNVHash.ToString(text.TableID), FNVHash.ToString(text.InstanceID), text.PlaceholderText) { }
-        public StringLocalizedString(string tableID, string instanceID, string? placeholderText = null)
+            : this(text.TableID == 0 ? null : FNVHash.ToString(text.TableID),
+                  text.InstanceID == 0 ? null : FNVHash.ToString(text.InstanceID),
+                  text.PlaceholderText) { }
+        public StringLocalizedString(string? tableID, string? instanceID, string? placeholderText = null)
         {
             TableID = tableID;
             InstanceID = instanceID;
@@ -31,6 +33,10 @@ namespace DBPF_Compiler.Types
         }
 
         public readonly override string ToString()
-            => $"({TableID}!{InstanceID}) \"{PlaceholderText}\"";
+        {
+            if (TableID == null)
+                return "\"" + _placeholderText + "\"";
+            return $"({TableID}!{InstanceID}) \"{_placeholderText}\"";
+        }
     }
 }

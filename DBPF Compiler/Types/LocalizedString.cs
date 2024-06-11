@@ -19,8 +19,8 @@
 
         public const int PLACEHOLDER_SIZE = 512;
 
-        public LocalizedString() : this(0xFFFFFFFF, 0xFFFFFFFF, null) { }
-        public LocalizedString(string placeholderText) : this(0xFFFFFFFF, 0xFFFFFFFF, placeholderText) { }
+        public LocalizedString() : this(0, 0) { }
+        public LocalizedString(string placeholderText) : this(0, 0, placeholderText) { }
         public LocalizedString(uint tableID, uint instanceID, string? placeholderText = null)
         {
             TableID = tableID;

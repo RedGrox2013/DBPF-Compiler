@@ -490,8 +490,8 @@ namespace DBPF_Compiler.FileTypes.Prop
                             if (arr != null)
                                 foreach (var i in arr)
                                     output.WriteLocalizedString(new(
-                                        _regManager.GetHash(i.TableID, "file"),
-                                        _regManager.GetHash(i.InstanceID),
+                                        i.TableID != null ? _regManager.GetHash(i.TableID, "file") : 0,
+                                        i.InstanceID != null ? _regManager.GetHash(i.InstanceID) : 0,
                                         i.PlaceholderText));
                         }
                         break;
