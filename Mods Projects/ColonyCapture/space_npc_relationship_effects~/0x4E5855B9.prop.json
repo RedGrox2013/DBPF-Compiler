@@ -1,0 +1,1206 @@
+{
+  "Properties": [
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventCompliment",
+      "Value": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventTrade",
+      "Value": [
+        0.3,
+        0.2,
+        0,
+        5,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventGift",
+      "Value": [
+        0.4,
+        0.05,
+        0,
+        12,
+        -0.1,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventBuyCityOver",
+      "Value": [
+        0,
+        1,
+        0,
+        5,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventJoinedAlliance",
+      "Value": [
+        0,
+        1,
+        0,
+        10,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventBribeNode",
+      "Value": [
+        0,
+        -1,
+        -4,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventInsult",
+      "Value": [
+        -1,
+        -0.5,
+        -3,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventHostility",
+      "Value": [
+        -3,
+        -0.03,
+        -9,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventReligion",
+      "Value": [
+        -2,
+        -0.01,
+        -5,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventBuyCityUnder",
+      "Value": [
+        0,
+        -1,
+        -5,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventDemandRejected",
+      "Value": [
+        -1,
+        -1,
+        -5,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventDeclaredWar",
+      "Value": [
+        -5,
+        -1,
+        -10,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceMissionComplete",
+      "Value": [
+        0,
+        1,
+        -10,
+        10,
+        -0.1,
+        1
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceMissionFailed",
+      "Value": [
+        0,
+        -1,
+        -5,
+        10,
+        -0.25,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceMissionRejected",
+      "Value": [
+        0,
+        -1,
+        -5,
+        10,
+        -0.25,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceMissionAborted",
+      "Value": [
+        0,
+        -1,
+        -5,
+        10,
+        -0.25,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceGiveGift",
+      "Value": [
+        0,
+        1,
+        -10,
+        5,
+        -0.5,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceBreakAlliance",
+      "Value": [
+        -5,
+        -5,
+        -20,
+        10,
+        -0.25,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceCreateAlliance",
+      "Value": [
+        0,
+        5,
+        -10,
+        5,
+        -0.5,
+        1
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceTradeComplete",
+      "Value": [
+        0,
+        0.25,
+        -1,
+        1.5,
+        -0.5,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceTradeDeclined",
+      "Value": [
+        0,
+        0,
+        -5,
+        5,
+        -0.5,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceCityPanicked",
+      "Value": [
+        0,
+        -2,
+        -10,
+        10,
+        -0.5,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceTerraformWorsened",
+      "Value": [
+        0,
+        -3,
+        -10,
+        10,
+        -0.5,
+        1
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceTerraformImproved",
+      "Value": [
+        0,
+        3,
+        -10,
+        10,
+        -0.5,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceTerraformExtinction",
+      "Value": [
+        0,
+        -5,
+        -10,
+        10,
+        -0.5,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceDestroyBuilding",
+      "Value": [
+        0,
+        -1.5,
+        -10,
+        10,
+        -0.5,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceDestroyAllyUFO",
+      "Value": [
+        0,
+        -0.5,
+        -10,
+        10,
+        -0.5,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceBadToolUse",
+      "Value": [
+        0,
+        -1,
+        -10,
+        10,
+        -0.5,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceGoodToolUse",
+      "Value": [
+        0,
+        1,
+        -10,
+        5,
+        -0.5,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceFloodCity",
+      "Value": [
+        0,
+        -8,
+        -10,
+        10,
+        -0.5,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceAbductCitizen",
+      "Value": [
+        0,
+        -0.5,
+        -3,
+        10,
+        -0.5,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceStealCommodity",
+      "Value": [
+        0,
+        -0.5,
+        -3,
+        5,
+        -0.5,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceCheatGood",
+      "Value": [
+        0,
+        1,
+        0,
+        999,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceCheatBad",
+      "Value": [
+        0,
+        -1,
+        -999,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceNewEmpireAndCTMGOwner",
+      "Value": [
+        0,
+        3.5,
+        -10,
+        10,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventTribeAttack",
+      "Value": [
+        0,
+        -1,
+        -6,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventTribeKill",
+      "Value": [
+        0,
+        -6,
+        -10,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventTribeRaid",
+      "Value": [
+        0,
+        -3,
+        -6,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventTribeStealBaby",
+      "Value": [
+        0,
+        -3,
+        -10,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventTribeAttackToolOrHut",
+      "Value": [
+        0,
+        -1,
+        -10,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventTribeDestroyTool",
+      "Value": [
+        0,
+        -10,
+        -10,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventTribeGift",
+      "Value": [
+        0,
+        1,
+        -999,
+        999,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventTribeSocial",
+      "Value": [
+        0,
+        1,
+        -999,
+        999,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventTribeRecruit",
+      "Value": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventTribeConvert",
+      "Value": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventTribeCheatGood",
+      "Value": [
+        0,
+        1,
+        0,
+        999,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventTribeCheatBad",
+      "Value": [
+        0,
+        -1,
+        -999,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceUpliftedCiv",
+      "Value": [
+        0,
+        5,
+        0,
+        5,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceBadSystemPurchaseOffer",
+      "Value": [
+        -1,
+        -1,
+        -10,
+        0,
+        -0.1,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceGoodSystemPurchaseOffer",
+      "Value": [
+        1,
+        1,
+        0,
+        10,
+        -0.1,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceBadPeaceOffer",
+      "Value": [
+        0.5,
+        0.5,
+        0,
+        10,
+        -0.1,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceGoodPeaceOffer",
+      "Value": [
+        1,
+        1,
+        0,
+        10,
+        -0.5,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "int32s",
+      "Name": "missionGeneratorWeight",
+      "Value": [
+        60,
+        20,
+        20,
+        0,
+        10,
+        0,
+        10,
+        10,
+        0,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "PropertyType": "int32s",
+      "Name": "missionGeneratorWeightDuringWar",
+      "Value": [
+        6,
+        2,
+        2,
+        10,
+        1,
+        1,
+        1,
+        10,
+        10,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "PropertyType": "int32s",
+      "Name": "missionGeneratorWeightDuringAlliance",
+      "Value": [
+        6,
+        20,
+        20,
+        1,
+        1,
+        1,
+        10,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "PropertyType": "float",
+      "Name": "tradeChance",
+      "Value": 1
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventUsedNuclearWeapon",
+      "Value": [
+        -8,
+        -1,
+        -10,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceBeNice",
+      "Value": [
+        0,
+        2,
+        -5,
+        10,
+        -0.5,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceBeNasty",
+      "Value": [
+        0,
+        -4,
+        -20,
+        0,
+        -0.5,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpacePushedTooFar",
+      "Value": [
+        0,
+        -10,
+        -10,
+        0,
+        -0.5,
+        0.3
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceCapturedASystem",
+      "Value": [
+        -10,
+        -5,
+        -10,
+        0,
+        -0.25,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceWasAtWar",
+      "Value": [
+        -2,
+        -1,
+        -10,
+        0,
+        -0.25,
+        0.3
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceEmbassyBonus",
+      "Value": [
+        0,
+        1,
+        0,
+        5,
+        -0.5,
+        0.3
+      ]
+    },
+    {
+      "PropertyType": "float",
+      "Name": "RelationshipDispositionThreshold",
+      "Value": 0
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceDestroyUFO",
+      "Value": [
+        0,
+        -1.5,
+        -10,
+        10,
+        -0.5,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceWitholdTribute",
+      "Value": [
+        -2.5,
+        -1.5,
+        -10,
+        0,
+        -0.5,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceAcceptGift",
+      "Value": [
+        0,
+        2,
+        0,
+        10,
+        -0.1,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventBrokeDeal",
+      "Value": [
+        -1,
+        -3,
+        -10,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceMissionStarted",
+      "Value": [
+        1,
+        0,
+        0,
+        1,
+        -0.5,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceCommunicatedNice",
+      "Value": [
+        1,
+        0,
+        0,
+        1,
+        -0.5,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpacePersonalityNice",
+      "Value": [
+        0,
+        0,
+        0,
+        0,
+        -0.25,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpacePersonalityMean",
+      "Value": [
+        0,
+        0,
+        0,
+        0,
+        -0.25,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceAvoidedContact",
+      "Value": [
+        -0.5,
+        -0.5,
+        -2,
+        0,
+        -0.5,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventFoughtEnemy",
+      "Value": [
+        1,
+        0.02,
+        0,
+        7,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceCommunicatedMean",
+      "Value": [
+        -1,
+        0,
+        -1,
+        0,
+        -0.5,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceStartedWar",
+      "Value": [
+        -5,
+        0,
+        -20,
+        0,
+        -0.2,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceArchetypeNice",
+      "Value": [
+        0,
+        1,
+        0,
+        5,
+        -0.25,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceArchetypeMean",
+      "Value": [
+        0,
+        -1,
+        -5,
+        0,
+        -0.25,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceSuperPower",
+      "Value": [
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceTradeRouteSpice",
+      "Value": [
+        0,
+        1,
+        -5,
+        3,
+        -0.5,
+        0
+      ]
+    },
+    {
+      "PropertyType": "int32s",
+      "Name": "minOutpostDefenders",
+      "Value": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "PropertyType": "int32s",
+      "Name": "maxOutpostDefenders",
+      "Value": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "PropertyType": "int32s",
+      "Name": "minColonyDefenders",
+      "Value": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "PropertyType": "int32s",
+      "Name": "minHomeworldDefenders",
+      "Value": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "PropertyType": "int32s",
+      "Name": "maxColonyDefenders",
+      "Value": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "PropertyType": "int32s",
+      "Name": "maxHomeworldDefenders",
+      "Value": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    {
+      "PropertyType": "float",
+      "Name": "spaceDestroyOnCaptureChance",
+      "Value": 0.1
+    },
+    {
+      "PropertyType": "float",
+      "Name": "spaceOutpostDestroyOnCaptureChance",
+      "Value": 0.1
+    },
+    {
+      "PropertyType": "float",
+      "Name": "surrenderChance",
+      "Value": 1
+    },
+    {
+      "PropertyType": "float",
+      "Name": "surrenderChanceNearDeath",
+      "Value": 1
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "minPeaceOfferMultiplier",
+      "Value": [
+        0.5,
+        1,
+        2,
+        5,
+        10,
+        20,
+        35,
+        55,
+        80,
+        110,
+        150
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "maxPeaceOfferMultiplier",
+      "Value": [
+        0.5,
+        1,
+        2,
+        5,
+        10,
+        20,
+        35,
+        55,
+        80,
+        110,
+        150
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceAlliedWithGrob",
+      "Value": [
+        -20,
+        -5,
+        -20,
+        0,
+        -0.05,
+        0
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventSpaceCommittedAtrocity",
+      "Value": [
+        0,
+        -1,
+        -20,
+        10,
+        -0.5,
+        0.5
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "minTributeMultiplier",
+      "Value": [
+        0.5,
+        1,
+        2,
+        5,
+        10,
+        20,
+        35,
+        55,
+        80,
+        110,
+        150
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "maxTributeMultiplier",
+      "Value": [
+        0.5,
+        1,
+        2,
+        5,
+        10,
+        20,
+        35,
+        55,
+        80,
+        110,
+        150
+      ]
+    },
+    {
+      "PropertyType": "floats",
+      "Name": "RelationshipEventTribeSocialPower",
+      "Value": [
+        0,
+        1,
+        -999,
+        999,
+        0,
+        0
+      ]
+    }
+  ]
+}
