@@ -152,7 +152,7 @@
             Controls.Add(packedPathTextBox);
             Controls.Add(unpackedPathBrowseBtn);
             Controls.Add(unpackedPathTextBox);
-            FormBorderStyle = FormBorderStyle.FixedDialog;
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Margin = new Padding(3, 2, 3, 2);
             MaximizeBox = false;
             MinimumSize = new Size(645, 155);
