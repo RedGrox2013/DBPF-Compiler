@@ -15,11 +15,15 @@ if (regDir.Exists)
 {
     foreach (var file in regDir.GetFiles())
         if (file.Name.StartsWith("reg_"))
-            NameRegistryManager.Instance.AddRegistryFromFileAsync(file.FullName).Wait();
+            await NameRegistryManager.Instance.AddRegistryFromFileAsync(file.FullName);
 }
+else
+    PrintError("No registers found. Translating hashes is not possible.");
 
-if (args[0].Equals("--help") || args[0].Equals("-h"))
-    Console.WriteLine(@"
+try
+{
+    if (args[0].Equals("--help") || args[0].Equals("-h"))
+        Console.WriteLine(@"
 --help, -h:                           show help
 --pack, -p <input> <output> <secret>: pack the contents of a folder into DBPF. <secret> - name of the folder whose contents are hidden in the DBPF
 --unpack, -u <input> <output>:        unpack DBPF to a specified directory
@@ -28,18 +32,23 @@ if (args[0].Equals("--help") || args[0].Equals("-h"))
 --hash <name> <registry>:             get hash by name
 --name-by-hash <name> <registry>:     get name by hash
 ");
-else if ((args[0].Equals("--pack") || args[0].Equals("-p")) && CheckArguments(args))
-    Pack(args[1], args[2], args.Length >= 4 ? args[3] : null);
-else if ((args[0].Equals("--unpack") || args[0].Equals("-u")) && CheckArguments(args))
-    Unpack(args[1], args[2]);
-else if (args[0].Equals("--encode") || args[0].Equals("-e"))
-    Encode(args[1], args.Length >= 3 ? args[2] : null);
-else if (args[0].Equals("--decode") || args[0].Equals("-d"))
-    Decode(args[1], args.Length >= 3 ? args[2] : null);
-else if (args[0].Equals("--hash"))
-    Hash(args[1], args.Length >= 3 ? args[2] : "all");
-else if (args[0].Equals("--name-by-hash"))
-    NameByHash(args[1], args.Length >= 3 ? args[2] : "all");
+    else if ((args[0].Equals("--pack") || args[0].Equals("-p")) && CheckArguments(args))
+        Pack(args[1], args[2], args.Length >= 4 ? args[3] : null);
+    else if ((args[0].Equals("--unpack") || args[0].Equals("-u")) && CheckArguments(args))
+        Unpack(args[1], args[2]);
+    else if (args[0].Equals("--encode") || args[0].Equals("-e"))
+        Encode(args[1], args.Length >= 3 ? args[2] : null);
+    else if (args[0].Equals("--decode") || args[0].Equals("-d"))
+        Decode(args[1], args.Length >= 3 ? args[2] : null);
+    else if (args[0].Equals("--hash"))
+        Hash(args[1], args.Length >= 3 ? args[2] : "all");
+    else if (args[0].Equals("--name-by-hash"))
+        NameByHash(args[1], args.Length >= 3 ? args[2] : "all");
+}
+catch (Exception e)
+{
+    PrintError(e.Message);
+}
 
 
 static void Pack(string inputPath, string outputPath, string? secretFolder = null)
@@ -50,85 +59,57 @@ static void Pack(string inputPath, string outputPath, string? secretFolder = nul
     const string STR_DATA = "Со мной воюет сатана 😈";
     byte[] data = Encoding.Default.GetBytes(STR_DATA);
 
-    try
-    {
-        using FileStream fs = File.Create(outputPath);
-        using DatabasePackedFile dbpf = new(fs);
-        dbpf.OnHeaderWriting += msg => Console.WriteLine("Writing header . . .");
-        dbpf.OnDataWriting += DisplayDataWritingMessage;
-        dbpf.OnIndexWriting += msg => Console.WriteLine("Writing index . . .");
-        dbpf.WriteData(data, new ResourceKey(FNVHash.Compute(STR_DATA), 0x2B6CAB5F));
+    using FileStream fs = File.Create(outputPath);
+    using DatabasePackedFile dbpf = new(fs);
+    dbpf.OnHeaderWriting += msg => Console.WriteLine("Writing header . . .");
+    dbpf.OnDataWriting += DisplayDataWritingMessage;
+    dbpf.OnIndexWriting += msg => Console.WriteLine("Writing index . . .");
+    dbpf.WriteData(data, new ResourceKey(FNVHash.Compute(STR_DATA), 0x2B6CAB5F));
 
-        dbpf.WriteSecretData(Encoding.Default.GetBytes("Уууу секретики"), new("Секретик", "txt"));
+    dbpf.WriteSecretData(Encoding.Default.GetBytes("Уууу секретики"), new("Секретик", "txt"));
 
-        packer.Pack(dbpf, secretFolder);
+    packer.Pack(dbpf, secretFolder);
 
-        stopwatch.Stop();
-        var ts = stopwatch.Elapsed;
-        Console.WriteLine($"The file was packed in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
-    }
-    catch (Exception ex)
-    {
-        PrintError(ex.Message);
-    }
+    stopwatch.Stop();
+    var ts = stopwatch.Elapsed;
+    Console.WriteLine($"The file was packed in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
 }
 
 static void Unpack(string inputPath, string outputPath)
 {
-    try
-    {
-        Stopwatch stopwatch = Stopwatch.StartNew();
-        using FileStream fs = new(inputPath, FileMode.Open, FileAccess.Read);
-        using DatabasePackedFile dbpf = new(fs);
+    Stopwatch stopwatch = Stopwatch.StartNew();
+    using FileStream fs = new(inputPath, FileMode.Open, FileAccess.Read);
+    using DatabasePackedFile dbpf = new(fs);
 
-        dbpf.OnHeaderReading += msg => Console.WriteLine("Reading header . . .");
-        dbpf.OnDataReading += DisplayDataReadingMessage;
-        dbpf.OnIndexReading += msg => Console.WriteLine("Reading index . . . Index offset: " + (msg as uint?));
+    dbpf.OnHeaderReading += msg => Console.WriteLine("Reading header . . .");
+    dbpf.OnDataReading += DisplayDataReadingMessage;
+    dbpf.OnIndexReading += msg => Console.WriteLine("Reading index . . . Index offset: " + (msg as uint?));
 
-        DBPFPacker unpacker = new(outputPath);
+    DBPFPacker unpacker = new(outputPath);
 
-        unpacker.Unpack(dbpf);
-        unpacker.UnpackSecret(dbpf);
+    unpacker.Unpack(dbpf);
+    unpacker.UnpackSecret(dbpf);
 
-        stopwatch.Stop();
-        var ts = stopwatch.Elapsed;
-        Console.WriteLine($"The file was unpacked in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
-    }
-    catch (Exception ex)
-    {
-        PrintError(ex.Message);
-    }
+    stopwatch.Stop();
+    var ts = stopwatch.Elapsed;
+    Console.WriteLine($"The file was unpacked in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
 }
 
 static void Encode(string inputPath, string? outputPath)
 {
-    try
-    {
-        var prop = PropertyListJsonSerializer.Deserialize(File.ReadAllText(inputPath));
+    var prop = PropertyListJsonSerializer.Deserialize(File.ReadAllText(inputPath));
 
-        using FileStream stream = File.Create(outputPath + "\\" + Path.GetFileNameWithoutExtension(inputPath));
-        prop.Encode(stream);
-    }
-    catch (Exception ex)
-    {
-        PrintError(ex.Message);
-    }
+    using FileStream stream = File.Create(outputPath + "\\" + Path.GetFileNameWithoutExtension(inputPath));
+    prop.Encode(stream);
 }
 
 static void Decode(string inputPath, string? outputPath)
 {
-    try
-    {
-        using FileStream stream = File.OpenRead(inputPath);
-        string json = PropertyListJsonSerializer.DecodePropertyListToJson(stream);
-        Console.WriteLine(json);
-        using StreamWriter writer = File.CreateText(outputPath ?? inputPath + ".json");
-        writer.Write(json);
-    }
-    catch (Exception ex)
-    {
-        PrintError(ex.Message);
-    }
+    using FileStream stream = File.OpenRead(inputPath);
+    string json = PropertyListJsonSerializer.DecodePropertyListToJson(stream);
+    Console.WriteLine(json);
+    using StreamWriter writer = File.CreateText(outputPath ?? inputPath + ".json");
+    writer.Write(json);
 }
 
 static void Hash(string name, string regName)
