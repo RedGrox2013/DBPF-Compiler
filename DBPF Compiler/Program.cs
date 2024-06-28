@@ -1,4 +1,5 @@
-﻿using DBPF_Compiler.DBPF;
+﻿using DBPF_Compiler.ArgScript;
+using DBPF_Compiler.DBPF;
 using DBPF_Compiler.FileTypes.Prop;
 using DBPF_Compiler.FNV;
 using DBPF_Compiler.Types;
@@ -6,6 +7,12 @@ using System.Diagnostics;
 using System.Text;
 
 Console.WriteLine("Spore Database Packed File Compiler");
+
+// test
+//var test = Lexer.Analyze(@"
+//test test (test test) test
+//");
+//Console.WriteLine(string.Join('\n', (IEnumerable<Line>)test));
 
 if (args.Length == 0)
     return;

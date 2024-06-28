@@ -1,13 +1,30 @@
-﻿namespace DBPF_Compiler.ArgScript
+﻿using System.Text;
+
+namespace DBPF_Compiler.ArgScript
 {
-    internal class Line(string[] arguments)
+    public class Line(string[] arguments)
     {
         private readonly string[] _args = arguments;
 
-        public int Count => _args.Length;
+        public int ArgumentCount => _args.Length;
+        public int LinePosition { get; set; } = 0;
+
+        public static Line Empty => new(0);
 
         private Line(int count) : this(new string[count]) { }
         public Line(IEnumerable<string> arguments) : this(arguments.ToArray()) { }
+
+        public static bool IsNullOrEmpty(Line? line)
+        {
+            if (line == null || line.ArgumentCount == 0)
+                return true;
+
+            foreach (var arg in line._args)
+                if (!string.IsNullOrWhiteSpace(arg))
+                    return false;
+
+            return true;
+        }
 
         public int Find(string argumentName)
             => Find(a => a.Equals(argumentName, StringComparison.InvariantCultureIgnoreCase));
@@ -38,7 +55,24 @@
             return option;
         }
 
-        public override string ToString() => string.Join(' ', _args);
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            foreach (var arg in _args)
+            {
+                if (arg.Contains(' '))
+                {
+                    sb.Append('"');
+                    sb.Append(arg);
+                    sb.Append('"');
+                }
+                else
+                    sb.Append(arg);
+                sb.Append(' ');
+            }
+
+            return sb.ToString();
+        }
 
         public string this[int index] => _args[index];
     }
