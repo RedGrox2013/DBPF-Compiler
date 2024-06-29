@@ -11,6 +11,8 @@ Console.WriteLine("Spore Database Packed File Compiler");
 // test
 //var test = Lexer.Analyze(@"
 //test test (test test) test
+
+//test test (test test) test
 //");
 //Console.WriteLine(string.Join('\n', (IEnumerable<Line>)test));
 
