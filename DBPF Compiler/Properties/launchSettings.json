@@ -6,7 +6,7 @@
     },
     "pack": {
       "commandName": "Project",
-      "commandLineArgs": "--pack ..\\..\\..\\..\\TestData test.package"
+      "commandLineArgs": "--pack \"..\\..\\..\\..\\Mods Projects\\TestData\" test.package"
     },
     "unpack": {
       "commandName": "Project",

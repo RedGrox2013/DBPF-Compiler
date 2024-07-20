@@ -1,9 +1,10 @@
-﻿using DBPF_Compiler.DBPF;
+﻿using DBPF_Compiler.ArgScript;
+using DBPF_Compiler.Commands;
+using DBPF_Compiler.DBPF;
 using DBPF_Compiler.FileTypes.Prop;
 using DBPF_Compiler.FNV;
 using DBPF_Compiler.Types;
 using System.Diagnostics;
-using System.Text;
 
 Console.WriteLine("Spore Database Packed File Compiler");
 
@@ -20,6 +21,9 @@ if (regDir.Exists)
 else
     PrintError("No registers found. Translating hashes is not possible.");
 
+CommandManager manager = CommandManager.Initialize();
+Line line = new(args);
+
 try
 {
     if (args[0].Equals("--help") || args[0].Equals("-h"))
@@ -32,9 +36,9 @@ try
 --hash <name> <registry>:             get hash by name
 --name-by-hash <name> <registry>:     get name by hash
 ");
-    else if ((args[0].Equals("--pack") || args[0].Equals("-p")) && CheckArguments(args))
-        Pack(args[1], args[2], args.Length >= 4 ? args[3] : null);
-    else if ((args[0].Equals("--unpack") || args[0].Equals("-u")) && CheckArguments(args))
+    else if (args[0].Equals("--pack") || args[0].Equals("-p"))
+        manager.ParseLine(line);
+    else if (args[0].Equals("--unpack") || args[0].Equals("-u"))
         Unpack(args[1], args[2]);
     else if (args[0].Equals("--encode") || args[0].Equals("-e"))
         Encode(args[1], args.Length >= 3 ? args[2] : null);
@@ -50,30 +54,6 @@ catch (Exception e)
     PrintError(e.Message);
 }
 
-
-static void Pack(string inputPath, string outputPath, string? secretFolder = null)
-{
-    DBPFPacker packer = new(inputPath);
-    Stopwatch stopwatch = Stopwatch.StartNew();
-
-    const string STR_DATA = "Со мной воюет сатана 😈";
-    byte[] data = Encoding.Default.GetBytes(STR_DATA);
-
-    using FileStream fs = File.Create(outputPath);
-    using DatabasePackedFile dbpf = new(fs);
-    dbpf.OnHeaderWriting += msg => Console.WriteLine("Writing header . . .");
-    dbpf.OnDataWriting += DisplayDataWritingMessage;
-    dbpf.OnIndexWriting += msg => Console.WriteLine("Writing index . . .");
-    dbpf.WriteData(data, new ResourceKey(FNVHash.Compute(STR_DATA), 0x2B6CAB5F));
-
-    dbpf.WriteSecretData(Encoding.Default.GetBytes("Уууу секретики"), new("Секретик", "txt"));
-
-    packer.Pack(dbpf, secretFolder);
-
-    stopwatch.Stop();
-    var ts = stopwatch.Elapsed;
-    Console.WriteLine($"The file was packed in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
-}
 
 static void Unpack(string inputPath, string outputPath)
 {
@@ -158,31 +138,10 @@ static void NameByHash(string strHash, string regName)
     Console.WriteLine(name);
 }
 
-static void DisplayDataWritingMessage(object? message)
-{
-    if (message is ResourceKey key)
-        Console.WriteLine("Writing data: {0} . . .", key);
-}
 static void DisplayDataReadingMessage(object? message)
 {
     if (message is ResourceKey key)
         Console.WriteLine("Reading data: {0} . . .", key);
-}
-
-static bool CheckArguments(string[] args)
-{
-    if (args.Length == 1)
-    {
-        PrintError("Missing <input> and <output> arguments.");
-        return false;
-    }
-    if (args.Length == 2)
-    {
-        PrintError("Missing <output> argument.");
-        return false;
-    }
-
-    return true;
 }
 
 static void PrintError(string message)
