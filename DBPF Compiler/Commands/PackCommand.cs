@@ -53,7 +53,7 @@ namespace DBPF_Compiler.Commands
         static void DisplayDataWritingMessage(object? message)
         {
             if (message is ResourceKey key)
-                Console.WriteLine("Writing data: {0} . . .", key);
+                CommandManager.Instance.WriteLine($"Writing data: {key} . . .");
         }
     }
 }
