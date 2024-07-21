@@ -7,17 +7,16 @@ namespace DBPF_Compiler.Commands
         private static CommandManager? _instance;
         public static CommandManager Instance => _instance ??= new CommandManager();
 
-        private Action<object?>? _write, _writeLine, _printError;
-        public event Action<object?> WriteEvent { add => _write += value; remove => _write -= value; }
-        public event Action<object?> WriteLineEvent { add => _writeLine += value; remove => _writeLine -= value; }
+        private Action<object?>? _printError;
         public event Action<object?> PrintErrorEvent { add => _printError += value; remove => _printError -= value; }
+        public TextWriter? Out { get; set; }
 
         private readonly Dictionary<string, ASCommand> _commands = [];
 
         private CommandManager() { }
 
-        public void Write(object? message) => _write?.Invoke(message);
-        public void WriteLine(object? message) => _writeLine?.Invoke(message);
+        public void Write(object? message) => Out?.Write(message);
+        public void WriteLine(object? message) => Out?.WriteLine(message);
         public void PrintError(object? message) => _printError?.Invoke(message);
 
         public void AddCommand(ASCommand command, params string[] keywords)
@@ -31,6 +30,7 @@ namespace DBPF_Compiler.Commands
         {
             _instance = new CommandManager();
             _instance.AddCommand(new PackCommand(), "-p", "--pack", "pack");
+            _instance.AddCommand(new UnpackCommand(), "-u", "--unpack", "unpack");
 
             return _instance;
         }
@@ -65,20 +65,20 @@ namespace DBPF_Compiler.Commands
 
         public void PrintHelp(string? commandName = null)
         {
-            if (_writeLine == null)
+            if (Out == null)
                 return;
 
             if (string.IsNullOrWhiteSpace(commandName))
             {
                 foreach (var command in _commands)
-                    _writeLine(command.Key + ":\t" + (command.Value.GetDescription() ?? "no description"));
+                    Out.WriteLine(command.Key + ":\t" + (command.Value.GetDescription() ?? "no description"));
                 return;
             }
 
             if (!_commands.TryGetValue(commandName, out var cmd))
                 _printError?.Invoke(commandName + " is not found");
             else
-                _writeLine(commandName + ":\t" +
+                Out.WriteLine(commandName + ":\t" +
                     (cmd.GetDescription(DescriptionMode.Complete) ?? cmd.GetDescription() ?? "no description"));
         }
     }

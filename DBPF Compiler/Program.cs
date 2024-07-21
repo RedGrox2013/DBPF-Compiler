@@ -22,6 +22,8 @@ else
     PrintError("No registers found. Translating hashes is not possible.");
 
 CommandManager manager = CommandManager.Initialize();
+manager.Out = Console.Out;
+manager.PrintErrorEvent += PrintError;
 Line line = new(args);
 
 try
@@ -36,10 +38,9 @@ try
 --hash <name> <registry>:             get hash by name
 --name-by-hash <name> <registry>:     get name by hash
 ");
-    else if (args[0].Equals("--pack") || args[0].Equals("-p"))
+    else if (args[0].Equals("--pack") || args[0].Equals("-p") ||
+        args[0].Equals("--unpack") || args[0].Equals("-u"))
         manager.ParseLine(line);
-    else if (args[0].Equals("--unpack") || args[0].Equals("-u"))
-        Unpack(args[1], args[2]);
     else if (args[0].Equals("--encode") || args[0].Equals("-e"))
         Encode(args[1], args.Length >= 3 ? args[2] : null);
     else if (args[0].Equals("--decode") || args[0].Equals("-d"))
@@ -54,26 +55,6 @@ catch (Exception e)
     PrintError(e.Message);
 }
 
-
-static void Unpack(string inputPath, string outputPath)
-{
-    Stopwatch stopwatch = Stopwatch.StartNew();
-    using FileStream fs = new(inputPath, FileMode.Open, FileAccess.Read);
-    using DatabasePackedFile dbpf = new(fs);
-
-    dbpf.OnHeaderReading += msg => Console.WriteLine("Reading header . . .");
-    dbpf.OnDataReading += DisplayDataReadingMessage;
-    dbpf.OnIndexReading += msg => Console.WriteLine("Reading index . . . Index offset: " + (msg as uint?));
-
-    DBPFPacker unpacker = new(outputPath);
-
-    unpacker.Unpack(dbpf);
-    unpacker.UnpackSecret(dbpf);
-
-    stopwatch.Stop();
-    var ts = stopwatch.Elapsed;
-    Console.WriteLine($"The file was unpacked in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
-}
 
 static void Encode(string inputPath, string? outputPath)
 {
@@ -138,13 +119,7 @@ static void NameByHash(string strHash, string regName)
     Console.WriteLine(name);
 }
 
-static void DisplayDataReadingMessage(object? message)
-{
-    if (message is ResourceKey key)
-        Console.WriteLine("Reading data: {0} . . .", key);
-}
-
-static void PrintError(string message)
+static void PrintError(object? message)
 {
     var oldColor = Console.ForegroundColor;
     Console.ForegroundColor = ConsoleColor.Red;
