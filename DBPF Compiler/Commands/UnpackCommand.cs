@@ -45,8 +45,8 @@ namespace DBPF_Compiler.Commands
             if (mode == DescriptionMode.Complete)
                 return
     @"unpack DBPF to a specified directory. This command takes the following arguments:
-    <input> - path to DBPF
-    <output> - path to output directory";
+        <input> - path to DBPF
+        <output> - path to output directory";
 
             throw new NotImplementedException();
         }
