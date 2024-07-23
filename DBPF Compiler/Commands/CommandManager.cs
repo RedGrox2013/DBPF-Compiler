@@ -29,8 +29,9 @@ namespace DBPF_Compiler.Commands
         public static CommandManager Initialize()
         {
             _instance = new CommandManager();
-            _instance.AddCommand(new PackCommand(), "-p", "--pack", "pack");
-            _instance.AddCommand(new UnpackCommand(), "-u", "--unpack", "unpack");
+            _instance.AddCommand(new PackCommand(), "pack", "--pack", "-p");
+            _instance.AddCommand(new UnpackCommand(), "unpack", "--unpack", "-u");
+            _instance.AddCommand(new EncodeCommand(), "encode", "--encode", "-e");
 
             return _instance;
         }
@@ -71,7 +72,7 @@ namespace DBPF_Compiler.Commands
             if (string.IsNullOrWhiteSpace(commandName))
             {
                 foreach (var command in _commands)
-                    Out.WriteLine(command.Key + ":\t" + (command.Value.GetDescription() ?? "no description"));
+                    Out.WriteLine(command.Key + ":\t\t" + (command.Value.GetDescription() ?? "no description"));
                 return;
             }
 

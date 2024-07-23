@@ -1,12 +1,9 @@
 ﻿using DBPF_Compiler.ArgScript;
 using DBPF_Compiler.Commands;
-using DBPF_Compiler.DBPF;
 using DBPF_Compiler.FileTypes.Prop;
 using DBPF_Compiler.FNV;
-using DBPF_Compiler.Types;
-using System.Diagnostics;
 
-Console.WriteLine("Spore Database Packed File Compiler");
+Console.WriteLine("Spore Database Packed File Compiler\n");
 
 if (args.Length == 0)
     return;
@@ -28,7 +25,7 @@ Line line = new(args);
 
 try
 {
-    if (args[0].Equals("--help") || args[0].Equals("-h"))
+    /*if (args[0].Equals("--help") || args[0].Equals("-h"))
         Console.WriteLine(@"
 --help, -h:                           show help
 --pack, -p <input> <output> <secret>: pack the contents of a folder into DBPF. <secret> - name of the folder whose contents are hidden in the DBPF
@@ -38,11 +35,11 @@ try
 --hash <name> <registry>:             get hash by name
 --name-by-hash <name> <registry>:     get name by hash
 ");
-    else if (args[0].Equals("--pack") || args[0].Equals("-p") ||
-        args[0].Equals("--unpack") || args[0].Equals("-u"))
+    else */if (args[0].Equals("--pack") || args[0].Equals("-p") ||
+        args[0].Equals("--unpack") || args[0].Equals("-u") ||
+        args[0].Equals("--encode") || args[0].Equals("-e") ||
+        args[0].Equals("--help") || args[0].Equals("-h"))
         manager.ParseLine(line);
-    else if (args[0].Equals("--encode") || args[0].Equals("-e"))
-        Encode(args[1], args.Length >= 3 ? args[2] : null);
     else if (args[0].Equals("--decode") || args[0].Equals("-d"))
         Decode(args[1], args.Length >= 3 ? args[2] : null);
     else if (args[0].Equals("--hash"))
@@ -55,14 +52,6 @@ catch (Exception e)
     PrintError(e.Message);
 }
 
-
-static void Encode(string inputPath, string? outputPath)
-{
-    var prop = PropertyListJsonSerializer.Deserialize(File.ReadAllText(inputPath));
-
-    using FileStream stream = File.Create(outputPath + "\\" + Path.GetFileNameWithoutExtension(inputPath));
-    prop.Encode(stream);
-}
 
 static void Decode(string inputPath, string? outputPath)
 {
