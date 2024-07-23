@@ -43,9 +43,9 @@ namespace DBPF_Compiler.Commands
             if (mode == DescriptionMode.Complete)
                 return
     @"pack the contents of a folder into DBPF. This command takes the following arguments:
-        <input> - path to source data
-        <output> - path to the output file
-        <secret> - name of the folder whose contents are hidden in the DBPF";
+    <input> - path to source data
+    <output> - path to the output file
+    <secret> - name of the folder whose contents are hidden in the DBPF";
 
             throw new NotImplementedException();
         }
