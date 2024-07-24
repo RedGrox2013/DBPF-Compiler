@@ -46,7 +46,7 @@ namespace DBPF_Compiler.ArgScript
             if (index == 0)
                 return null;
 
-            if (index + count >= _args.Length)
+            if (index + count - 1 >= _args.Length)
                 throw new IndexOutOfRangeException(optionName + " does not have as many arguments: " + count);
 
             string[] result = new string[count];
