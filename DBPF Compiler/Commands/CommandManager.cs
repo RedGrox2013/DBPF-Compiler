@@ -33,6 +33,7 @@ namespace DBPF_Compiler.Commands
             _instance.AddCommand(new UnpackCommand(), "unpack", "--unpack", "-u");
             _instance.AddCommand(new EncodeCommand(), "encode", "--encode", "-e");
             _instance.AddCommand(new DecodeCommand(), "decode", "--decode", "-d");
+            _instance.AddCommand(new HashCommand(),   "hash", "--hash");
 
             return _instance;
         }

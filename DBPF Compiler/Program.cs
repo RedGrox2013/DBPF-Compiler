@@ -17,9 +17,9 @@ if (regDir.Exists)
 else
     PrintError("No registers found. Translating hashes is not possible.");
 
-CommandManager manager = CommandManager.Initialize();
-manager.Out = Console.Out;
-manager.PrintErrorEvent += PrintError;
+CommandManager cmd = CommandManager.Initialize();
+cmd.Out = Console.Out;
+cmd.PrintErrorEvent += PrintError;
 Line line = new(args);
 
 try
@@ -38,10 +38,9 @@ try
         args[0].Equals("--unpack") || args[0].Equals("-u") ||
         args[0].Equals("--encode") || args[0].Equals("-e") ||
         args[0].Equals("--help") || args[0].Equals("-h") ||
-        args[0].Equals("--decode") || args[0].Equals("-d"))
-        manager.ParseLine(line);
-    else if (args[0].Equals("--hash"))
-        Hash(args[1], args.Length >= 3 ? args[2] : "all");
+        args[0].Equals("--decode") || args[0].Equals("-d") ||
+        args[0].Equals("--hash"))
+        cmd.ParseLine(line);
     else if (args[0].Equals("--name-by-hash"))
         NameByHash(args[1], args.Length >= 3 ? args[2] : "all");
 }
@@ -50,17 +49,6 @@ catch (Exception e)
     PrintError(e.Message);
 }
 
-
-static void Hash(string name, string regName)
-{
-    if (regName.Equals("fnv", StringComparison.InvariantCultureIgnoreCase))
-    {
-        CommandManager.Instance.WriteLine(FNVHash.ToString(FNVHash.Compute(name)));
-        return;
-    }
-
-    CommandManager.Instance.WriteLine(FNVHash.ToString(NameRegistryManager.Instance.GetHash(name, regName)));
-}
 
 static void NameByHash(string strHash, string regName)
 {
