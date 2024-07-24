@@ -29,9 +29,10 @@ namespace DBPF_Compiler.Commands
         public static CommandManager Initialize()
         {
             _instance = new CommandManager();
-            _instance.AddCommand(new PackCommand(), "pack", "--pack", "-p");
+            _instance.AddCommand(new PackCommand(),   "pack",   "--pack",   "-p");
             _instance.AddCommand(new UnpackCommand(), "unpack", "--unpack", "-u");
             _instance.AddCommand(new EncodeCommand(), "encode", "--encode", "-e");
+            _instance.AddCommand(new DecodeCommand(), "decode", "--decode", "-d");
 
             return _instance;
         }

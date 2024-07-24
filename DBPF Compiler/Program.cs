@@ -1,6 +1,5 @@
 ﻿using DBPF_Compiler.ArgScript;
 using DBPF_Compiler.Commands;
-using DBPF_Compiler.FileTypes.Prop;
 using DBPF_Compiler.FNV;
 
 Console.WriteLine("Spore Database Packed File Compiler\n");
@@ -38,10 +37,9 @@ try
     else */if (args[0].Equals("--pack") || args[0].Equals("-p") ||
         args[0].Equals("--unpack") || args[0].Equals("-u") ||
         args[0].Equals("--encode") || args[0].Equals("-e") ||
-        args[0].Equals("--help") || args[0].Equals("-h"))
+        args[0].Equals("--help") || args[0].Equals("-h") ||
+        args[0].Equals("--decode") || args[0].Equals("-d"))
         manager.ParseLine(line);
-    else if (args[0].Equals("--decode") || args[0].Equals("-d"))
-        Decode(args[1], args.Length >= 3 ? args[2] : null);
     else if (args[0].Equals("--hash"))
         Hash(args[1], args.Length >= 3 ? args[2] : "all");
     else if (args[0].Equals("--name-by-hash"))
@@ -53,31 +51,22 @@ catch (Exception e)
 }
 
 
-static void Decode(string inputPath, string? outputPath)
-{
-    using FileStream stream = File.OpenRead(inputPath);
-    string json = PropertyListJsonSerializer.DecodePropertyListToJson(stream);
-    Console.WriteLine(json);
-    using StreamWriter writer = File.CreateText(outputPath ?? inputPath + ".json");
-    writer.Write(json);
-}
-
 static void Hash(string name, string regName)
 {
     if (regName.Equals("fnv", StringComparison.InvariantCultureIgnoreCase))
     {
-        Console.WriteLine(FNVHash.ToString(FNVHash.Compute(name)));
+        CommandManager.Instance.WriteLine(FNVHash.ToString(FNVHash.Compute(name)));
         return;
     }
 
-    Console.WriteLine(FNVHash.ToString(NameRegistryManager.Instance.GetHash(name, regName)));
+    CommandManager.Instance.WriteLine(FNVHash.ToString(NameRegistryManager.Instance.GetHash(name, regName)));
 }
 
 static void NameByHash(string strHash, string regName)
 {
     if (!FNVHash.TryParse(strHash, out var hash))
     {
-        PrintError($"\"{strHash}\" is not hash.");
+        CommandManager.Instance.PrintError($"\"{strHash}\" is not hash.");
         return;
     }
 
@@ -86,9 +75,9 @@ static void NameByHash(string strHash, string regName)
     {
         name = NameRegistryManager.Instance.GetName(hash);
         if (name.StartsWith("0x"))
-            Console.WriteLine($"\"{strHash}\" not found.");
+            CommandManager.Instance.WriteLine($"\"{strHash}\" not found.");
         else
-            Console.WriteLine(name);
+            CommandManager.Instance.WriteLine(name);
 
         return;
     }
@@ -96,16 +85,16 @@ static void NameByHash(string strHash, string regName)
     var reg = NameRegistryManager.Instance.GetRegistry(regName);
     if (reg == null)
     {
-        PrintError($"\"{regName}\" not found.");
+        CommandManager.Instance.PrintError($"\"{regName}\" not found.");
         return;
     }
     if (!reg.GetName(hash, out name))
     {
-        PrintError($"\"{strHash}\" not found.");
+        CommandManager.Instance.PrintError($"\"{strHash}\" not found.");
         return;
     }
 
-    Console.WriteLine(name);
+    CommandManager.Instance.WriteLine(name);
 }
 
 static void PrintError(object? message)
