@@ -48,7 +48,7 @@ namespace DBPF_Compiler.Commands
     <input> - path to DBPF
     <output> - path to output directory";
 
-            throw new NotImplementedException();
+            return null;
         }
 
         static void DisplayDataReadingMessage(object? message)

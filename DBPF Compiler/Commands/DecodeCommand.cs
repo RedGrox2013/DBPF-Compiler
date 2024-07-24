@@ -27,7 +27,7 @@ namespace DBPF_Compiler.Commands
             if (mode == DescriptionMode.Complete)
                 return "decode file. This command takes the following arguments: <input> and <output>.";
 
-            throw new NotImplementedException();
+            return null;
         }
     }
 }

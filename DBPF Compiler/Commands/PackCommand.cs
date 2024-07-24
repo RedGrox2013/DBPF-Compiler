@@ -47,7 +47,7 @@ namespace DBPF_Compiler.Commands
     <output> - path to the output file
     <secret> - name of the folder whose contents are hidden in the DBPF";
 
-            throw new NotImplementedException();
+            return null;
         }
 
         static void DisplayDataWritingMessage(object? message)
