@@ -40,7 +40,7 @@ namespace DBPF_Compiler.ArgScript
 
         public bool HasFlag(string flagName) => Find("-" + flagName) != -1;
 
-        public Line? GetOption(string optionName, int count)
+        public string[]? GetOption(string optionName, int count)
         {
             int index = Find("-" + optionName) + 1;
             if (index == 0)
@@ -49,10 +49,10 @@ namespace DBPF_Compiler.ArgScript
             if (index + count >= _args.Length)
                 throw new IndexOutOfRangeException(optionName + " does not have as many arguments: " + count);
 
-            Line option = new(count);
-            Array.Copy(_args, index, option._args, 0, count);
+            string[] result = new string[count];
+            Array.Copy(_args, index, result, 0, count);
 
-            return option;
+            return result;
         }
 
         public override string ToString()
