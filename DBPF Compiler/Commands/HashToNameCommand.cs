@@ -7,9 +7,16 @@ namespace DBPF_Compiler.Commands
     {
         public override void ParseLine(Line line)
         {
-            if (!FNVHash.TryParse(line[1], out var hash))
+            if (line.ArgumentCount < 2)
             {
-                CommandManager.Instance.PrintError($"\"{line[1]}\" is not hash.");
+                CommandManager.Instance.PrintError("Required arguments are missing");
+                return;
+            }
+
+            string strHash = line.GetOption("-hash", 1)?[0] ?? line[1];
+            if (!FNVHash.TryParse(strHash, out var hash))
+            {
+                CommandManager.Instance.PrintError($"\"{strHash}\" is not hash.");
                 return;
             }
 
@@ -19,20 +26,27 @@ namespace DBPF_Compiler.Commands
             {
                 name = NameRegistryManager.Instance.GetName(hash);
                 if (name.StartsWith("0x"))
-                    CommandManager.Instance.WriteLine($"\"{line[1]}\" not found.");
-                else
-                    CommandManager.Instance.WriteLine(name);
-
-                return;
+                {
+                    CommandManager.Instance.PrintError($"\"{strHash}\" not found.");
+                    return;
+                }
+            }
+            else
+            {
+                var reg = NameRegistryManager.Instance.GetRegistry(regName);
+                if (reg == null)
+                {
+                    CommandManager.Instance.PrintError($"\"{regName}\" not found.");
+                    return;
+                }
+                if (!reg.GetName(hash, out name))
+                {
+                    CommandManager.Instance.PrintError($"\"{strHash}\" not found.");
+                    return;
+                }
             }
 
-            var reg = NameRegistryManager.Instance.GetRegistry(regName);
-            if (reg == null)
-                CommandManager.Instance.PrintError($"\"{regName}\" not found.");
-            else if (!reg.GetName(hash, out name))
-                CommandManager.Instance.PrintError($"\"{line[1]}\" not found.");
-            else
-                CommandManager.Instance.WriteLine($"{hash} ----[{regName ?? "all"}]----> {name}");
+            CommandManager.Instance.WriteLine($"{strHash} ----[{regName ?? "all"}]----> {name}");
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
