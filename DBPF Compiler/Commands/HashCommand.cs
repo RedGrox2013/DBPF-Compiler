@@ -7,15 +7,8 @@ namespace DBPF_Compiler.Commands
     {
         public override void ParseLine(Line line)
         {
-            //if (line[2].Equals("fnv", StringComparison.InvariantCultureIgnoreCase))
-            //{
-            //    CommandManager.Instance.WriteLine(FNVHash.ToString(FNVHash.Compute(line[1])));
-            //    return;
-            //}
-
-            //CommandManager.Instance.WriteLine(FNVHash.ToString(NameRegistryManager.Instance.GetHash(name, regName)));
-
-            string? name = line.GetOption("-name", 1)?[0] ?? line.GetOption("n", 1)?[0];
+            string? name = line.ArgumentCount == 2 ? line[1] :
+                line.GetOption("-name", 1)?[0] ?? line.GetOption("n", 1)?[0];
             if (string.IsNullOrEmpty(name))
             {
                 CommandManager.Instance.PrintError("Required argument missing: <name>");
@@ -23,20 +16,32 @@ namespace DBPF_Compiler.Commands
             }
 
             string? regName = line.GetOption("-registry", 1)?[0];
+            string hash;
             if (regName != null && regName.Equals("fnv", StringComparison.InvariantCultureIgnoreCase))
-            {
-                CommandManager.Instance.WriteLine(FNVHash.ToString(FNVHash.Compute(name)));
-                return;
-            }
+                hash = FNVHash.ToString(FNVHash.Compute(name));
+            else
+                hash = FNVHash.ToString(NameRegistryManager.Instance.GetHash(name, regName));
 
-            CommandManager.Instance.WriteLine(FNVHash.ToString(NameRegistryManager.Instance.GetHash(name, regName)));
+            CommandManager.Instance.WriteLine($"{name} ----[{regName ?? "all"}]----> {hash}");
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
         {
-            // TODO: Добавить нормальное описание
-            if (mode == DescriptionMode.Basic || mode == DescriptionMode.Complete)
-                return "example: hash -n <name> --registry <registry>";
+            if (mode == DescriptionMode.Basic)
+                return "get hash by name.";
+            if (mode == DescriptionMode.Complete)
+                return @"get hash by name.
+Usage:  hash -n <name> [--registry <registry>]
+<name>     name to hash
+<registry> The registry from which the hash will be searched.
+           If the hash is not found, the name will be hashed.
+           This parameter accepts the following values (default is all):
+                all
+                fnv
+                file
+                property
+                type
+                simulator";
 
             return null;
         }
