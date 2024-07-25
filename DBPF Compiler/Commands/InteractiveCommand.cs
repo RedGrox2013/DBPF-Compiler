@@ -4,27 +4,34 @@ namespace DBPF_Compiler.Commands
 {
     internal class InteractiveCommand : ASCommand
     {
-        private static bool _run = false;
+        public static bool IsRunning { get; private set; } = false;
 
         public override void ParseLine(Line line)
         {
-            if (_run)
+            if (IsRunning)
                 return;
 
-            _run = true;
+            string? cmdLine;
+            IsRunning = true;
             line = Line.Empty;
-            string[]? args;
             CommandManager.Instance.WriteLine("To exit, enter \"exit\"");
 
-            do
+            try
             {
-                CommandManager.Instance.ParseLine(line);
-                CommandManager.Instance.Write(">>> ");
-                args = CommandManager.Instance.ReadLine()?.Split();
-                line = args == null ? Line.Empty : new(args);
-            } while (args != null && !line[0].Equals("exit", StringComparison.OrdinalIgnoreCase));
+                do
+                {
+                    CommandManager.Instance.ParseLine(line);
 
-            _run = false;
+                    CommandManager.Instance.Write(">>> ");
+                    cmdLine = CommandManager.Instance.ReadLine();
+                    line = Lexer.LineToArgs(cmdLine);
+                } while (cmdLine != null &&
+                    (Line.IsNullOrEmpty(line) || !line[0].Equals("exit", StringComparison.OrdinalIgnoreCase)));
+            }
+            finally
+            {
+                IsRunning = false;
+            }
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
