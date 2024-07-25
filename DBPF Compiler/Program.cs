@@ -19,7 +19,9 @@ else
 
 CommandManager cmd = CommandManager.Initialize();
 cmd.Out = Console.Out;
+cmd.In = Console.In;
 cmd.PrintErrorEvent += PrintError;
+cmd.AddCommand(new InteractiveCommand(), "interactive");
 Line line = new(args);
 
 try
@@ -34,7 +36,7 @@ try
 --hash <name> <registry>:             get hash by name
 --name-by-hash <name> <registry>:     get name by hash
 ");
-    else */if (args[0].Equals("--pack") || args[0].Equals("-p") ||
+    else if (args[0].Equals("--pack") || args[0].Equals("-p") ||
         args[0].Equals("--unpack") || args[0].Equals("-u") ||
         args[0].Equals("--encode") || args[0].Equals("-e") ||
         args[0].Equals("--help") || args[0].Equals("-h") ||
@@ -42,48 +44,28 @@ try
         args[0].Equals("--hash"))
         cmd.ParseLine(line);
     else if (args[0].Equals("--name-by-hash"))
-        NameByHash(args[1], args.Length >= 3 ? args[2] : "all");
+        NameByHash(args[1], args.Length >= 3 ? args[2] : "all");*/
+
+    //if (line.HasFlag("-interactive"))
+    //{
+    //    do
+    //    {
+    //        cmd.Write(">>> ");
+    //        args = Console.ReadLine()?.Split();
+    //        line = args == null ? Line.Empty : new(args);
+    //        cmd.ParseLine(line);
+    //    } while (!line[0].Equals("^Z") && !line[0].Equals("exit", StringComparison.OrdinalIgnoreCase));
+    //}
+    //else
+    //    cmd.ParseLine(line);
+
+    cmd.ParseLine(line);
 }
 catch (Exception e)
 {
     PrintError(e.Message);
 }
 
-
-static void NameByHash(string strHash, string regName)
-{
-    if (!FNVHash.TryParse(strHash, out var hash))
-    {
-        CommandManager.Instance.PrintError($"\"{strHash}\" is not hash.");
-        return;
-    }
-
-    string name;
-    if (regName.Equals("all", StringComparison.InvariantCultureIgnoreCase))
-    {
-        name = NameRegistryManager.Instance.GetName(hash);
-        if (name.StartsWith("0x"))
-            CommandManager.Instance.WriteLine($"\"{strHash}\" not found.");
-        else
-            CommandManager.Instance.WriteLine(name);
-
-        return;
-    }
-
-    var reg = NameRegistryManager.Instance.GetRegistry(regName);
-    if (reg == null)
-    {
-        CommandManager.Instance.PrintError($"\"{regName}\" not found.");
-        return;
-    }
-    if (!reg.GetName(hash, out name))
-    {
-        CommandManager.Instance.PrintError($"\"{strHash}\" not found.");
-        return;
-    }
-
-    CommandManager.Instance.WriteLine(name);
-}
 
 static void PrintError(object? message)
 {

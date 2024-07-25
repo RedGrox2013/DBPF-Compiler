@@ -6,22 +6,23 @@
     },
     "pack": {
       "commandName": "Project",
-      "commandLineArgs": "--pack \"..\\..\\..\\..\\Mods Projects\\TestData\" test.package"
+      "commandLineArgs": "pack \"..\\..\\..\\..\\Mods Projects\\TestData\" test.package"
     },
     "unpack": {
       "commandName": "Project",
-      "commandLineArgs": "--unpack test.package test_unpacked"
+      "commandLineArgs": "unpack test.package test_unpacked"
     },
     "encode": {
       "commandName": "Project",
-      "commandLineArgs": "--encode test.prop.json"
+      "commandLineArgs": "encode test.prop.json"
     },
     "decode": {
       "commandName": "Project",
-      "commandLineArgs": "--decode \"D:\\Program Files\\SporeModder FX\\Projects\\proptest\\test\\test.prop\" test.prop.json"
+      "commandLineArgs": "decode \"D:\\Program Files\\SporeModder FX\\Projects\\proptest\\test\\test.prop\" test.prop.json"
     },
-    "no arguments": {
-      "commandName": "Project"
+    "interactive": {
+      "commandName": "Project",
+      "commandLineArgs": "interactive"
     }
   }
 }

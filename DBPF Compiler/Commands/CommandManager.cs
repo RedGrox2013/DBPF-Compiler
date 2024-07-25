@@ -10,6 +10,7 @@ namespace DBPF_Compiler.Commands
         private Action<object?>? _printError;
         public event Action<object?> PrintErrorEvent { add => _printError += value; remove => _printError -= value; }
         public TextWriter? Out { get; set; }
+        public TextReader? In { get; set; }
 
         private readonly Dictionary<string, ASCommand> _commands = [];
 
@@ -18,6 +19,7 @@ namespace DBPF_Compiler.Commands
         public void Write(object? message) => Out?.Write(message);
         public void WriteLine(object? message) => Out?.WriteLine(message);
         public void PrintError(object? message) => _printError?.Invoke(message);
+        public string? ReadLine() => In?.ReadLine();
 
         public void AddCommand(ASCommand command, params string[] keywords)
         {
@@ -29,11 +31,12 @@ namespace DBPF_Compiler.Commands
         public static CommandManager Initialize()
         {
             _instance = new CommandManager();
-            _instance.AddCommand(new PackCommand(),   "pack",   "--pack",   "-p");
-            _instance.AddCommand(new UnpackCommand(), "unpack", "--unpack", "-u");
-            _instance.AddCommand(new EncodeCommand(), "encode", "--encode", "-e");
-            _instance.AddCommand(new DecodeCommand(), "decode", "--decode", "-d");
-            _instance.AddCommand(new HashCommand(),   "hash", "--hash");
+            _instance.AddCommand(new PackCommand(),       "pack");
+            _instance.AddCommand(new UnpackCommand(),     "unpack");
+            _instance.AddCommand(new EncodeCommand(),     "encode");
+            _instance.AddCommand(new DecodeCommand(),     "decode");
+            _instance.AddCommand(new HashCommand(),       "hash");
+            _instance.AddCommand(new HashToNameCommand(), "hash-to-name");
 
             return _instance;
         }
@@ -74,7 +77,7 @@ namespace DBPF_Compiler.Commands
             if (string.IsNullOrWhiteSpace(commandName))
             {
                 foreach (var command in _commands)
-                    Out.WriteLine(command.Key + ":\t\t" + (command.Value.GetDescription() ?? "no description"));
+                    Out.WriteLine(command.Key + ":\t\t\t" + (command.Value.GetDescription() ?? "no description"));
                 return;
             }
 
