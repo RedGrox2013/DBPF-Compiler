@@ -51,6 +51,20 @@ namespace DBPF_Compiler.Commands
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
         {
+            if (mode == DescriptionMode.Basic)
+                return "get name by hash.";
+            if (mode == DescriptionMode.Complete)
+                return @"get name by hash.
+Usage:     hash-to-name --hash <hash> [--registry <registry>]
+<hash>     hash by which the name will be searched
+<registry> The registry from which the name will be searched.
+           This parameter accepts the following values (default is all):
+                all
+                file
+                property
+                type
+                simulator";
+
             return null;
         }
     }
