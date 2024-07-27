@@ -42,7 +42,8 @@ namespace DBPF_Compiler.Commands
                 return "pack the contents of a folder into DBPF.";
             if (mode == DescriptionMode.Complete)
                 return
-    @"pack the contents of a folder into DBPF. This command takes the following arguments:
+    @"pack the contents of a folder into DBPF.
+Usage:  pack <input> <output> [<secret>]
     <input> - path to source data
     <output> - path to the output file
     <secret> - name of the folder whose contents are hidden in the DBPF";

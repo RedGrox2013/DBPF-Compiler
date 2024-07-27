@@ -24,7 +24,8 @@ namespace DBPF_Compiler.Commands
             if (mode == DescriptionMode.Basic)
                 return "encode file.";
             if (mode == DescriptionMode.Complete)
-                return "encode file. This command takes the following arguments: <input> and <output>.";
+                return @"encode file.
+Usage:  encode <input> [<output>]";
 
             return null;
         }

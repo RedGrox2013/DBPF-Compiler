@@ -25,7 +25,8 @@ namespace DBPF_Compiler.Commands
             if (mode == DescriptionMode.Basic)
                 return "decode file.";
             if (mode == DescriptionMode.Complete)
-                return "decode file. This command takes the following arguments: <input> and <output>.";
+                return @"decode file.
+Usage:  decode <input> [<output>]";
 
             return null;
         }
