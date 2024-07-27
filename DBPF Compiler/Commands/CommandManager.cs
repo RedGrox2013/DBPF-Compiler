@@ -21,22 +21,19 @@ namespace DBPF_Compiler.Commands
         public void PrintError(object? message) => _printError?.Invoke(message);
         public string? ReadLine() => In?.ReadLine();
 
-        public void AddCommand(ASCommand command, params string[] keywords)
-        {
-            foreach (string keyword in keywords)
-                _commands.Add(keyword, command);
-        }
+        public void AddCommand(string keyword, ASCommand command) => _commands.Add(keyword, command);
         public ASCommand GetCommand(string keyword) => _commands[keyword];
 
         public static CommandManager Initialize()
         {
             _instance = new CommandManager();
-            _instance.AddCommand(new PackCommand(),       "pack");
-            _instance.AddCommand(new UnpackCommand(),     "unpack");
-            _instance.AddCommand(new EncodeCommand(),     "encode");
-            _instance.AddCommand(new DecodeCommand(),     "decode");
-            _instance.AddCommand(new HashCommand(),       "hash");
-            _instance.AddCommand(new HashToNameCommand(), "hash-to-name");
+
+            _instance.AddCommand("pack",         new PackCommand());
+            _instance.AddCommand("unpack",       new UnpackCommand());
+            _instance.AddCommand("encode",       new EncodeCommand());
+            _instance.AddCommand("decode",       new DecodeCommand());
+            _instance.AddCommand("hash",         new HashCommand());
+            _instance.AddCommand("hash-to-name", new HashToNameCommand());
 
             return _instance;
         }
@@ -77,14 +74,14 @@ namespace DBPF_Compiler.Commands
             if (string.IsNullOrWhiteSpace(commandName))
             {
                 foreach (var command in _commands)
-                    Out.WriteLine(command.Key + ":\t\t\t" + (command.Value.GetDescription() ?? "no description"));
+                    Out.WriteLine(command.Key + "\t\t\t" + (command.Value.GetDescription() ?? "no description"));
                 return;
             }
 
             if (!_commands.TryGetValue(commandName, out var cmd))
                 _printError?.Invoke(commandName + " is not found");
             else
-                Out.WriteLine(commandName + ":\t" +
+                Out.WriteLine(commandName + "\t" +
                     (cmd.GetDescription(DescriptionMode.Complete) ?? cmd.GetDescription() ?? "no description"));
         }
     }
