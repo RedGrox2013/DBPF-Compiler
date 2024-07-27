@@ -28,6 +28,7 @@ namespace DBPF_Compiler.Commands
         {
             _instance = new CommandManager();
 
+            _instance.AddCommand("help",         new HelpCommand());
             _instance.AddCommand("pack",         new PackCommand());
             _instance.AddCommand("unpack",       new UnpackCommand());
             _instance.AddCommand("encode",       new EncodeCommand());
@@ -46,19 +47,6 @@ namespace DBPF_Compiler.Commands
 #pragma warning disable CS8602 // Разыменование вероятной пустой ссылки.
             string keyword = line[0];
 #pragma warning restore CS8602 // Разыменование вероятной пустой ссылки.
-
-            if (keyword.Equals("-h", StringComparison.OrdinalIgnoreCase) ||
-                keyword.Equals("--help", StringComparison.OrdinalIgnoreCase) ||
-                keyword.Equals("help", StringComparison.OrdinalIgnoreCase))
-            {
-                if (line.ArgumentCount > 1)
-                    for (int i = 1; i < line.ArgumentCount; i++)
-                        PrintHelp(line[i]);
-                else
-                    PrintHelp();
-
-                return;
-            }
 
             if (!_commands.TryGetValue(keyword, out var command))
                 _printError?.Invoke(keyword + ": unknown command");

@@ -22,6 +22,9 @@ cmd.Out = Console.Out;
 cmd.In = Console.In;
 cmd.PrintErrorEvent += PrintError;
 cmd.AddCommand("interactive", new InteractiveCommand());
+
+if (args[0].Equals("-h", StringComparison.OrdinalIgnoreCase) || args[0].Equals("--help", StringComparison.OrdinalIgnoreCase))
+    args[0] = "help";
 Line line = new(args);
 
 try
