@@ -8,7 +8,9 @@ namespace DBPF_Compiler.Commands
         public static CommandManager Instance => _instance ??= new CommandManager();
 
         private Action<object?>? _printError;
+        private Action? _clear;
         public event Action<object?> PrintErrorEvent { add => _printError += value; remove => _printError -= value; }
+        public event Action ClearEvent { add => _clear += value; remove => _clear += value; }
         public TextWriter? Out { get; set; }
         public TextReader? In { get; set; }
 
@@ -20,6 +22,14 @@ namespace DBPF_Compiler.Commands
         public void WriteLine(object? message) => Out?.WriteLine(message);
         public void PrintError(object? message) => _printError?.Invoke(message);
         public string? ReadLine() => In?.ReadLine();
+        public bool Clear()
+        {
+            if (_clear == null)
+                return false;
+
+            _clear();
+            return true;
+        }
 
         public void AddCommand(string keyword, ASCommand command) => _commands.Add(keyword, command);
         public ASCommand GetCommand(string keyword) => _commands[keyword];
@@ -35,6 +45,7 @@ namespace DBPF_Compiler.Commands
             _instance.AddCommand("decode",       new DecodeCommand());
             _instance.AddCommand("hash",         new HashCommand());
             _instance.AddCommand("hash-to-name", new HashToNameCommand());
+            _instance.AddCommand("clear",        new ClearCommand());
 
             return _instance;
         }
