@@ -36,6 +36,9 @@ namespace DBPF_Compiler.Commands
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
         {
+            if (mode != DescriptionMode.HTML)
+                return "enter interactive mode.";
+
             return null;
         }
     }
