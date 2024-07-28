@@ -2,7 +2,7 @@
 
 namespace DBPF_Compiler.Commands
 {
-    internal class ClearCommand : ASCommand
+    internal class ClearCommand : ConsoleCommand
     {
         public override void ParseLine(Line line)
         {

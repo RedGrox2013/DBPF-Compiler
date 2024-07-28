@@ -2,10 +2,13 @@
 
 namespace DBPF_Compiler.Commands
 {
-    public class CommandManager
+    public class CommandManager : IParser
     {
         private static CommandManager? _instance;
         public static CommandManager Instance => _instance ??= new CommandManager();
+
+        public FormatParser FormatParser { get; private set; } = new();
+        public object? Data { get; private set; }
 
         private Action<object?>? _printError;
         private Action? _clear;
@@ -14,7 +17,7 @@ namespace DBPF_Compiler.Commands
         public TextWriter? Out { get; set; }
         public TextReader? In { get; set; }
 
-        private readonly Dictionary<string, ASCommand> _commands = [];
+        private readonly Dictionary<string, ConsoleCommand> _commands = [];
 
         private CommandManager() { }
 
@@ -31,8 +34,12 @@ namespace DBPF_Compiler.Commands
             return true;
         }
 
-        public void AddCommand(string keyword, ASCommand command) => _commands.Add(keyword, command);
-        public ASCommand GetCommand(string keyword) => _commands[keyword];
+        public void AddCommand(string keyword, ConsoleCommand command)
+        {
+            command.SetData(FormatParser, Data);
+            _commands.Add(keyword, command);
+        }
+        public ConsoleCommand GetCommand(string keyword) => _commands[keyword];
 
         public static CommandManager Initialize()
         {
@@ -50,6 +57,15 @@ namespace DBPF_Compiler.Commands
             return _instance;
         }
 
+        public void SetData(FormatParser formatParser, object? data)
+        {
+            FormatParser = formatParser;
+            Data = data;
+
+            foreach (var command in _commands)
+                command.Value.SetData(formatParser, data);
+        }
+
         public void ParseLine(Line? line)
         {
             if (Line.IsNullOrEmpty(line))
@@ -65,6 +81,9 @@ namespace DBPF_Compiler.Commands
                 command.ParseLine(line);
         }
 
+        public string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
+            => null;
+
         public void PrintHelp(string? commandName = null)
         {
             if (Out == null)
@@ -73,7 +92,10 @@ namespace DBPF_Compiler.Commands
             if (string.IsNullOrWhiteSpace(commandName))
             {
                 foreach (var command in _commands)
-                    Out.WriteLine(command.Key + "\t\t\t" + (command.Value.GetDescription() ?? "no description"));
+                {
+                    if (!command.Value.NotDisplayDescription)
+                        Out.WriteLine(command.Key + "\t\t\t" + (command.Value.GetDescription() ?? "no description"));
+                }
                 return;
             }
 

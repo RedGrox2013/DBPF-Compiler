@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace DBPF_Compiler.Commands
 {
-    internal class UnpackCommand : ASCommand
+    internal class UnpackCommand : ConsoleCommand
     {
         public override void ParseLine(Line line)
         {

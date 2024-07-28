@@ -2,7 +2,7 @@
 
 namespace DBPF_Compiler.Commands
 {
-    internal class InteractiveCommand : ASCommand
+    internal class InteractiveCommand : ConsoleCommand
     {
         public static bool IsRunning { get; private set; } = false;
 
@@ -22,7 +22,7 @@ namespace DBPF_Compiler.Commands
                 {
                     CommandManager.Instance.ParseLine(line);
 
-                    CommandManager.Instance.Write(">>> ");
+                    CommandManager.Instance.Write("dbpfc>");
                     cmdLine = CommandManager.Instance.ReadLine();
                     line = Lexer.LineToArgs(cmdLine);
                 } while (cmdLine != null &&

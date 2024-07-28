@@ -3,7 +3,7 @@ using DBPF_Compiler.FNV;
 
 namespace DBPF_Compiler.Commands
 {
-    internal class HashCommand : ASCommand
+    internal class HashCommand : ConsoleCommand
     {
         public override void ParseLine(Line line)
         {

@@ -3,7 +3,7 @@ using DBPF_Compiler.FileTypes.Prop;
 
 namespace DBPF_Compiler.Commands
 {
-    internal class EncodeCommand : ASCommand
+    internal class EncodeCommand : ConsoleCommand
     {
         public override void ParseLine(Line line)
         {
