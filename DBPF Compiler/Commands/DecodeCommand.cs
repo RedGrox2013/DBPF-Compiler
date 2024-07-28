@@ -9,13 +9,13 @@ namespace DBPF_Compiler.Commands
         {
             if (line.ArgumentCount < 2)
             {
-                CommandManager.Instance.PrintError("Missing <input> and <output> arguments.");
+                PrintError?.Invoke("Missing <input> and <output> arguments.");
                 return;
             }
 
             using FileStream stream = File.OpenRead(line[1]);
             string json = PropertyListJsonSerializer.DecodePropertyListToJson(stream);
-            CommandManager.Instance.WriteLine(json);
+            Out?.WriteLine(json);
             using StreamWriter writer = File.CreateText(line.ArgumentCount > 3 ? line[3] : (line[1] + ".json"));
             writer.Write(json);
         }

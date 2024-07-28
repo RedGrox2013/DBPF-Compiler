@@ -11,12 +11,12 @@ namespace DBPF_Compiler.Commands
         {
             if (line.ArgumentCount == 1)
             {
-                CommandManager.Instance.PrintError("Missing <input> and <output> arguments.");
+                PrintError?.Invoke("Missing <input> and <output> arguments.");
                 return;
             }
             if (line.ArgumentCount == 2)
             {
-                CommandManager.Instance.PrintError("Missing <output> argument.");
+                PrintError?.Invoke("Missing <output> argument.");
                 return;
             }
 
@@ -25,15 +25,15 @@ namespace DBPF_Compiler.Commands
         
             using FileStream fs = File.Create(line[2]);
             using DatabasePackedFile dbpf = new(fs);
-            dbpf.OnHeaderWriting += msg => CommandManager.Instance.WriteLine("Writing header . . .");
+            dbpf.OnHeaderWriting += msg => Out?.WriteLine("Writing header . . .");
             dbpf.OnDataWriting += DisplayDataWritingMessage;
-            dbpf.OnIndexWriting += msg => CommandManager.Instance.WriteLine("Writing index . . .");
+            dbpf.OnIndexWriting += msg => Out?.WriteLine("Writing index . . .");
 
             packer.Pack(dbpf, line.ArgumentCount > 3 ? line[3] : null);
 
             stopwatch.Stop();
             var ts = stopwatch.Elapsed;
-            CommandManager.Instance.WriteLine($"The file was packed in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
+            Out?.WriteLine($"The file was packed in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
@@ -51,10 +51,10 @@ Usage:  pack <input> <output> [<secret>]
             return null;
         }
 
-        static void DisplayDataWritingMessage(object? message)
+        private void DisplayDataWritingMessage(object? message)
         {
             if (message is ResourceKey key)
-                CommandManager.Instance.WriteLine($"Writing data: {key} . . .");
+                Out?.WriteLine($"Writing data: {key} . . .");
         }
     }
 }

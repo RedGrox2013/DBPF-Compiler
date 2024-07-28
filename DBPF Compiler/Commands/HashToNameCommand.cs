@@ -9,14 +9,14 @@ namespace DBPF_Compiler.Commands
         {
             if (line.ArgumentCount < 2)
             {
-                CommandManager.Instance.PrintError("Required arguments are missing");
+                PrintError?.Invoke("Required arguments are missing");
                 return;
             }
 
             string strHash = line.GetOption("-hash", 1)?[0] ?? line[1];
             if (!FNVHash.TryParse(strHash, out var hash))
             {
-                CommandManager.Instance.PrintError($"\"{strHash}\" is not hash.");
+                PrintError?.Invoke($"\"{strHash}\" is not hash.");
                 return;
             }
 
@@ -27,7 +27,7 @@ namespace DBPF_Compiler.Commands
                 name = NameRegistryManager.Instance.GetName(hash);
                 if (name.StartsWith("0x"))
                 {
-                    CommandManager.Instance.PrintError($"\"{strHash}\" not found.");
+                    PrintError?.Invoke($"\"{strHash}\" not found.");
                     return;
                 }
             }
@@ -36,17 +36,17 @@ namespace DBPF_Compiler.Commands
                 var reg = NameRegistryManager.Instance.GetRegistry(regName);
                 if (reg == null)
                 {
-                    CommandManager.Instance.PrintError($"\"{regName}\" not found.");
+                    PrintError?.Invoke($"\"{regName}\" not found.");
                     return;
                 }
                 if (!reg.GetName(hash, out name))
                 {
-                    CommandManager.Instance.PrintError($"\"{strHash}\" not found.");
+                    PrintError?.Invoke($"\"{strHash}\" not found.");
                     return;
                 }
             }
 
-            CommandManager.Instance.WriteLine($"{strHash} ----[{regName ?? "all"}]----> {name}");
+            Out?.WriteLine($"{strHash} ----[{regName ?? "all"}]----> {name}");
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)

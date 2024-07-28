@@ -11,32 +11,49 @@ namespace DBPF_Compiler.Commands
         public object? Data { get; private set; }
 
         private Action<object?>? _printError;
+        public Action<object?>? PrintError
+        {
+            get => _printError;
+            set
+            {
+                _printError = value;
+                foreach (var command in _commands)
+                    command.Value.PrintError = value;
+            }
+        }
         private Action? _clear;
-        public event Action<object?> PrintErrorEvent { add => _printError += value; remove => _printError -= value; }
-        public event Action ClearEvent { add => _clear += value; remove => _clear += value; }
-        public TextWriter? Out { get; set; }
-        public TextReader? In { get; set; }
+        public Action? Clear
+        {
+            get => _clear;
+            set
+            {
+                _clear = value;
+                foreach (var command in _commands)
+                    command.Value.Clear = value;
+            }
+        }
+        private TextWriter? _out;
+        public TextWriter? Out
+        {
+            get => _out;
+            set
+            {
+                _out = value;
+                foreach (var command in _commands)
+                    command.Value.Out = value;
+            }
+        }
 
         private readonly Dictionary<string, ConsoleCommand> _commands = [];
 
         private CommandManager() { }
 
-        public void Write(object? message) => Out?.Write(message);
-        public void WriteLine(object? message) => Out?.WriteLine(message);
-        public void PrintError(object? message) => _printError?.Invoke(message);
-        public string? ReadLine() => In?.ReadLine();
-        public bool Clear()
-        {
-            if (_clear == null)
-                return false;
-
-            _clear();
-            return true;
-        }
-
         public void AddCommand(string keyword, ConsoleCommand command)
         {
             command.SetData(FormatParser, Data);
+            command.Out = _out;
+            command.Clear = _clear;
+            command.PrintError = _printError;
             _commands.Add(keyword, command);
         }
         public ConsoleCommand GetCommand(string keyword) => _commands[keyword];
@@ -76,7 +93,7 @@ namespace DBPF_Compiler.Commands
 #pragma warning restore CS8602 // Разыменование вероятной пустой ссылки.
 
             if (!_commands.TryGetValue(keyword, out var command))
-                _printError?.Invoke(keyword + ": unknown command");
+                PrintError?.Invoke(keyword + ": unknown command");
             else
                 command.ParseLine(line);
         }
@@ -100,7 +117,7 @@ namespace DBPF_Compiler.Commands
             }
 
             if (!_commands.TryGetValue(commandName, out var cmd))
-                _printError?.Invoke(commandName + " is not found");
+                PrintError?.Invoke(commandName + " is not found");
             else
                 Out.WriteLine(commandName + "\t" +
                     (cmd.GetDescription(DescriptionMode.Complete) ?? cmd.GetDescription() ?? "no description"));

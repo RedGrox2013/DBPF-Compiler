@@ -2,9 +2,10 @@
 
 namespace DBPF_Compiler.Commands
 {
-    internal class InteractiveCommand : ConsoleCommand
+    internal class InteractiveCommand(TextReader input) : ConsoleCommand
     {
         public static bool IsRunning { get; private set; } = false;
+        public TextReader In { get; set; } = input;
 
         public override void ParseLine(Line line)
         {
@@ -14,7 +15,7 @@ namespace DBPF_Compiler.Commands
             string? cmdLine;
             IsRunning = true;
             line = Line.Empty;
-            CommandManager.Instance.WriteLine("To exit, enter \"exit\"");
+            Out?.WriteLine("To exit, enter \"exit\"");
 
             try
             {
@@ -22,8 +23,8 @@ namespace DBPF_Compiler.Commands
                 {
                     CommandManager.Instance.ParseLine(line);
 
-                    CommandManager.Instance.Write("dbpfc>");
-                    cmdLine = CommandManager.Instance.ReadLine();
+                    Out?.Write("dbpfc>");
+                    cmdLine = In.ReadLine();
                     line = Lexer.LineToArgs(cmdLine);
                 } while (cmdLine != null &&
                     (Line.IsNullOrEmpty(line) || !line[0].Equals("exit", StringComparison.OrdinalIgnoreCase)));

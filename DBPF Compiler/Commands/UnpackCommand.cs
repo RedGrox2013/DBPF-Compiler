@@ -11,12 +11,12 @@ namespace DBPF_Compiler.Commands
         {
             if (line.ArgumentCount == 1)
             {
-                CommandManager.Instance.PrintError("Missing <input> and <output> arguments.");
+                PrintError?.Invoke("Missing <input> and <output> arguments.");
                 return;
             }
             if (line.ArgumentCount == 2)
             {
-                CommandManager.Instance.PrintError("Missing <output> argument.");
+                PrintError?.Invoke("Missing <output> argument.");
                 return;
             }
 
@@ -24,9 +24,9 @@ namespace DBPF_Compiler.Commands
             using FileStream fs = new(line[1], FileMode.Open, FileAccess.Read);
             using DatabasePackedFile dbpf = new(fs);
 
-            dbpf.OnHeaderReading += msg => CommandManager.Instance.WriteLine("Reading header . . .");
+            dbpf.OnHeaderReading += msg => Out?.WriteLine("Reading header . . .");
             dbpf.OnDataReading += DisplayDataReadingMessage;
-            dbpf.OnIndexReading += msg => CommandManager.Instance.WriteLine("Reading index . . . Index offset: " + (msg as uint?));
+            dbpf.OnIndexReading += msg => Out?.WriteLine("Reading index . . . Index offset: " + (msg as uint?));
 
             DBPFPacker unpacker = new(line[2]);
 
@@ -35,7 +35,7 @@ namespace DBPF_Compiler.Commands
 
             stopwatch.Stop();
             var ts = stopwatch.Elapsed;
-            CommandManager.Instance.WriteLine($"The file was unpacked in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
+            Out?.WriteLine($"The file was unpacked in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
@@ -52,10 +52,10 @@ Usage:  unpack <input> <output>
             return null;
         }
 
-        static void DisplayDataReadingMessage(object? message)
+        private void DisplayDataReadingMessage(object? message)
         {
             if (message is ResourceKey key)
-                CommandManager.Instance.WriteLine($"Writing data: {key} . . .");
+                Out?.WriteLine($"Writing data: {key} . . .");
         }
     }
 }

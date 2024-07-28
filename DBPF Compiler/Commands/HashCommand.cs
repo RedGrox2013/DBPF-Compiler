@@ -11,7 +11,7 @@ namespace DBPF_Compiler.Commands
                 line.GetOption("-name", 1)?[0] ?? line.GetOption("n", 1)?[0];
             if (string.IsNullOrEmpty(name))
             {
-                CommandManager.Instance.PrintError("Required argument missing: <name>");
+                PrintError?.Invoke("Required argument missing: <name>");
                 return;
             }
 
@@ -22,7 +22,7 @@ namespace DBPF_Compiler.Commands
             else
                 hash = FNVHash.ToString(NameRegistryManager.Instance.GetHash(name, regName));
 
-            CommandManager.Instance.WriteLine($"{name} ----[{regName ?? "all"}]----> {hash}");
+            Out?.WriteLine($"{name} ----[{regName ?? "all"}]----> {hash}");
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
