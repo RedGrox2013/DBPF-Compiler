@@ -32,7 +32,7 @@ namespace DBPF_Compiler.Commands
             
             if (!dbpf.ReadDBPFInfo().Contains(key))
             {
-                PrintError(line[1] + " not found");
+                PrintError(skey + " not found");
                 return;
             }
 
