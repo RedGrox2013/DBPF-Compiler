@@ -9,7 +9,7 @@ namespace DBPF_Compiler.Commands
         {
             if (line.ArgumentCount < 2)
             {
-                PrintError?.Invoke("Missing <input> and <output> arguments.");
+                PrintErrorAction?.Invoke("Missing <input> and <output> arguments.");
                 return;
             }
 

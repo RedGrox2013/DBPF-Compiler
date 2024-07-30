@@ -9,14 +9,14 @@ namespace DBPF_Compiler.Commands
         {
             if (line.ArgumentCount < 2)
             {
-                PrintError?.Invoke("Required arguments are missing");
+                PrintErrorAction?.Invoke("Required arguments are missing");
                 return;
             }
 
             string strHash = line.GetOption("-hash", 1)?[0] ?? line[1];
             if (!FNVHash.TryParse(strHash, out var hash))
             {
-                PrintError?.Invoke($"\"{strHash}\" is not hash.");
+                PrintErrorAction?.Invoke($"\"{strHash}\" is not hash.");
                 return;
             }
 
@@ -27,7 +27,7 @@ namespace DBPF_Compiler.Commands
                 name = NameRegistryManager.Instance.GetName(hash);
                 if (name.StartsWith("0x"))
                 {
-                    PrintError?.Invoke($"\"{strHash}\" not found.");
+                    PrintErrorAction?.Invoke($"\"{strHash}\" not found.");
                     return;
                 }
             }
@@ -36,12 +36,12 @@ namespace DBPF_Compiler.Commands
                 var reg = NameRegistryManager.Instance.GetRegistry(regName);
                 if (reg == null)
                 {
-                    PrintError?.Invoke($"\"{regName}\" not found.");
+                    PrintErrorAction?.Invoke($"\"{regName}\" not found.");
                     return;
                 }
                 if (!reg.GetName(hash, out name))
                 {
-                    PrintError?.Invoke($"\"{strHash}\" not found.");
+                    PrintErrorAction?.Invoke($"\"{strHash}\" not found.");
                     return;
                 }
             }

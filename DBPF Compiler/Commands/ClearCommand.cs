@@ -6,10 +6,10 @@ namespace DBPF_Compiler.Commands
     {
         public override void ParseLine(Line line)
         {
-            if (Clear == null)
-                PrintError?.Invoke("Failed to clear");
+            if (ClearAction == null)
+                PrintErrorAction?.Invoke("Failed to clear");
             else
-                Clear();
+                ClearAction();
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)

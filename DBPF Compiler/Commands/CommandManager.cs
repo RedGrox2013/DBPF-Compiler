@@ -30,26 +30,26 @@ namespace DBPF_Compiler.Commands
         public FormatParser FormatParser { get; private set; } = new();
         public object? Data { get; private set; }
 
-        private Action<object?>? _printError;
-        public Action<object?>? PrintError
+        private Action<object?>? _printErrorAction;
+        public Action<object?>? PrintErrorAction
         {
-            get => _printError;
+            get => _printErrorAction;
             set
             {
-                _printError = value;
+                _printErrorAction = value;
                 foreach (var command in _commands)
-                    command.Value.PrintError = value;
+                    command.Value.PrintErrorAction = value;
             }
         }
-        private Action? _clear;
-        public Action? Clear
+        private Action? _clearAction;
+        public Action? ClearAction
         {
-            get => _clear;
+            get => _clearAction;
             set
             {
-                _clear = value;
+                _clearAction = value;
                 foreach (var command in _commands)
-                    command.Value.Clear = value;
+                    command.Value.ClearAction = value;
             }
         }
         private TextWriter? _out;
@@ -72,8 +72,8 @@ namespace DBPF_Compiler.Commands
         {
             command.SetData(FormatParser, Data);
             command.Out = _out;
-            command.Clear = _clear;
-            command.PrintError = _printError;
+            command.ClearAction = _clearAction;
+            command.PrintErrorAction = _printErrorAction;
             _commands.Add(keyword, command);
         }
         public ConsoleCommand GetCommand(string keyword) => _commands[keyword];
@@ -97,7 +97,7 @@ namespace DBPF_Compiler.Commands
 #pragma warning restore CS8602 // Разыменование вероятной пустой ссылки.
 
             if (!_commands.TryGetValue(keyword, out var command))
-                PrintError?.Invoke(keyword + ": unknown command");
+                PrintErrorAction?.Invoke(keyword + ": unknown command");
             else
                 command.ParseLine(line);
         }
@@ -121,7 +121,7 @@ namespace DBPF_Compiler.Commands
             }
 
             if (!_commands.TryGetValue(commandName, out var cmd))
-                PrintError?.Invoke(commandName + " is not found");
+                PrintErrorAction?.Invoke(commandName + " is not found");
             else
                 Out.WriteLine(commandName + "\t" +
                     (cmd.GetDescription(DescriptionMode.Complete) ?? cmd.GetDescription() ?? "no description"));

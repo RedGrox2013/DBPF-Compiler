@@ -11,7 +11,7 @@ namespace DBPF_Compiler.Commands
                 line.GetOption("-name", 1)?[0] ?? line.GetOption("n", 1)?[0];
             if (string.IsNullOrEmpty(name))
             {
-                PrintError?.Invoke("Required argument missing: <name>");
+                PrintErrorAction?.Invoke("Required argument missing: <name>");
                 return;
             }
 

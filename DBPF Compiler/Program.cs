@@ -19,8 +19,8 @@ else
 
 CommandManager cmd = CommandManager.Instance;
 cmd.Out = Console.Out;
-cmd.PrintError = PrintError;
-cmd.Clear = Console.Clear;
+cmd.PrintErrorAction = PrintError;
+cmd.ClearAction = Console.Clear;
 cmd.AddCommand("interactive", new InteractiveCommand(Console.In));
 
 if (args[0].Equals("-h", StringComparison.OrdinalIgnoreCase) || args[0].Equals("--help", StringComparison.OrdinalIgnoreCase))

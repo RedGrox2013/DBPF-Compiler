@@ -11,12 +11,12 @@ namespace DBPF_Compiler.Commands
         {
             if (line.ArgumentCount == 1)
             {
-                PrintError?.Invoke("Missing <input> and <output> arguments.");
+                PrintErrorAction?.Invoke("Missing <input> and <output> arguments.");
                 return;
             }
             if (line.ArgumentCount == 2)
             {
-                PrintError?.Invoke("Missing <output> argument.");
+                PrintErrorAction?.Invoke("Missing <output> argument.");
                 return;
             }
 
