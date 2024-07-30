@@ -22,6 +22,7 @@ cmd.Out = Console.Out;
 cmd.PrintErrorAction = PrintError;
 cmd.ClearAction = Console.Clear;
 cmd.AddCommand("interactive", new InteractiveCommand(Console.In));
+cmd.AddCommand("test", new TestCommand() { NotDisplayDescription = true });
 
 if (args[0].Equals("-h", StringComparison.OrdinalIgnoreCase) || args[0].Equals("--help", StringComparison.OrdinalIgnoreCase))
     args[0] = "help";
