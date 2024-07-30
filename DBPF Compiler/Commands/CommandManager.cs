@@ -5,7 +5,27 @@ namespace DBPF_Compiler.Commands
     public class CommandManager : IParser
     {
         private static CommandManager? _instance;
-        public static CommandManager Instance => _instance ??= new CommandManager();
+        public static CommandManager Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new CommandManager();
+
+                    _instance.AddCommand("help", new HelpCommand());
+                    _instance.AddCommand("pack", new PackCommand());
+                    _instance.AddCommand("unpack", new UnpackCommand());
+                    _instance.AddCommand("encode", new EncodeCommand());
+                    _instance.AddCommand("decode", new DecodeCommand());
+                    _instance.AddCommand("hash", new HashCommand());
+                    _instance.AddCommand("hash-to-name", new HashToNameCommand());
+                    _instance.AddCommand("clear", new ClearCommand());
+                }
+
+                return _instance;
+            }
+        }
 
         public FormatParser FormatParser { get; private set; } = new();
         public object? Data { get; private set; }
@@ -57,22 +77,6 @@ namespace DBPF_Compiler.Commands
             _commands.Add(keyword, command);
         }
         public ConsoleCommand GetCommand(string keyword) => _commands[keyword];
-
-        public static CommandManager Initialize()
-        {
-            _instance = new CommandManager();
-
-            _instance.AddCommand("help",         new HelpCommand());
-            _instance.AddCommand("pack",         new PackCommand());
-            _instance.AddCommand("unpack",       new UnpackCommand());
-            _instance.AddCommand("encode",       new EncodeCommand());
-            _instance.AddCommand("decode",       new DecodeCommand());
-            _instance.AddCommand("hash",         new HashCommand());
-            _instance.AddCommand("hash-to-name", new HashToNameCommand());
-            _instance.AddCommand("clear",        new ClearCommand());
-
-            return _instance;
-        }
 
         public void SetData(FormatParser formatParser, object? data)
         {
