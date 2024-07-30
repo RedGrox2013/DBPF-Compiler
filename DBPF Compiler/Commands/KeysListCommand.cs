@@ -10,7 +10,7 @@ namespace DBPF_Compiler.Commands
         {
             if (line.ArgumentCount < 2)
             {
-                PrintError("Missing <input> argument.");
+                PrintError("Missing <filePath> argument.");
                 return;
             }
 
