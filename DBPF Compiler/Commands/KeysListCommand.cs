@@ -67,11 +67,11 @@ Resources:");
             if (mode == DescriptionMode.Complete)
                 return @"get a list of resources in DBPF.
 Usage:  keys <filePath> [--no-header] [-b]
-    <filePath>  path to DBPF
-    --no-header use to not display file header information
-    -b          use to display a list of resources in
-                groupID!instanceID.typeID format
-                without displaying them in a tree view";
+<filePath>  path to DBPF
+--no-header use to not display file header information
+-b          use to display a list of resources in
+            groupID!instanceID.typeID format
+            without displaying them in a tree view";
 
             return base.GetDescription(mode);
         }
