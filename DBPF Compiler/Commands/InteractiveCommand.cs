@@ -17,22 +17,24 @@ namespace DBPF_Compiler.Commands
             line = Line.Empty;
             Out?.WriteLine("To exit, enter \"exit\"");
 
-            try
+            do
             {
-                do
+                try
                 {
                     CommandManager.Instance.ParseLine(line);
+                }
+                catch (Exception e)
+                {
+                    PrintError(e.Message);
+                }
 
-                    Out?.Write("dbpfc>");
-                    cmdLine = In.ReadLine();
-                    line = Lexer.LineToArgs(cmdLine);
-                } while (cmdLine != null &&
-                    (Line.IsNullOrEmpty(line) || !line[0].Equals("exit", StringComparison.OrdinalIgnoreCase)));
-            }
-            finally
-            {
-                IsRunning = false;
-            }
+                Out?.Write("dbpfc>");
+                cmdLine = In.ReadLine();
+                line = Lexer.LineToArgs(cmdLine);
+            } while (cmdLine != null &&
+                (Line.IsNullOrEmpty(line) || !line[0].Equals("exit", StringComparison.OrdinalIgnoreCase)));
+
+            IsRunning = false;
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
