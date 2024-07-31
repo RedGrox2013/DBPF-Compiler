@@ -1,6 +1,5 @@
 ﻿using DBPF_Compiler.DBPF;
 using DBPF_Compiler.FNV;
-using System.Text;
 
 namespace DBPF_Compiler.Types
 {
@@ -18,22 +17,14 @@ namespace DBPF_Compiler.Types
 
         public static StringResourceKey Parse(string key)
         {
-            string[] parts = key.Split('!');
-            string? group;
-            if (parts.Length == 1)
-                group = null;
-            else
-            {
-                group = parts[0];
-                key = string.Empty;
-                for (int i = 1; i < parts.Length; i++)
-                    key += parts[i];
-            }
+            int groupIndex = key.IndexOf('!');
+            string? group = groupIndex == -1 ? null : key[..groupIndex];
 
-            int index = key.LastIndexOf('.');
-            if (index == -1)
-                return new StringResourceKey(key, groupID: group);
-            return new StringResourceKey(key[..index], key[(index + 1)..], group);
+            int typeIndex = key.LastIndexOf('.');
+            if (typeIndex <= groupIndex)
+                return new StringResourceKey(key[(groupIndex + 1)..], groupID: group);
+
+            return new StringResourceKey(key[(groupIndex + 1)..typeIndex], key[(typeIndex + 1)..], group);
         }
 
         public static bool operator==(StringResourceKey left, StringResourceKey right)
