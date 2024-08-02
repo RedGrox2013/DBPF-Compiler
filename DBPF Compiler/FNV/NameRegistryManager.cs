@@ -32,6 +32,18 @@ namespace DBPF_Compiler.FNV
         public void AddRegistry(NameRegistry reg)
             => _regs.Add(reg);
 
+        public static async Task<bool> LoadAsync(DirectoryInfo registriesDirectory)
+        {
+            if (!registriesDirectory.Exists)
+                return false;
+
+            foreach (var file in registriesDirectory.GetFiles())
+                if (file.Name.StartsWith("reg_"))
+                    await Instance.AddRegistryFromFileAsync(file.FullName);
+
+            return true;
+        }
+
         public async Task AddRegistryFromFileAsync(string filePath)
         {
             NameRegistry reg = new(Path.GetFileNameWithoutExtension(filePath).Replace("reg_", null));

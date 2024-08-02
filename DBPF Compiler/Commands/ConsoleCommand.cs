@@ -14,6 +14,7 @@ namespace DBPF_Compiler.Commands
 
         protected virtual void Write(object? message) => Out?.Write(message);
         protected virtual void WriteLine(object? message) => Out?.WriteLine(message);
+        protected virtual void WriteLine() => Out?.WriteLine();
         protected virtual void PrintError(object? message) => PrintErrorAction?.Invoke(message);
     }
 }

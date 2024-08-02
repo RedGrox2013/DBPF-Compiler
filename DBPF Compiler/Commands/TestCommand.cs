@@ -1,13 +1,20 @@
 ﻿using DBPF_Compiler.ArgScript;
-using DBPF_Compiler.DBPF;
-using DBPF_Compiler.FNV;
-using DBPF_Compiler.Types;
+//using DBPF_Compiler.DBPF;
+//using DBPF_Compiler.FNV;
+//using DBPF_Compiler.Types;
 
 namespace DBPF_Compiler.Commands
 {
     internal class TestCommand : ConsoleCommand
     {
         public override void ParseLine(Line line)
+        {
+            for (int i = 1; i < line.ArgumentCount; i++)
+                WriteLine(i + ". " + line[i]);
+        }
+
+
+        /*public override void ParseLine(Line line)
         {
             if (line.ArgumentCount < 2)
             {
@@ -97,6 +104,6 @@ Resources:");
                     }
                 }
             }
-        }
+        }*/
     }
 }

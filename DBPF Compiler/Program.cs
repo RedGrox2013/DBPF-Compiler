@@ -1,4 +1,5 @@
-﻿using DBPF_Compiler.ArgScript;
+﻿using DBPF_Compiler;
+using DBPF_Compiler.ArgScript;
 using DBPF_Compiler.Commands;
 using DBPF_Compiler.FNV;
 
@@ -7,14 +8,8 @@ Console.WriteLine("Spore Database Packed File Compiler\n");
 if (args.Length == 0)
     return;
 
-DirectoryInfo regDir = new("Registries");
-if (regDir.Exists)
-{
-    foreach (var file in regDir.GetFiles())
-        if (file.Name.StartsWith("reg_"))
-            await NameRegistryManager.Instance.AddRegistryFromFileAsync(file.FullName);
-}
-else
+await ConfigManager.LoadAsync();
+if (!await NameRegistryManager.LoadAsync(new DirectoryInfo(ConfigManager.Instance.RegistriesPath)))
     PrintError("No registers found. Translating hashes is not possible.");
 
 CommandManager cmd = CommandManager.Instance;
