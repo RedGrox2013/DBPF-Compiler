@@ -21,7 +21,7 @@ namespace DBPF_Compiler.Commands
 
             if (!line.HasFlag("-no-header"))
                 WriteLine($@"Database packed file header:
-Major version: {dbpf.MajorVersion}
+Version:       {dbpf.MajorVersion}.{dbpf.MinorVersion}
 Index count:   {dbpf.IndexCount}
 Index size:    {dbpf.IndexSize} bytes
 Index offset:  {dbpf.IndexOffset} bytes

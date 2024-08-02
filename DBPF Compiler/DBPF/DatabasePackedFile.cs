@@ -67,24 +67,11 @@ namespace DBPF_Compiler.DBPF
         /// <summary>
         /// Always 2 or 3
         /// </summary>
-        public int MajorVersion
-        {
-            get => _majorVersion;
-            set
-            {
-                if (value < 2)
-                    _majorVersion = 2;
-                else if (value > 3)
-                    _majorVersion = 3;
-                else
-                    _majorVersion = value;
-            }
-        }
-        private int _majorVersion = 3;
+        public int MajorVersion { get; set; } = 3;
         /// <summary>
         /// Always 0
         /// </summary>
-        public const int MinorVersion = 0;
+        public int MinorVersion { get; set; } = 0;
         /// <summary>
         /// Number of index entries in the package.
         /// </summary>
