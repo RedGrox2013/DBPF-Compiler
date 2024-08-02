@@ -2,7 +2,7 @@
 
 namespace DBPF_Compiler.Commands
 {
-    public abstract class ConsoleCommand : ASCommand
+    public abstract class ConsoleCommand : ArgScriptCommand
     {
         public bool NotDisplayDescription { get; set; } = false;
         public TextWriter? Out { get; set; }

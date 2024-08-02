@@ -1,6 +1,6 @@
 ﻿namespace DBPF_Compiler.ArgScript
 {
-    public abstract class ASCommand : IParser
+    public abstract class ArgScriptCommand : IParser
     {
         public FormatParser FormatParser { get; protected set; } = new();
         public object? Data { get; protected set; }
