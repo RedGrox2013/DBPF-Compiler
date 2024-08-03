@@ -25,6 +25,7 @@ if (args[0].Equals("-h", StringComparison.OrdinalIgnoreCase) || args[0].Equals("
 try
 {
     cmd.ParseLine(new Line(args));
+    await ConfigManager.SaveAsync();
 }
 catch (Exception e)
 {

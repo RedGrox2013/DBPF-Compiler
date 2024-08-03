@@ -1,5 +1,7 @@
-﻿using System.Text.Json;
+﻿using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Unicode;
 
 namespace DBPF_Compiler
 {
@@ -13,13 +15,18 @@ namespace DBPF_Compiler
                 if (_instance == null)
                     Load();
 
-                return _instance ?? new ConfigManager(DEFAULT_CONFIGS_PATH);
+                return _instance ??= new ConfigManager();
             }
         }
 
         public const string DEFAULT_CONFIGS_PATH = "configs.json";
+        private readonly static JsonSerializerOptions _jsonSerializerOptions = new()
+        {
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+        };
         [JsonIgnore]
-        public string ConfigsPath { get; set; }
+        public string ConfigsPath { get; set; } = DEFAULT_CONFIGS_PATH;
         public string RegistriesPath { get; set; } = "Registries";
 
         public static async Task LoadAsync(string path = DEFAULT_CONFIGS_PATH, CancellationToken cancellationToken = default)
@@ -27,12 +34,21 @@ namespace DBPF_Compiler
             if (File.Exists(path))
                 _instance = JsonSerializer.Deserialize<ConfigManager>(
                     await File.ReadAllTextAsync(path, cancellationToken));
-            _instance ??= new ConfigManager(DEFAULT_CONFIGS_PATH);
+
+            _instance ??= new ConfigManager();
+            _instance.ConfigsPath = path;
         }
 
         public static void Load(string path = DEFAULT_CONFIGS_PATH)
             => LoadAsync(path).Wait();
 
-        private ConfigManager(string configPath) => ConfigsPath = configPath;
+        public static async Task SaveAsync(CancellationToken cancellationToken = default)
+        {
+            if (_instance == null)
+                return;
+
+            using var file = File.Create(_instance.ConfigsPath);
+            await JsonSerializer.SerializeAsync(file, _instance, _jsonSerializerOptions, cancellationToken);
+        }
     }
 }
