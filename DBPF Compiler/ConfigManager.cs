@@ -1,4 +1,5 @@
-﻿using System.Text.Encodings.Web;
+﻿using DBPF_Compiler.Commands;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Unicode;
@@ -26,6 +27,7 @@ namespace DBPF_Compiler
             Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
         };
         [JsonIgnore]
+        [ConfigsCommandIgnore]
         public string ConfigsPath { get; set; } = DEFAULT_CONFIGS_PATH;
         public string RegistriesPath { get; set; } = "Registries";
 

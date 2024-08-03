@@ -22,6 +22,7 @@ namespace DBPF_Compiler.Commands
                     _instance.AddCommand("hash-to-name", new HashToNameCommand());
                     _instance.AddCommand("keys", new KeysListCommand());
                     _instance.AddCommand("extract", new ExtractCommand());
+                    _instance.AddCommand("configs", new ConfigsCommand());
                     _instance.AddCommand("clear", new ClearCommand());
                 }
 
