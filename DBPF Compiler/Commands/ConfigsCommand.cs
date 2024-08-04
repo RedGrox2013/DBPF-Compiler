@@ -1,5 +1,6 @@
 ﻿using DBPF_Compiler.ArgScript;
 using System.Reflection;
+using System.Text;
 
 namespace DBPF_Compiler.Commands
 {
@@ -67,17 +68,35 @@ namespace DBPF_Compiler.Commands
         {
             if (mode == DescriptionMode.Basic)
                 return "Use this command to manage program configurations.";
-            if (mode == DescriptionMode.Complete)
-                return @"Use this command to manage program configurations.
+            if (mode == DescriptionMode.HTML)
+                return base.GetDescription(mode);
+
+            StringBuilder description = new(
+@"Use this command to manage program configurations.
 Usage:  configs <get/set> <property-name> <value> [-l]
 <property-name> name of the property
-                whose value needs to be viewed/changed
+                whose value needs to be viewed/changed.
+                List of available properties:");
+
+            foreach (var prop in typeof(ConfigManager).GetProperties(
+                    BindingFlags.Instance | BindingFlags.Public))
+            {
+                if (prop.GetCustomAttribute<ConfigsCommandIgnoreAttribute>() == null)
+                {
+                    description.Append("\n                \t");
+                    description.Append(prop.Name);
+                    description.Append(" = ");
+                    description.Append(prop.GetValue(ConfigManager.Instance));
+                }
+            }
+
+                description.Append(@"
 <value>         (only for ""set"") the value to set for the property
 -l              use this flag to get a list of properties.
                 You can also call the command without arguments
-                to get a list of properties.";
+                to get a list of properties.");
 
-            return base.GetDescription(mode);
+            return description.ToString();
         }
     }
 
