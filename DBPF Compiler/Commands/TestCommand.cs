@@ -37,7 +37,7 @@ Resources:");
 
             if (!line.HasFlag("b"))
             {
-                WriteLine(Path.GetFileName(file.Name));
+                WriteLine(AssetsPath.GetFileName(file.Name));
                 PrintTree(dbpf, keys);
                 return;
             }
