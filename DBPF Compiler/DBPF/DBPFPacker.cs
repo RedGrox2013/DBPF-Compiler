@@ -24,8 +24,12 @@ namespace DBPF_Compiler.DBPF
 
         public void Pack(DatabasePackedFile output, string? secretFolder = null)
         {
+            // Перебираем папки
             foreach (var group in UnpackedDataDirectory.GetDirectories())
             {
+                if (group.Name.EndsWith(".dbpfc_ignore"))
+                    continue;
+
                 if (group.Name == secretFolder)
                 {
                     output.SecretGroupName = secretFolder;
@@ -40,6 +44,7 @@ namespace DBPF_Compiler.DBPF
                     continue;
                 }
 
+                // Перебираем подпапки
                 foreach (var d in group.GetDirectories())
                 {
                     if (!d.Name.EndsWith(".package.unpacked"))
@@ -63,6 +68,7 @@ namespace DBPF_Compiler.DBPF
                     output.CopyFromStream(stream, key);
                 }
 
+                // Перебираем файлы
                 foreach (var file in group.GetFiles())
                 {
                     string[] splitFileName = file.Name.Split('.');
