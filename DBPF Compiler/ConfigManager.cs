@@ -29,7 +29,9 @@ namespace DBPF_Compiler
         [JsonIgnore]
         [ConfigsCommandIgnore]
         public string ConfigsPath { get; set; } = DEFAULT_CONFIGS_PATH;
+
         public string RegistriesPath { get; set; } = "Registries";
+        public string? EALayer3Path { get; set; }
 
         public static async Task LoadAsync(string path = DEFAULT_CONFIGS_PATH, CancellationToken cancellationToken = default)
         {
@@ -40,7 +42,6 @@ namespace DBPF_Compiler
             _instance ??= new ConfigManager();
             _instance.ConfigsPath = path;
         }
-
         public static void Load(string path = DEFAULT_CONFIGS_PATH)
             => LoadAsync(path).Wait();
 
@@ -52,5 +53,6 @@ namespace DBPF_Compiler
             using var file = File.Create(_instance.ConfigsPath);
             await JsonSerializer.SerializeAsync(file, _instance, _jsonSerializerOptions, cancellationToken);
         }
+        public static void Save() => SaveAsync().Wait();
     }
 }
