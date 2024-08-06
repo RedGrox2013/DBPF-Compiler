@@ -24,7 +24,7 @@ namespace DBPF_Compiler
                 throw new Exception("Project file not found.");
 
             var proj = JsonSerializer.Deserialize<ModProject>(File.ReadAllText(filePath)) ??
-                throw new NotSupportedException(Path.GetFileName(projectFolderPath) + " is not mod project.");
+                throw new NotSupportedException(Path.GetFileName(filePath) + " is not mod project.");
             proj.Name = Path.GetFileNameWithoutExtension(filePath);
             proj.FolderPath = projectFolderPath;
 
