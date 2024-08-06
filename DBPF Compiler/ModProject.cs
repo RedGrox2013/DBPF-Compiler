@@ -1,15 +1,29 @@
 ﻿using DBPF_Compiler.DBPF;
+using DBPF_Compiler.ModsTemplates;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace DBPF_Compiler
 {
-    public class ModProject
+    public class ModProject : IModTemplate
     {
         [JsonIgnore]
         public string? Name { get; set; }
         [JsonIgnore]
         public string? FolderPath { get; set; }
+
+        public List<IModTemplate>? Templates { get; set; }
+
+        public void AddModTemplate(IModTemplate template)
+        {
+            if (Templates == null)
+            {
+                Templates = [template];
+                return;
+            }
+
+            Templates.Add(template);
+        }
 
         public static ModProject Deserialize(string projectFolderPath)
         {
@@ -29,6 +43,29 @@ namespace DBPF_Compiler
             proj.FolderPath = projectFolderPath;
 
             return proj;
+        }
+
+        public static bool TryDeserialize(string projectFolderPath, out ModProject? project)
+        {
+            try
+            {
+                project = Deserialize(projectFolderPath);
+                return true;
+            }
+            catch
+            {
+                project = null;
+                return false;
+            }
+        }
+
+        public void BuildMod(DatabasePackedFile dbpf)
+        {
+            if (Templates == null)
+                return;
+
+            foreach (var template in Templates)
+                template.BuildMod(dbpf);
         }
     }
 }
