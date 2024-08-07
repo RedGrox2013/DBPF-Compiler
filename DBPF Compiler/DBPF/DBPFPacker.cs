@@ -25,7 +25,7 @@ namespace DBPF_Compiler.DBPF
         public void Pack(DatabasePackedFile output, string? secretFolder = null)
         {
             if (ModProject.TryDeserialize(UnpackedDataDirectory.FullName, out var proj))
-                proj.BuildMod(output);
+                proj?.BuildMod(output);
 
             // Перебираем папки
             foreach (var group in UnpackedDataDirectory.GetDirectories())
