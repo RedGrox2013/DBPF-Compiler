@@ -1,12 +1,11 @@
-﻿using DBPF_Compiler.DBPF;
-using DBPF_Compiler.FNV;
+﻿using DBPF_Compiler.FNV;
 using System.Text;
 
-namespace DBPF_Compiler.ModsTemplates
+namespace DBPF_Compiler.DBPF
 {
-    public class ModTemplateHelper(string projectFolderPath)
+    public class DBPFPackerHelper
     {
-        public string ProjectFolderPath { get; set; } = projectFolderPath;
+        public string? ProjectFolderPath { get; set; }
         public string? ProjectName { get; set; }
         public List<string> Strings { get; set; } = [];
 

@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace DBPF_Compiler
 {
-    public class ModProject
+    public class ModProject : IModTemplate
     {
         [JsonIgnore]
         public string? Name { get; set; }
@@ -59,18 +59,14 @@ namespace DBPF_Compiler
             }
         }
 
-        public void BuildMod(DatabasePackedFile dbpf)
+        public void BuildMod(DatabasePackedFile dbpf, DBPFPackerHelper helper)
         {
             if (Templates == null)
                 return;
 
-            ModTemplateHelper helper = new(FolderPath ?? string.Empty)
-            {
-                ProjectName = Name
-            };
+            helper.ProjectName = Name;
             foreach (var template in Templates)
                 template.BuildMod(dbpf, helper);
-            helper.WriteHelperData(dbpf);
         }
     }
 }

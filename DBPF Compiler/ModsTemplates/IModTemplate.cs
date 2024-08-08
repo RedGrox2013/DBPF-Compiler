@@ -4,6 +4,6 @@ namespace DBPF_Compiler.ModsTemplates
 {
     public interface IModTemplate
     {
-        void BuildMod(DatabasePackedFile dbpf, ModTemplateHelper helper);
+        void BuildMod(DatabasePackedFile dbpf, DBPFPackerHelper helper);
     }
 }

@@ -24,8 +24,9 @@ namespace DBPF_Compiler.DBPF
 
         public void Pack(DatabasePackedFile output, string? secretFolder = null)
         {
+            DBPFPackerHelper helper = new();
             if (ModProject.TryDeserialize(UnpackedDataDirectory.FullName, out var proj))
-                proj?.BuildMod(output);
+                proj?.BuildMod(output, helper);
 
             // Перебираем папки
             foreach (var group in UnpackedDataDirectory.GetDirectories())
@@ -93,6 +94,8 @@ namespace DBPF_Compiler.DBPF
                     }
                 }
             }
+
+            helper.WriteHelperData(output);
 
             output.WriteIndex();
             output.WriteSecretIndex();

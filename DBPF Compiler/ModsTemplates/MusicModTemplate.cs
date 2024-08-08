@@ -1,6 +1,5 @@
 ﻿using DBPF_Compiler.DBPF;
 using DBPF_Compiler.Types;
-using System.Text.Json.Serialization;
 
 namespace DBPF_Compiler.ModsTemplates
 {
@@ -16,13 +15,18 @@ namespace DBPF_Compiler.ModsTemplates
 
         public string? SporepediaName { get; set; }
 
-        public void BuildMod(DatabasePackedFile dbpf, ModTemplateHelper helper)
+        public void BuildMod(DatabasePackedFile dbpf, DBPFPackerHelper helper)
         {
             if (string.IsNullOrEmpty(FileName))
                 throw new NullReferenceException();
 
             string name = Path.GetFileNameWithoutExtension(FileName);
-            // доделать
+            string filePath = Path.Combine(helper.ProjectFolderPath ?? string.Empty,
+                ".dbpfc_ignore", "templates", name);
+            if (Path.GetExtension(FileName).Equals(".mp3", StringComparison.InvariantCultureIgnoreCase))
+            {
+                // доделать
+            }
         }
     }
 }
