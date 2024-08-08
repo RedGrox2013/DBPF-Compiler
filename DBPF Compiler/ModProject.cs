@@ -64,9 +64,13 @@ namespace DBPF_Compiler
             if (Templates == null)
                 return;
 
-            ModTemplateHelper helper = new(FolderPath ?? string.Empty);
+            ModTemplateHelper helper = new(FolderPath ?? string.Empty)
+            {
+                ProjectName = Name
+            };
             foreach (var template in Templates)
                 template.BuildMod(dbpf, helper);
+            helper.WriteHelperData(dbpf);
         }
     }
 }
