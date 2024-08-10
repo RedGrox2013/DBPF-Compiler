@@ -1,5 +1,7 @@
 ﻿using DBPF_Compiler.DBPF;
+using DBPF_Compiler.FNV;
 using DBPF_Compiler.Types;
+using DBPF_Compiler.FileTypes.Prop;
 
 namespace DBPF_Compiler.ModsTemplates
 {
@@ -25,8 +27,21 @@ namespace DBPF_Compiler.ModsTemplates
                 ".dbpfc_ignore", "templates", name);
             if (Path.GetExtension(FileName).Equals(".mp3", StringComparison.InvariantCultureIgnoreCase))
             {
-                // доделать
+                // доделать конвертацию в snr
             }
+
+            uint musicID = FNVHash.Compute(name);
+            using FileStream audio = File.OpenRead(filePath + ".snr");
+            dbpf.CopyFromStream(audio, new(musicID, (uint)TypeIDs.snr, (uint)GroupIDs.audio));
+            PropertyList soundProp = new([
+                new Property("gain") {PropertyType = PropertyType.@float, Value = .8f},
+                new Property("islooped") {PropertyType = PropertyType.@bool, Value = IsLooped},
+                new Property("musicTemplate") {PropertyType = PropertyType.key, Value = new ResourceKey(0x869DB904)},
+                new Property("samples") {PropertyType = PropertyType.keys, Value = new ResourceKey[] {new(musicID)} },
+                new Property("codec") {PropertyType = PropertyType.uint32, Value = 5}
+                ]);
+
+            // доделать
         }
     }
 }

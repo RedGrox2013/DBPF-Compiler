@@ -11,7 +11,7 @@ namespace DBPF_Compiler.DBPF
 
         private Random? _random;
 
-        public void WriteHelperData(DatabasePackedFile dbpf)
+        internal void WriteHelperData(DatabasePackedFile dbpf)
         {
             if (Strings.Count == 0)
                 return;
