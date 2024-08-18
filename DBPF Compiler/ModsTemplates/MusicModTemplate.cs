@@ -23,8 +23,9 @@ namespace DBPF_Compiler.ModsTemplates
                 throw new NullReferenceException();
 
             string name = Path.GetFileNameWithoutExtension(FileName);
-            string filePath = Path.Combine(helper.ProjectFolderPath ?? string.Empty,
-                ".dbpfc_ignore", "templates", name);
+            string templatePath = Path.Combine(helper.ProjectFolderPath ?? string.Empty,
+                ".dbpfc_ignore", "templates");
+            string filePath = Path.Combine(templatePath, name);
             if (Path.GetExtension(FileName).Equals(".mp3", StringComparison.InvariantCultureIgnoreCase))
             {
                 // доделать конвертацию в snr
@@ -36,10 +37,17 @@ namespace DBPF_Compiler.ModsTemplates
             PropertyList soundProp = new([
                 new Property("gain") {PropertyType = PropertyType.@float, Value = .8f},
                 new Property("islooped") {PropertyType = PropertyType.@bool, Value = IsLooped},
-                new Property("musicTemplate") {PropertyType = PropertyType.key, Value = new ResourceKey(0x869DB904)},
+                new Property("musicTemplate") {PropertyType = PropertyType.key, Value = MusicTemplate},
                 new Property("samples") {PropertyType = PropertyType.keys, Value = new ResourceKey[] {new(musicID)} },
                 new Property("codec") {PropertyType = PropertyType.uint32, Value = 5}
                 ]);
+            dbpf.WriteSporeFile(soundProp, new(musicID, (uint)TypeIDs.soundProp, (uint)GroupIDs.audio));
+
+            if (!string.IsNullOrWhiteSpace(PlannerThumbnail))
+            {
+                using FileStream thumb = File.OpenRead(Path.Combine(templatePath, PlannerThumbnail));
+                dbpf.CopyFromStream(thumb, new(musicID, (uint)TypeIDs.png, (uint)GroupIDs.PlannerThumbnails));
+            }
 
             // доделать
         }
