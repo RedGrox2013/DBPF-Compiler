@@ -15,6 +15,7 @@ try
 catch (Exception e)
 {
     PrintError(e.Message);
+    Environment.Exit(-1);
 }
 
 
