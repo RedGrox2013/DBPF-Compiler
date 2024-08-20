@@ -10,12 +10,15 @@ Line line = await Initialize(args);
 try
 {
     CommandManager.Instance.ParseLine(line);
-    await ConfigManager.SaveAsync();
 }
 catch (Exception e)
 {
     PrintError(e.Message);
-    Environment.Exit(-1);
+    Environment.ExitCode = -1;
+}
+finally
+{
+    await ConfigManager.SaveAsync();
 }
 
 
