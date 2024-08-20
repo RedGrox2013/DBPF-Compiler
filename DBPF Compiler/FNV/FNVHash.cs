@@ -18,6 +18,14 @@
             return hash;
         }
 
+        public static uint Parse(string input)
+        {
+            if (TryParse(input, out uint hash))
+                return hash;
+
+            throw new FormatException();
+        }
+
         public static bool TryParse(string? input, out uint hash)
         {
             if (string.IsNullOrWhiteSpace(input))

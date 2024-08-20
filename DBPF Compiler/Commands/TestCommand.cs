@@ -2,6 +2,7 @@
 //using DBPF_Compiler.DBPF;
 //using DBPF_Compiler.FNV;
 //using DBPF_Compiler.Types;
+using DBPF_Compiler.FileTypes;
 
 namespace DBPF_Compiler.Commands
 {
@@ -9,8 +10,11 @@ namespace DBPF_Compiler.Commands
     {
         public override void ParseLine(Line line)
         {
-            for (int i = 1; i < line.ArgumentCount; i++)
-                WriteLine(i + ". " + line[i]);
+            var locale = new LocalizationTable();
+            using FileStream file = File.OpenRead("jopatest.locale");
+            locale.Decode(file);
+
+            WriteLine(locale);
         }
 
 
