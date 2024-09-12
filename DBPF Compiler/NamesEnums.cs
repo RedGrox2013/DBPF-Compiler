@@ -15,6 +15,8 @@
         animations = 0x0,
         audio = 0x021407EE,
         locale = 0x02FABF01,
-        PlannerThumbnails = 0x65928944
+        PlannerThumbnails = 0x65928944,
+        PaletteItems = 0xd87454e6,
+        civicobjects = 0x9430add7
     }
 }

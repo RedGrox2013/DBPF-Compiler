@@ -17,6 +17,9 @@ namespace DBPF_Compiler.ModsTemplates
 
         public string? SporepediaName { get; set; }
 
+        public StringResourceKey TemplateFixedObjectAudioMusic { get; set; } = new("TemplateFixedObjectAudioMusic", "prop", "PaletteItems");
+        public StringResourceKey ModelMeshLOD0 { get; set; } = new("ep1_audioicon_default2", "rw4", "EP1_TerrainIcons");
+
         public void BuildMod(DatabasePackedFile dbpf, DBPFPackerHelper helper)
         {
             if (string.IsNullOrEmpty(FileName))
@@ -49,7 +52,15 @@ namespace DBPF_Compiler.ModsTemplates
                 dbpf.CopyFromStream(thumb, new(musicID, (uint)TypeIDs.png, (uint)GroupIDs.PlannerThumbnails));
             }
 
-            // доделать
+            PropertyList paletteItem = new([
+                new Property("parent") {PropertyType = PropertyType.key, Value = TemplateFixedObjectAudioMusic},
+                new Property("adventureMusicId") {PropertyType = PropertyType.uint32, Value = musicID},
+                new Property("modelMeshLOD0") {PropertyType = PropertyType.key, Value = ModelMeshLOD0},
+                new Property("paletteItemPlacedAsset") {PropertyType = PropertyType.key, Value = new ResourceKey(0xe5855b05, 0x074e0069, (uint)GroupIDs.civicobjects)}, // civicobjects!ep1_audioobject_music.cPlaceableSound
+                // доделать текст
+                new Property("sporepediaShow") {PropertyType = PropertyType.@bool, Value = true}
+                ]);
+            dbpf.WriteSporeFile(paletteItem, new(musicID, (uint)TypeIDs.prop, (uint)GroupIDs.PaletteItems));
         }
     }
 }
