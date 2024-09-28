@@ -32,6 +32,7 @@ namespace DBPF_Compiler.ModsTemplates
             if (Path.GetExtension(FileName).Equals(".mp3", StringComparison.InvariantCultureIgnoreCase))
             {
                 // доделать конвертацию в snr
+                throw new NotImplementedException("Конвертация в snr пока не доделана(");
             }
 
             uint musicID = FNVHash.Compute(name);
@@ -41,7 +42,7 @@ namespace DBPF_Compiler.ModsTemplates
                 new Property("gain") {PropertyType = PropertyType.@float, Value = .8f},
                 new Property("islooped") {PropertyType = PropertyType.@bool, Value = IsLooped},
                 new Property("musicTemplate") {PropertyType = PropertyType.key, Value = MusicTemplate},
-                new Property("samples") {PropertyType = PropertyType.keys, Value = new ResourceKey[] {new(musicID)} },
+                new Property("samples") {PropertyType = PropertyType.keys, Value = new ResourceKey[] { new(musicID) } },
                 new Property("codec") {PropertyType = PropertyType.uint32, Value = 5}
                 ]);
             dbpf.WriteSporeFile(soundProp, new(musicID, (uint)TypeIDs.soundProp, (uint)GroupIDs.audio));
@@ -57,7 +58,7 @@ namespace DBPF_Compiler.ModsTemplates
                 new Property("adventureMusicId") {PropertyType = PropertyType.uint32, Value = musicID},
                 new Property("modelMeshLOD0") {PropertyType = PropertyType.key, Value = ModelMeshLOD0},
                 new Property("paletteItemPlacedAsset") {PropertyType = PropertyType.key, Value = new ResourceKey(0xe5855b05, 0x074e0069, (uint)GroupIDs.civicobjects)}, // civicobjects!ep1_audioobject_music.cPlaceableSound
-                // доделать текст
+                new Property("sporepediaName") {PropertyType = PropertyType.texts, Value = new StringLocalizedString[] { helper.AddText(SporepediaName ?? name) } },
                 new Property("sporepediaShow") {PropertyType = PropertyType.@bool, Value = true}
                 ]);
             dbpf.WriteSporeFile(paletteItem, new(musicID, (uint)TypeIDs.prop, (uint)GroupIDs.PaletteItems));
