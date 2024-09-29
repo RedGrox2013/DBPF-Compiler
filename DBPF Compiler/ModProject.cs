@@ -1,7 +1,9 @@
 ﻿using DBPF_Compiler.DBPF;
 using DBPF_Compiler.ModsTemplates;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Unicode;
 
 namespace DBPF_Compiler
 {
@@ -13,6 +15,12 @@ namespace DBPF_Compiler
         public string? FolderPath { get; set; }
 
         public List<IModTemplate>? Templates { get; set; }
+
+        private readonly static JsonSerializerOptions _jsonSerializerOptions = new()
+        {
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+        };
 
         public void AddModTemplate(IModTemplate template)
         {
@@ -37,7 +45,7 @@ namespace DBPF_Compiler
             if (filePath == null)
                 throw new Exception("Project file not found.");
 
-            var proj = JsonSerializer.Deserialize<ModProject>(File.ReadAllText(filePath)) ??
+            var proj = JsonSerializer.Deserialize<ModProject>(File.ReadAllText(filePath), _jsonSerializerOptions) ??
                 throw new NotSupportedException(Path.GetFileName(filePath) + " is not mod project.");
             proj.Name = Path.GetFileNameWithoutExtension(filePath);
             proj.FolderPath = projectFolderPath;
@@ -57,6 +65,22 @@ namespace DBPF_Compiler
                 project = null;
                 return false;
             }
+        }
+
+        public static string Serialize(ModProject project, string projectFolderPath)
+        {
+            string json = JsonSerializer.Serialize(project, _jsonSerializerOptions);
+            File.WriteAllText(Path.Combine(projectFolderPath, project.Name + ".dbpfcproj"), json);
+
+            return json;
+        }
+
+        public static string Serialize(ModProject project)
+        {
+            if (string.IsNullOrEmpty(project.FolderPath))
+                throw new NullReferenceException();
+
+            return Serialize(project, project.FolderPath);
         }
 
         public void BuildMod(DatabasePackedFile dbpf, DBPFPackerHelper helper)
