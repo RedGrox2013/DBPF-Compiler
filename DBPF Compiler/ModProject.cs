@@ -14,6 +14,7 @@ namespace DBPF_Compiler
         [JsonIgnore]
         public string? FolderPath { get; set; }
 
+        // TODO: исправить сериализацию в json
         public List<IModTemplate>? Templates { get; set; }
 
         private readonly static JsonSerializerOptions _jsonSerializerOptions = new()
