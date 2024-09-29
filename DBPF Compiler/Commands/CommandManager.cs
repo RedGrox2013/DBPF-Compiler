@@ -23,6 +23,7 @@ namespace DBPF_Compiler.Commands
                     _instance.AddCommand("keys", new KeysListCommand());
                     _instance.AddCommand("extract", new ExtractCommand());
                     _instance.AddCommand("configs", new ConfigsCommand());
+                    _instance.AddCommand("create-project", new CreateProjectCommand());
                     _instance.AddCommand("create-template", new CreateTemplateCommand());
                     _instance.AddCommand("clear", new ClearCommand());
                 }
