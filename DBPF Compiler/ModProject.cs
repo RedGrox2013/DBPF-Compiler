@@ -14,6 +14,8 @@ namespace DBPF_Compiler
         [JsonIgnore]
         public string? FolderPath { get; set; }
 
+        public const string PROJECT_FILE_EXTENSION = ".dbpfcproj";
+
         // TODO: исправить сериализацию в json
         public List<IModTemplate>? Templates { get; set; }
 
@@ -34,17 +36,34 @@ namespace DBPF_Compiler
             Templates.Add(template);
         }
 
+        /// <summary>
+        /// Десериализует проект из папки или из <c>.dbpfcproj</c>-файла
+        /// </summary>
+        /// <param name="projectFolderPath">Путь к папке проекта</param>
+        /// <returns>Десериализованный <see cref="ModProject"/></returns>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
         public static ModProject Deserialize(string projectFolderPath)
         {
-            string? filePath = null;
-            foreach (var f in Directory.GetFiles(projectFolderPath))
-                if (f.EndsWith(".dbpfcproj", StringComparison.OrdinalIgnoreCase))
-                {
-                    filePath = f;
-                    break;
-                }
-            if (filePath == null)
-                throw new Exception("Project file not found.");
+            string? filePath;
+            if (projectFolderPath.EndsWith(PROJECT_FILE_EXTENSION))
+            {
+                filePath = projectFolderPath;
+                projectFolderPath = Path.GetDirectoryName(projectFolderPath) ??
+                    throw new FileNotFoundException("Project file not found.");
+            }
+            else
+            {
+                filePath = null;
+                foreach (var f in Directory.GetFiles(projectFolderPath))
+                    if (f.EndsWith(PROJECT_FILE_EXTENSION, StringComparison.OrdinalIgnoreCase))
+                    {
+                        filePath = f;
+                        break;
+                    }
+                if (filePath == null)
+                    throw new FileNotFoundException("Project file not found.");
+            }
 
             var proj = JsonSerializer.Deserialize<ModProject>(File.ReadAllText(filePath), _jsonSerializerOptions) ??
                 throw new NotSupportedException(Path.GetFileName(filePath) + " is not mod project.");
@@ -70,8 +89,12 @@ namespace DBPF_Compiler
 
         public static string Serialize(ModProject project, string projectFolderPath)
         {
+            if (projectFolderPath.EndsWith(PROJECT_FILE_EXTENSION))
+                projectFolderPath = Path.GetDirectoryName(projectFolderPath) ??
+                    throw new FileNotFoundException("Project file not found.");
+
             string json = JsonSerializer.Serialize(project, _jsonSerializerOptions);
-            File.WriteAllText(Path.Combine(projectFolderPath, project.Name + ".dbpfcproj"), json);
+            File.WriteAllText(Path.Combine(projectFolderPath, project.Name + PROJECT_FILE_EXTENSION), json);
 
             return json;
         }
