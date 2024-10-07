@@ -14,17 +14,16 @@ namespace DBPF_Compiler.Commands
                 return;
             }
 
-            string? type = line.GetOption("t", 1)?[0]?.ToLower();
-            if (string.IsNullOrEmpty(type))
+            if (!Enum.TryParse<ModTemplateType>(line.GetOption("t", 1)?[0], true, out var type))
             {
                 PrintError("Required argument missing: <type>");
                 return;
             }
 
-            var project = ModProject.Deserialize(projectPath);
+            var project = ModProject.Load(projectPath);
             switch (type)
             {
-                case "music":
+                case ModTemplateType.Music:
                     string? folder = line.GetOption("-folder", 1)?[0];
                     if (string.IsNullOrEmpty(folder))
                     {
@@ -52,7 +51,7 @@ namespace DBPF_Compiler.Commands
                     return;
             }
 
-            WriteLine(project.Name + ":\n" + ModProject.Serialize(project, projectPath));
+            WriteLine(project.Name + ":\n" + ModProject.Save(project, projectPath));
         }
     }
 }

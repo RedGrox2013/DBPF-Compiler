@@ -16,8 +16,11 @@ namespace DBPF_Compiler
 
         public const string PROJECT_FILE_EXTENSION = ".dbpfcproj";
 
-        // TODO: исправить сериализацию в json
+        // TODO: переделать хранение шаблонов
+        [JsonIgnore]
         public List<IModTemplate>? Templates { get; set; }
+
+        public ModTemplateType TemplateType => ModTemplateType.Project;
 
         private readonly static JsonSerializerOptions _jsonSerializerOptions = new()
         {
@@ -37,13 +40,13 @@ namespace DBPF_Compiler
         }
 
         /// <summary>
-        /// Десериализует проект из папки или из <c>.dbpfcproj</c>-файла
+        /// Загружает проект из папки или из <c>.dbpfcproj</c>-файла
         /// </summary>
         /// <param name="projectFolderPath">Путь к папке проекта</param>
-        /// <returns>Десериализованный <see cref="ModProject"/></returns>
+        /// <returns>Загруженный <see cref="ModProject"/></returns>
         /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="NotSupportedException"></exception>
-        public static ModProject Deserialize(string projectFolderPath)
+        public static ModProject Load(string projectFolderPath)
         {
             string? filePath;
             if (projectFolderPath.EndsWith(PROJECT_FILE_EXTENSION))
@@ -73,11 +76,11 @@ namespace DBPF_Compiler
             return proj;
         }
 
-        public static bool TryDeserialize(string projectFolderPath, out ModProject? project)
+        public static bool TryLoad(string projectFolderPath, out ModProject? project)
         {
             try
             {
-                project = Deserialize(projectFolderPath);
+                project = Load(projectFolderPath);
                 return true;
             }
             catch
@@ -87,7 +90,7 @@ namespace DBPF_Compiler
             }
         }
 
-        public static string Serialize(ModProject project, string projectFolderPath)
+        public static string Save(ModProject project, string projectFolderPath)
         {
             if (projectFolderPath.EndsWith(PROJECT_FILE_EXTENSION))
                 projectFolderPath = Path.GetDirectoryName(projectFolderPath) ??
@@ -96,15 +99,32 @@ namespace DBPF_Compiler
             string json = JsonSerializer.Serialize(project, _jsonSerializerOptions);
             File.WriteAllText(Path.Combine(projectFolderPath, project.Name + PROJECT_FILE_EXTENSION), json);
 
+            //if (project.Templates != null)
+            //    foreach (var template in project.Templates)
+            //    {
+            //        var path = new DirectoryInfo(Path.Combine(projectFolderPath, "Templates.dbpfc_ignore", template.TemplateType.ToString()));
+            //        if (!path.Exists)
+            //            path.Create();
+
+            //        switch (template.TemplateType)
+            //        {
+            //            case ModTemplateType.Music:
+            //                if (template is not MusicModTemplate musicTemplate)
+            //                    throw new NullReferenceException();
+            //                // доделать сериализацию
+            //                break;
+            //        }
+            //    }
+
             return json;
         }
 
-        public static string Serialize(ModProject project)
+        public static string Save(ModProject project)
         {
             if (string.IsNullOrEmpty(project.FolderPath))
                 throw new NullReferenceException();
 
-            return Serialize(project, project.FolderPath);
+            return Save(project, project.FolderPath);
         }
 
         public void BuildMod(DatabasePackedFile dbpf, DBPFPackerHelper helper)

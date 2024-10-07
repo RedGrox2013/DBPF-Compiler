@@ -22,16 +22,18 @@ namespace DBPF_Compiler.DBPF
 
         private readonly NameRegistryManager _regManager = NameRegistryManager.Instance;
 
+        public const string IGNORE_FOLDERS_EXTENSION = ".dbpfc_ignore";
+
         public void Pack(DatabasePackedFile output, string? secretFolder = null)
         {
             DBPFPackerHelper helper = new();
-            if (ModProject.TryDeserialize(UnpackedDataDirectory.FullName, out var proj))
+            if (ModProject.TryLoad(UnpackedDataDirectory.FullName, out var proj))
                 proj?.BuildMod(output, helper);
 
             // Перебираем папки
             foreach (var group in UnpackedDataDirectory.GetDirectories())
             {
-                if (group.Name.EndsWith(".dbpfc_ignore"))
+                if (group.Name.EndsWith(IGNORE_FOLDERS_EXTENSION))
                     continue;
 
                 if (group.Name == secretFolder)

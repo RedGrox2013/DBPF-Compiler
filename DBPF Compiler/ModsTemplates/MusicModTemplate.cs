@@ -5,9 +5,10 @@ using DBPF_Compiler.FileTypes.Prop;
 
 namespace DBPF_Compiler.ModsTemplates
 {
-    // TODO: исправить сериализацию в json
     internal class MusicModTemplate : IModTemplate
     {
+        public ModTemplateType TemplateType => ModTemplateType.Music;
+
         //////// soundprop ////////
         public string? FileName { get; set; }
         public StringResourceKey MusicTemplate { get; set; } = new("0x869DB904");

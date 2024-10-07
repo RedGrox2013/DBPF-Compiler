@@ -17,7 +17,7 @@ namespace DBPF_Compiler.Commands
                 FolderPath = line[1],
                 Name = line.GetOption("n", 1)?[0] ?? Path.GetFileName(line[1])
             };
-            WriteLine(project.Name + ":\n" + ModProject.Serialize(project));
+            WriteLine(project.Name + ":\n" + ModProject.Save(project));
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
