@@ -79,7 +79,7 @@ namespace DBPF_Compiler.Commands
             command.Out = _out;
             command.ClearAction = _clearAction;
             command.PrintErrorAction = _printErrorAction;
-            _commands.Add(keyword, command);
+            _commands.Add(keyword.ToLower(), command);
         }
         public ConsoleCommand GetCommand(string keyword) => _commands[keyword];
 
@@ -101,7 +101,7 @@ namespace DBPF_Compiler.Commands
             string keyword = line[0];
 #pragma warning restore CS8602 // Разыменование вероятной пустой ссылки.
 
-            if (!_commands.TryGetValue(keyword, out var command))
+            if (!_commands.TryGetValue(keyword.ToLower(), out var command))
                 PrintErrorAction?.Invoke(keyword + ": unknown command");
             else
                 command.ParseLine(line);
