@@ -1,5 +1,4 @@
 ﻿using DBPF_Compiler.DBPF;
-using DBPF_Compiler.ModsTemplates;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -7,7 +6,7 @@ using System.Text.Unicode;
 
 namespace DBPF_Compiler
 {
-    public class ModProject : IModTemplate
+    public class ModProject
     {
         [JsonIgnore]
         public string? Name { get; set; }
@@ -16,28 +15,11 @@ namespace DBPF_Compiler
 
         public const string PROJECT_FILE_EXTENSION = ".dbpfcproj";
 
-        // TODO: переделать хранение шаблонов
-        [JsonIgnore]
-        public List<IModTemplate>? Templates { get; set; }
-
-        public ModTemplateType TemplateType => ModTemplateType.Project;
-
         private readonly static JsonSerializerOptions _jsonSerializerOptions = new()
         {
             WriteIndented = true,
             Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
         };
-
-        public void AddModTemplate(IModTemplate template)
-        {
-            if (Templates == null)
-            {
-                Templates = [template];
-                return;
-            }
-
-            Templates.Add(template);
-        }
 
         /// <summary>
         /// Загружает проект из папки или из <c>.dbpfcproj</c>-файла
@@ -99,23 +81,6 @@ namespace DBPF_Compiler
             string json = JsonSerializer.Serialize(project, _jsonSerializerOptions);
             File.WriteAllText(Path.Combine(projectFolderPath, project.Name + PROJECT_FILE_EXTENSION), json);
 
-            //if (project.Templates != null)
-            //    foreach (var template in project.Templates)
-            //    {
-            //        var path = new DirectoryInfo(Path.Combine(projectFolderPath, "Templates.dbpfc_ignore", template.TemplateType.ToString()));
-            //        if (!path.Exists)
-            //            path.Create();
-
-            //        switch (template.TemplateType)
-            //        {
-            //            case ModTemplateType.Music:
-            //                if (template is not MusicModTemplate musicTemplate)
-            //                    throw new NullReferenceException();
-            //                // доделать сериализацию
-            //                break;
-            //        }
-            //    }
-
             return json;
         }
 
@@ -129,12 +94,7 @@ namespace DBPF_Compiler
 
         public void BuildMod(DatabasePackedFile dbpf, DBPFPackerHelper helper)
         {
-            if (Templates == null)
-                return;
-
-            helper.ProjectName = Name;
-            foreach (var template in Templates)
-                template.BuildMod(dbpf, helper);
+            // потом пригодится (наверное)
         }
     }
 }
