@@ -10,11 +10,9 @@ namespace DBPF_Compiler.Commands
     {
         public override void ParseLine(Line line)
         {
-            var locale = new LocalizationTable();
-            using FileStream file = File.OpenRead("jopatest.locale");
-            locale.Decode(file);
-
-            WriteLine(locale);
+            var test = Lexer.LineToArgs(line[1]);
+            for (int i = 0; i < test.ArgumentCount; i++)
+                WriteLine($"{i + 1}: {test[i]}");
         }
 
 
