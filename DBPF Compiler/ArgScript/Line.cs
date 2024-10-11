@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.InteropServices;
+using System.Text;
 
 namespace DBPF_Compiler.ArgScript
 {
@@ -55,6 +56,52 @@ namespace DBPF_Compiler.ArgScript
             return result;
         }
 
+        /// <summary>
+        /// Парсит строку и преобразует её в <see cref="Line"/><br/>
+        /// Представляет функцию <c>CommandLineToArgvW</c> из shell32.dll
+        /// </summary>
+        /// <param name="line"></param>
+        /// <returns>Строка в виде объекта <see cref="Line"/></returns>
+        public static Line Parse(string? line)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+                return Empty;
+
+            IntPtr argv = CommandLineToArgvW(line, out int argc);
+            if (argv == IntPtr.Zero)
+                return Empty;
+
+            try
+            {
+                Line result = new(argc);
+                for (int i = 0; i < argc; i++)
+                {
+                    IntPtr pStr = Marshal.ReadIntPtr(argv, i * IntPtr.Size);
+                    result._args[i] = Marshal.PtrToStringUni(pStr) ?? string.Empty;
+                }
+
+                return result;
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(argv);
+            }
+        }
+
+        public static bool TryParse(string? line, out Line? result)
+        {
+            try
+            {
+                result = Parse(line);
+                return true;
+            }
+            catch
+            {
+                result = null;
+                return false;
+            }
+        }
+
         public override string ToString()
         {
             StringBuilder sb = new();
@@ -75,5 +122,8 @@ namespace DBPF_Compiler.ArgScript
         }
 
         public string this[int index] => _args[index];
+
+        [DllImport("shell32.dll", SetLastError = true)]
+        private static extern IntPtr CommandLineToArgvW([MarshalAs(UnmanagedType.LPWStr)] string lpCmdLine, out int pNumArgs);
     }
 }
