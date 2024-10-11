@@ -18,5 +18,11 @@
             Row = row;
             Column = column;
         }
+        public ArgScriptException(Line? targetLine, int row, int column, string? message, Exception? innerException) : base(message, innerException)
+        {
+            TargetLine = targetLine;
+            Row = row;
+            Column = column;
+        }
     }
 }
