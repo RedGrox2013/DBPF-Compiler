@@ -398,7 +398,7 @@ namespace DBPF_Compiler.DBPF
                 byte[] data = new byte[entry.Size];
                 var oldPosition = _stream.Position;
                 _stream.Position = entry.Offset;
-                _stream.Read(data);
+                _stream.ReadExactly(data);
                 _stream.Position = oldPosition;
 
                 return data;
@@ -458,7 +458,7 @@ namespace DBPF_Compiler.DBPF
                 if (!decompress || !compressed)
                 {
                     data = new byte[compressed ? entry.CompressedSize : entry.UncompressedSize];
-                    _stream.Read(data);
+                    _stream.ReadExactly(data);
                 }
                 else
                     data = _stream.RefPackDecompress(entry.CompressedSize, entry.UncompressedSize);

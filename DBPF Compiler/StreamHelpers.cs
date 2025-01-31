@@ -10,7 +10,7 @@ namespace DBPF_Compiler
         {
             var buffer = new byte[size];
 
-            stream.Read(buffer, 0, size);
+            stream.ReadExactly(buffer);
             if (bigEndian)
                 Array.Reverse(buffer, 0, size);
 
@@ -462,7 +462,7 @@ namespace DBPF_Compiler
         private static bool ReadRefPackCompressionHeader(this Stream stream)
         {
             byte[] header = new byte[2];
-            stream.Read(header, 0, header.Length);
+            stream.ReadExactly(header);
 
             if ((header[0] & 0x3E) != 0x10 || (header[1] != 0xFB))
             {
@@ -482,7 +482,7 @@ namespace DBPF_Compiler
             if (!stream.ReadRefPackCompressionHeader())
             {
                 stream.Position = baseOffset;
-                stream.Read(outputData);
+                stream.ReadExactly(outputData);
                 return outputData;
             }
 
@@ -503,7 +503,7 @@ namespace DBPF_Compiler
                 else if (prefix >= 0xC0)
                 {
                     byte[] extra = new byte[3];
-                    stream.Read(extra, 0, extra.Length);
+                    stream.ReadExactly(extra);
                     plainSize = (uint)(prefix & 3);
                     copySize = (uint)((((prefix & 0x0C) << 6) | extra[2]) + 5);
                     copyOffset = (uint)((((((prefix & 0x10) << 4) | extra[0]) << 8) | extra[1]) + 1);
@@ -511,7 +511,7 @@ namespace DBPF_Compiler
                 else if (prefix >= 0x80)
                 {
                     byte[] extra = new byte[2];
-                    stream.Read(extra, 0, extra.Length);
+                    stream.ReadExactly(extra);
                     plainSize = (uint)(extra[0] >> 6);
                     copySize = (uint)((prefix & 0x3F) + 4);
                     copyOffset = (uint)((((extra[0] & 0x3F) << 8) | extra[1]) + 1);
@@ -526,7 +526,7 @@ namespace DBPF_Compiler
 
                 if (plainSize > 0)
                 {
-                    stream.Read(outputData, (int)offset, (int)plainSize);
+                    stream.ReadExactly(outputData, (int)offset, (int)plainSize);
                     offset += plainSize;
                 }
 
