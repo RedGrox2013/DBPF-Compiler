@@ -23,4 +23,6 @@ DBPF Compiler создавался мной для того, чтобы поня
 
 ## Требования
 
-Для работы DBPF Compiler'а требуется [.NET 8.0](https://aka.ms/dotnet-core-applaunch?framework=Microsoft.NETCore.App&framework_version=8.0.0)
+Для работы новых версий DBPF Compiler'а требуется [.NET 9.0](https://dotnet.microsoft.com/ru-ru/download/dotnet/9.0/runtime?cid=getdotnetcore)
+
+Для работы DBPF Compiler'а (версии 1.0.0.5 и более старых) требуется [.NET 8.0](https://aka.ms/dotnet-core-applaunch?framework=Microsoft.NETCore.App&framework_version=8.0.0)
