@@ -2,27 +2,19 @@
 {
     public class ArgScriptException : Exception
     {
-        public Line? TargetLine { get; set; }
-        public int Row { get; set; }
-        public int Column { get; set; }
+        public int Position { get; set; }
 
-        public ArgScriptException(Line? targetLine, int row, int column)
+        public ArgScriptException(int position)
         {
-            TargetLine = targetLine;
-            Row = row;
-            Column = column;
+            Position = position;
         }
-        public ArgScriptException(Line? targetLine, int row, int column, string? message) : base(message)
+        public ArgScriptException(string? message, int position) : base(message)
         {
-            TargetLine = targetLine;
-            Row = row;
-            Column = column;
+            Position = position;
         }
-        public ArgScriptException(Line? targetLine, int row, int column, string? message, Exception? innerException) : base(message, innerException)
+        public ArgScriptException(string? message, int position, Exception? innerException) : base(message, innerException)
         {
-            TargetLine = targetLine;
-            Row = row;
-            Column = column;
+            Position = position;
         }
     }
 }

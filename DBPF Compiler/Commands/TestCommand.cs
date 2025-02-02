@@ -10,9 +10,30 @@ namespace DBPF_Compiler.Commands
     {
         public override void ParseLine(Line line)
         {
-            var test = Lexer.LineToArgs(line[1]);
-            for (int i = 0; i < test.ArgumentCount; i++)
-                WriteLine($"{i + 1}: {test[i]}");
+            const string CODE =
+@"# comment
+#<
+multiline comment
+dasdasdas
+asdad
+#>
+
+set myVariable 1488
+int32 value $myVariable+1 + (12 / 2) * 3
+float pi 3.14
+string16 str ""Hello world!""
+string16s strArray
+    ""щавель""
+    ""ракушка""
+    ""персик""
+end
+string16 #< гойда наш слон #> test ""фимоз""
+string16 test2 ""фимоз"" # comment
+";
+
+            var tokens = Lexer.Tokenize(CODE);
+            foreach (var token in tokens)
+                WriteLine($"{token.Type}: {token.Text} ({token.Position})");
         }
 
 
