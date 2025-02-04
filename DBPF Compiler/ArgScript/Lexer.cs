@@ -6,9 +6,24 @@ namespace DBPF_Compiler.ArgScript
     public static class Lexer
     {
         public static Line LineToArgs(string? line)
-            => Line.Parse(line);
+        {
+            if (string.IsNullOrWhiteSpace(line))
+                return Line.Empty;
 
-        internal static IEnumerable<Token> Tokenize(string argScript)
+            var tokens = Tokenize(line);
+            List<string> args = [];
+            foreach (var token in tokens)
+            {
+                if (token.Type == TokenType.STR)
+                    args.Add(token.Text.Trim('"'));
+                else
+                    args.Add(token.Text);
+            }
+
+            return new Line(args);
+        }
+
+        internal static List<Token> Tokenize(string argScript)
         {
             List<Token> tokens = [];
             int pos = 0;

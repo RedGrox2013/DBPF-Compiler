@@ -56,6 +56,7 @@ namespace DBPF_Compiler.ArgScript
             return result;
         }
 
+        [Obsolete("Представляет функцию CommandLineToArgvW из shell32.dll. Для полной поддержки ArgScript лучше использовать Lexer.LineToArgs")]
         /// <summary>
         /// Парсит строку и преобразует её в <see cref="Line"/><br/>
         /// Представляет функцию <c>CommandLineToArgvW</c> из shell32.dll
@@ -88,6 +89,7 @@ namespace DBPF_Compiler.ArgScript
             }
         }
 
+        [Obsolete("Представляет функцию CommandLineToArgvW из shell32.dll. Для полной поддержки ArgScript лучше использовать Lexer.LineToArgs")]
         public static bool TryParse(string? line, out Line? result)
         {
             try
