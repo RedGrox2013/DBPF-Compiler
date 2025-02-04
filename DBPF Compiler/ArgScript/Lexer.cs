@@ -12,12 +12,18 @@ namespace DBPF_Compiler.ArgScript
 
             var tokens = Tokenize(line);
             List<string> args = [];
-            foreach (var token in tokens)
+            string? prefix = null;
+            for (int i = 0; i < tokens.Count; i++)
             {
-                if (token.Type == TokenType.STR)
-                    args.Add(token.Text.Trim('"'));
+                if (tokens[i].Type == TokenType.STR)
+                    args.Add(tokens[i].Text.Trim('"'));
+                else if (tokens[i].Type == TokenType.MINUS)
+                    prefix += tokens[i].Text;
                 else
-                    args.Add(token.Text);
+                {
+                    args.Add(prefix + tokens[i].Text);
+                    prefix = null;
+                }
             }
 
             return new Line(args);

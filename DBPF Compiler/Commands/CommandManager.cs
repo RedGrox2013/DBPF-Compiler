@@ -19,11 +19,11 @@ namespace DBPF_Compiler.Commands
                     _instance.AddCommand("encode", new EncodeCommand());
                     _instance.AddCommand("decode", new DecodeCommand());
                     _instance.AddCommand("hash", new HashCommand());
-                    _instance.AddCommand("hash-to-name", new HashToNameCommand());
+                    _instance.AddCommand("hashToName", new HashToNameCommand());
                     _instance.AddCommand("keys", new KeysListCommand());
                     _instance.AddCommand("extract", new ExtractCommand());
                     _instance.AddCommand("configs", new ConfigsCommand());
-                    _instance.AddCommand("create-project", new CreateProjectCommand());
+                    _instance.AddCommand("createProject", new CreateProjectCommand());
                     //_instance.AddCommand("create-template", new CreateTemplateCommand());
                     _instance.AddCommand("clear", new ClearCommand());
                 }
@@ -125,7 +125,7 @@ namespace DBPF_Compiler.Commands
                 return;
             }
 
-            if (!_commands.TryGetValue(commandName, out var cmd))
+            if (!_commands.TryGetValue(commandName.ToLower(), out var cmd))
                 PrintErrorAction?.Invoke(commandName + " is not found");
             else
                 Out.WriteLine(commandName + "\t" +
