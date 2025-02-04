@@ -10,7 +10,10 @@ namespace DBPF_Compiler.Commands
         public override void ParseLine(Line line)
         {
             if (IsRunning)
+            {
+                PrintError("Interactive mode is already running");
                 return;
+            }
 
             string? cmdLine;
             IsRunning = true;
@@ -22,15 +25,16 @@ namespace DBPF_Compiler.Commands
                 try
                 {
                     CommandManager.Instance.ParseLine(line);
+
+                    Out?.Write("dbpfc>");
+                    cmdLine = In.ReadLine();
+                    line = Lexer.LineToArgs(cmdLine);
                 }
                 catch (Exception e)
                 {
                     PrintError(e.Message);
+                    cmdLine = string.Empty;
                 }
-
-                Out?.Write("dbpfc>");
-                cmdLine = In.ReadLine();
-                line = Lexer.LineToArgs(cmdLine);
             } while (cmdLine != null &&
                 (Line.IsNullOrEmpty(line) || !line[0].Equals("exit", StringComparison.OrdinalIgnoreCase)));
 
