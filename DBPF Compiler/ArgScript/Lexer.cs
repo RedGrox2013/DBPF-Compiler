@@ -17,7 +17,13 @@ namespace DBPF_Compiler.ArgScript
             {
                 if (tokens[i].Type == TokenType.STR)
                     args.Add(tokens[i].Text.Trim('"'));
-                else if (tokens[i].Type == TokenType.MINUS)
+                else if (tokens[i].Type == TokenType.MINUS ||
+                    tokens[i].Type == TokenType.DEVIDE ||
+                    tokens[i].Type == TokenType.DOLLAR ||
+                    tokens[i].Type == TokenType.MOD ||
+                    tokens[i].Type == TokenType.PLUS ||
+                    tokens[i].Type == TokenType.MULTIPLY ||
+                    tokens[i].Type == TokenType.POWER)
                     prefix += tokens[i].Text;
                 else
                 {

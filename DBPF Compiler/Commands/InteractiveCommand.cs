@@ -16,9 +16,9 @@ namespace DBPF_Compiler.Commands
             }
 
             string? cmdLine;
-            IsRunning = true;
+            IsRunning = NotDisplayDescription = true;
             line = Line.Empty;
-            Out?.WriteLine("To exit, enter \"exit\"");
+            WriteLine("To exit, enter \"exit\"");
 
             do
             {
@@ -26,7 +26,7 @@ namespace DBPF_Compiler.Commands
                 {
                     CommandManager.Instance.ParseLine(line);
 
-                    Out?.Write("dbpfc>");
+                    Write("dbpfc>");
                     cmdLine = In.ReadLine();
                     line = Lexer.LineToArgs(cmdLine);
                 }
@@ -34,11 +34,12 @@ namespace DBPF_Compiler.Commands
                 {
                     PrintError(e.Message);
                     cmdLine = string.Empty;
+                    line = Line.Empty;
                 }
             } while (cmdLine != null &&
                 (Line.IsNullOrEmpty(line) || !line[0].Equals("exit", StringComparison.OrdinalIgnoreCase)));
 
-            IsRunning = false;
+            IsRunning = NotDisplayDescription = false;
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
