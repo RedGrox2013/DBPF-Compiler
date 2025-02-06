@@ -5,13 +5,11 @@ namespace DBPF_Compiler.ArgScript
     public class FormatParser
     {
         private List<Token>? _tokens;
+        private int _position;
 
         private readonly Dictionary<string, object> _variables = [];
 
-        public FormatParser()
-        {
-            
-        }
+        public FormatParser() { }
         internal FormatParser(IEnumerable<Token> tokens)
         {
             _tokens = new(tokens);
@@ -31,10 +29,23 @@ namespace DBPF_Compiler.ArgScript
 
         public void Parse(string argScript)
         {
-            _variables.Clear();
             _tokens = Lexer.Tokenize(argScript);
+            _variables.Clear();
+            _position = 0;
 
             Parse();
         }
+
+        private Token? Match(params TokenType[] expected)
+        {
+            if (_tokens != null && _position < _tokens.Count && expected.Contains(_tokens[_position].Type))
+                return _tokens[_position++];
+
+            return null;
+        }
+
+        private Token Require(params TokenType[] expected)
+            => Match(expected) ??
+            throw new ArgScriptException($"Token expected: {string.Join(" or ", expected)}", _position);
     }
 }
