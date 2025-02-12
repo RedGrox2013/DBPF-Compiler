@@ -1,11 +1,12 @@
-﻿using System.Runtime.InteropServices;
+﻿using DBPF_Compiler.ArgScript.Syntax;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace DBPF_Compiler.ArgScript
 {
-    public class Line(string[] arguments)
+    public class Line
     {
-        private readonly string[] _args = arguments;
+        private readonly string[] _args;
 
         public int ArgumentCount => _args.Length;
         public int LinePosition { get; set; } = 0;
@@ -14,6 +15,35 @@ namespace DBPF_Compiler.ArgScript
 
         private Line(int count) : this(new string[count]) { }
         public Line(IEnumerable<string> arguments) : this(arguments.ToArray()) { }
+        Line(string[] arguments)
+        {
+            _args = arguments;
+        }
+        internal Line(IEnumerable<Token> tokens)
+        {
+            List<string> args = [];
+            string? prefix = null;
+            foreach (var token in tokens)
+            {
+                if (token.Type == TokenType.STR)
+                    args.Add(token.Text.Trim('"'));
+                else if (token.Type == TokenType.MINUS ||
+                    token.Type == TokenType.DEVIDE ||
+                    token.Type == TokenType.DOLLAR ||
+                    token.Type == TokenType.MOD ||
+                    token.Type == TokenType.PLUS ||
+                    token.Type == TokenType.MULTIPLY ||
+                    token.Type == TokenType.POWER)
+                    prefix += token.Text;
+                else
+                {
+                    args.Add(prefix + token.Text);
+                    prefix = null;
+                }
+            }
+
+            _args = [.. args];
+        }
 
         public static bool IsNullOrEmpty(Line? line)
         {

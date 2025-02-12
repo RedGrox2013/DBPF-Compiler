@@ -22,18 +22,43 @@ namespace DBPF_Compiler.ArgScript
         public T GetVariable<T>(string name)
             => (T)_variables[name];
 
-        internal void Parse()
+        internal ArgScriptTree Parse()
         {
-            throw new NotImplementedException();
+            if (_tokens == null)
+                throw new NullReferenceException("No tokens");
+
+            _position = 0;
+            var tree = new ArgScriptTreeRoot();
+            while (_position < _tokens.Count)
+            {
+                var node = ParseExpression();
+                if (node == null)
+                    continue;
+                Require(TokenType.ENDL);
+                tree.AddNode(node);
+            }
+
+            return tree;
         }
 
-        public void Parse(string argScript)
+        public ArgScriptTree Parse(string argScript, bool clearVariables = true)
         {
             _tokens = Lexer.Tokenize(argScript);
-            _variables.Clear();
-            _position = 0;
+            if (clearVariables)
+                _variables.Clear();
 
-            Parse();
+            return Parse();
+        }
+
+        private ArgScriptTree? ParseExpression()
+        {
+            if (Match(TokenType.ENDL, TokenType.COMMENT, TokenType.MULTILCOMMENT, TokenType.SPACE) != null)
+                return null;
+
+            --_position;
+
+            // доделать
+            throw new NotImplementedException();
         }
 
         private Token? Match(params TokenType[] expected)

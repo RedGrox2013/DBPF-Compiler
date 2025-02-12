@@ -10,29 +10,7 @@ namespace DBPF_Compiler.ArgScript
             if (string.IsNullOrWhiteSpace(line))
                 return Line.Empty;
 
-            var tokens = Tokenize(line);
-            List<string> args = [];
-            string? prefix = null;
-            for (int i = 0; i < tokens.Count; i++)
-            {
-                if (tokens[i].Type == TokenType.STR)
-                    args.Add(tokens[i].Text.Trim('"'));
-                else if (tokens[i].Type == TokenType.MINUS ||
-                    tokens[i].Type == TokenType.DEVIDE ||
-                    tokens[i].Type == TokenType.DOLLAR ||
-                    tokens[i].Type == TokenType.MOD ||
-                    tokens[i].Type == TokenType.PLUS ||
-                    tokens[i].Type == TokenType.MULTIPLY ||
-                    tokens[i].Type == TokenType.POWER)
-                    prefix += tokens[i].Text;
-                else
-                {
-                    args.Add(prefix + tokens[i].Text);
-                    prefix = null;
-                }
-            }
-
-            return new Line(args);
+            return new Line(Tokenize(line));
         }
 
         internal static List<Token> Tokenize(string argScript)
