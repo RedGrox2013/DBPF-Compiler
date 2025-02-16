@@ -41,6 +41,9 @@ namespace DBPF_Compiler.ArgScript
                     throw new ArgScriptException($"Unknown token in {pos}", pos);
             }
 
+            if (tokens.Count > 0 && tokens[^1].Type != TokenType.ENDL)
+                tokens.Add(new Token(TokenType.ENDL, "\n", pos));
+
             //return from t in tokens
             //       where t.Type != TokenType.SPACE &&
             //       t.Type != TokenType.MULTILCOMMENT &&
