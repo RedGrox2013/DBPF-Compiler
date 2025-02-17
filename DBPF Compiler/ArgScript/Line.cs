@@ -29,7 +29,7 @@ namespace DBPF_Compiler.ArgScript
                     args.Add(token.Text.Trim('"'));
                 else if (token.Type == TokenType.MINUS ||
                     token.Type == TokenType.DEVIDE ||
-                    token.Type == TokenType.DOLLAR ||
+                    token.Type == TokenType.VARIABLE ||
                     token.Type == TokenType.MOD ||
                     token.Type == TokenType.PLUS ||
                     token.Type == TokenType.MULTIPLY ||

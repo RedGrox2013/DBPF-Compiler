@@ -19,8 +19,9 @@
             => Name.GetHashCode();
 
         #region Token types
-        public static readonly TokenType NUMBER = new(nameof(NUMBER), @"\d*\.\d+");
-        public static readonly TokenType KEYWORD = new(nameof(KEYWORD), @"\w+");
+        public static readonly TokenType NUMBER = new(nameof(NUMBER), @"\d*\.?\d+");
+        public static readonly TokenType SET = new(nameof(SET), @"\bset\w?\b");
+        public static readonly TokenType ARGUMENT = new(nameof(ARGUMENT), @"\w+");
         public static readonly TokenType SPACE = new(nameof(SPACE), @"[ \t\x0B\f\r]+");
         public static readonly TokenType ENDL = new(nameof(ENDL), @"\n");
         //public static readonly TokenType QUOT = new(nameof(QUOT), "\"\"");
@@ -44,12 +45,17 @@
         public static readonly TokenType AND = new(nameof(AND), @"\band\b");
         public static readonly TokenType OR = new(nameof(OR), @"\bor\b");
         public static readonly TokenType NOT = new(nameof(NOT), @"\bnot\b");
-        public static readonly TokenType DOLLAR = new(nameof(DOLLAR), @"\$");
+        public static readonly TokenType VARIABLE = new(nameof(VARIABLE), @"\$\w+");
         public static readonly TokenType END = new(nameof(END), @"\bend\b");
 
-        public static readonly TokenType[] TokenTypes = [NUMBER, KEYWORD, ENDL, SPACE, STR, //QUOT,
-            LPAR, RPAR, LBRACE, RBRACE, PLUS, MINUS, MULTIPLY, DEVIDE, MOD, POWER, DOLLAR,
-            MULTILCOMMENT, GREAT, SMALL, EQUAL, NOTEQUAL, COMMENT, AND, OR, END];
+        public static readonly TokenType[] AllTypes = [NUMBER, SET, AND, OR, NOT, END, ARGUMENT,
+            ENDL, SPACE, STR, LPAR, RPAR, LBRACE, RBRACE, PLUS, MINUS, MULTIPLY, DEVIDE,
+            MOD, POWER, VARIABLE, MULTILCOMMENT, GREAT, SMALL, EQUAL, NOTEQUAL, COMMENT];
+
+        public static readonly TokenType[] Keywords = [SET, END, ARGUMENT];
+        public static readonly TokenType[] BinOperators = [PLUS, MINUS, MULTIPLY, DEVIDE, MOD,
+            POWER, GREAT, SMALL, EQUAL, NOTEQUAL, AND, OR];
+        //public static readonly TokenType[] UnarOperators = [NOT];
         #endregion
     }
 }
