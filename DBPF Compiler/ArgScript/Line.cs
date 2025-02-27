@@ -25,6 +25,9 @@ namespace DBPF_Compiler.ArgScript
             string? prefix = null;
             foreach (var token in tokens)
             {
+                if (string.IsNullOrWhiteSpace(token.Text))
+                    continue;
+
                 if (token.Type == TokenType.STR)
                     args.Add(token.Text.Trim('"'));
                 else if (token.Type == TokenType.MINUS ||
