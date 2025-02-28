@@ -30,6 +30,8 @@ namespace DBPF_Compiler.ArgScript
 
                 if (token.Type == TokenType.STR)
                     args.Add(token.Text.Trim('"'));
+                else if (token.Type == TokenType.BRACEEXPR)
+                    args.Add(token.Text.TrimStart('(').TrimEnd(')'));
                 else if (token.Type == TokenType.MINUS ||
                     token.Type == TokenType.DEVIDE ||
                     token.Type == TokenType.VARIABLE ||

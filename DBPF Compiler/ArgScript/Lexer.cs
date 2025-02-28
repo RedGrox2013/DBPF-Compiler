@@ -5,7 +5,7 @@ namespace DBPF_Compiler.ArgScript
 {
     public class Lexer
     {
-        private List<TokenType> _tokenTypes = new(TokenType.AllTypes);
+        private List<TokenType> _tokenTypes = [.. TokenType.AllTypes];
 
         public static Line LineToArgs(string? line)
         {
@@ -54,12 +54,11 @@ namespace DBPF_Compiler.ArgScript
             return tokens;
         }
 
-        internal List<Token> Tokenize(string argScript)
-            => Tokenize(argScript, _tokenTypes);
+        internal List<Token> Tokenize(string argScript) => Tokenize(argScript, _tokenTypes);
 
-        public void AddKeyword(string keyword)
-            => _tokenTypes.Add(new TokenType(keyword, string.Format(@"\b{0}\b", keyword)));
+        public void AddKeyword(string keyword) =>
+            _tokenTypes.Add(new TokenType(keyword, string.Format(@"\b{0}\b", keyword)));
 
-        public void Clear() => _tokenTypes = new(TokenType.AllTypes);
+        public void Clear() => _tokenTypes = [.. TokenType.AllTypes];
     }
 }

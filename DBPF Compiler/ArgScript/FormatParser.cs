@@ -1,9 +1,25 @@
-﻿using DBPF_Compiler.ArgScript.Syntax;
+﻿using DBPF_Compiler.ArgScript.Parsers;
+using DBPF_Compiler.ArgScript.Syntax;
 
 namespace DBPF_Compiler.ArgScript
 {
     public class FormatParser(Lexer lexer)
     {
+        private static FormatParser? _propListParser = null;
+        public static FormatParser PropertyListParser
+        {
+            get
+            {
+                if (_propListParser == null)
+                {
+                    _propListParser = new();
+                    _propListParser.AddParser("float", new FloatPropertyParser());
+                }
+
+                return _propListParser;
+            }
+        }
+
         private readonly Lexer _lexer = lexer;
 
         private List<Token>? _tokens;
@@ -20,11 +36,12 @@ namespace DBPF_Compiler.ArgScript
         public FormatParser() : this(new Lexer()) { }
 
         public void SetGlobalVariable(string name, object value)
-            => _scopes[string.Empty][name] = value;
+            => _scopes[string.Empty][name.ToLower()] = value;
         public void SetVariable(string name, object value)
-            => _scopes[CurrentScope][name] = value;
+            => _scopes[CurrentScope][name.ToLower()] = value;
         public object GetVariable(string name)
         {
+            name = name.ToLower();
             foreach (var scope in _scopes)
                 if (scope.Value.TryGetValue(name, out var value))
                     return value;
@@ -44,73 +61,114 @@ namespace DBPF_Compiler.ArgScript
         public void AddParser(string keyword, IParser parser)
         {
             parser.SetData(this, _tokens);
-            _parsers.Add(keyword, parser);
-
+            _parsers.Add(keyword.ToLower(), parser);
+            
             _lexer.AddKeyword(keyword);
         }
 
-        public IParser GetParser(string keyword)
-            => _parsers[keyword];
+        public IParser GetParser(string keyword) => _parsers[keyword.ToLower()];
 
-        public ArgScriptTree Parse(string argScript)
+        public object? Parse(string argScript) => Parse(_lexer.Tokenize(argScript));
+
+        internal object? Parse(List<Token> tokenizedArgScript)
         {
-            _tokens = _lexer.Tokenize(argScript);
+            _tokens = tokenizedArgScript;
             ClearScopes();
 
             _position = 0;
-            var tree = new ArgScriptTree();
+            object? result = null;
             while (_position < _tokens.Count)
             {
-                var node = ParseCommand();
-                //if (node == null)
-                //    continue;
-                //Require(TokenType.ENDL);
-                tree.AddNode(node);
+                if (Match(TokenType.ENDL) != null)
+                    continue;
+
+                var keyword = Require(TokenType.ARGUMENT);
+                IParser parser;
+                try
+                {
+                    parser = GetParser(keyword.Text);
+                }
+                catch
+                {
+                    throw new ArgScriptException("Unknown token: " + keyword.Text, _position);
+                }
+
+                List<Token> args = [keyword];
+                while (Match(TokenType.ENDL) == null)
+                    args.Add(_tokens[_position++]);
+                
+                parser.SetData(this, result);
+                parser.ParseLine(new Line(args));
+                result = parser.Data;
             }
 
-            return tree;
+            return result;
         }
 
-        private ArgScriptTree ParseCommand()
+        public float ParseFloat(string s)
         {
-            if (_tokens == null)
-                throw new NullReferenceException("No tokens");
-
-            var command = new ArgScriptTree();
-            while (Match(TokenType.ENDL) == null)
-            {
-                var keyword = Match(TokenType.ARGUMENT);
-                if (keyword != null)
-                    command.AddNode(new KeywordNode(keyword));
-                else
-                    command.AddNode(ParseFormula());
-            }
-
-            return command;
+            return float.Parse(s, System.Globalization.CultureInfo.InvariantCulture);
         }
 
-        private IArgScriptTreeNode ParseFormula()
-        {
-            var left = ParseParentheses();
+        //public ArgScriptTree Parse(string argScript)
+        //{
+        //    _tokens = _lexer.Tokenize(argScript);
+        //    ClearScopes();
 
-            throw new NotImplementedException();
-        }
+        //    _position = 0;
+        //    var tree = new ArgScriptTree();
+        //    while (_position < _tokens.Count)
+        //    {
+        //        var node = ParseCommand();
+        //        //if (node == null)
+        //        //    continue;
+        //        //Require(TokenType.ENDL);
+        //        tree.AddNode(node);
+        //    }
 
-        private IArgScriptTreeNode ParseParentheses()
-        {
-            if (Match(TokenType.LPAR) == null)
-                return ParseValue();
+        //    return tree;
+        //}
 
-            var node = ParseFormula();
-            Require(TokenType.RPAR);
+        //private ArgScriptTree ParseCommand()
+        //{
+        //    if (_tokens == null)
+        //        throw new NullReferenceException("No tokens");
 
-            return node;
-        }
+        //    var command = new ArgScriptTree();
+        //    while (Match(TokenType.ENDL) == null)
+        //    {
+        //        var keyword = Match(TokenType.ARGUMENT);
+        //        if (keyword != null)
+        //            command.AddNode(new KeywordNode(keyword));
+        //        else
+        //            command.AddNode(ParseFormula());
+        //    }
 
-        private IArgScriptTreeNode ParseValue()
-        {
-            throw new NotImplementedException();
-        }
+        //    return command;
+        //}
+
+        //private IArgScriptTreeNode ParseFormula()
+        //{
+        //    var left = ParseParentheses();
+
+        //    throw new NotImplementedException();
+        //}
+
+        //private IArgScriptTreeNode ParseParentheses()
+        //{
+        //    if (Match(TokenType.LPAR) == null)
+        //        return ParseValue();
+
+        //    var node = ParseFormula();
+        //    Require(TokenType.RPAR);
+
+        //    return node;
+        //}
+
+        //private IArgScriptTreeNode ParseValue()
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         private Token? Match(params IEnumerable<TokenType> expected)
         {

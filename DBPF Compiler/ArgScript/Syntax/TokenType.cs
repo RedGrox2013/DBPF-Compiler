@@ -7,16 +7,13 @@
 
         public override readonly string ToString() => Name;
 
-        public static bool operator==(TokenType left, TokenType right)
-            => left.Equals(right);
-        public static bool operator!=(TokenType left, TokenType right)
-            => !left.Equals(right);
+        public static bool operator==(TokenType left, TokenType right) => left.Equals(right);
+        public static bool operator!=(TokenType left, TokenType right) => !left.Equals(right);
 
-        public override bool Equals(object? obj)
-            => obj is TokenType t && t.Name.Equals(Name);
+        public override bool Equals(object? obj) =>
+            obj is TokenType t && t.Name.Equals(Name, StringComparison.InvariantCultureIgnoreCase);
 
-        public override int GetHashCode()
-            => Name.GetHashCode();
+        public override int GetHashCode() => Name.GetHashCode();
 
         #region Token types
         public static readonly TokenType NUMBER = new(nameof(NUMBER), @"\d*\.?\d+");
@@ -26,6 +23,7 @@
         public static readonly TokenType ENDL = new(nameof(ENDL), @"\n");
         //public static readonly TokenType QUOT = new(nameof(QUOT), "\"\"");
         public static readonly TokenType STR = new(nameof(STR), @"\"".*\""");
+        public static readonly TokenType BRACEEXPR = new(nameof(BRACEEXPR), @"\(.*\)");
         public static readonly TokenType LPAR = new(nameof(LPAR), @"\(");
         public static readonly TokenType RPAR = new(nameof(RPAR), @"\)");
         public static readonly TokenType LBRACE = new(nameof(LBRACE), @"\{");
@@ -49,7 +47,7 @@
         public static readonly TokenType END = new(nameof(END), @"\bend\b");
 
         public static readonly TokenType[] AllTypes = [NUMBER, SET, AND, OR, NOT, END, ARGUMENT,
-            ENDL, SPACE, STR, LPAR, RPAR, LBRACE, RBRACE, PLUS, MINUS, MULTIPLY, DEVIDE,
+            ENDL, SPACE, STR, BRACEEXPR, LPAR, RPAR, LBRACE, RBRACE, PLUS, MINUS, MULTIPLY, DEVIDE,
             MOD, POWER, VARIABLE, MULTILCOMMENT, GREAT, SMALL, EQUAL, NOTEQUAL, COMMENT];
 
         public static readonly TokenType[] Keywords = [SET, END, ARGUMENT];
