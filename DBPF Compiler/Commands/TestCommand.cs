@@ -1,6 +1,8 @@
 ﻿using DBPF_Compiler.ArgScript;
 using DBPF_Compiler.ArgScript.Syntax;
 using DBPF_Compiler.FileTypes.Prop;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 
 namespace DBPF_Compiler.Commands
 {
@@ -8,12 +10,16 @@ namespace DBPF_Compiler.Commands
     {
         public override void ParseLine(Line line)
         {
-            var tokens = Lexer.Tokenize(File.ReadAllText("example.argscript"), TokenType.AllTypes);
+            var tokens = Lexer.Tokenize(File.ReadAllText("example.argscript"), TokenType.MainTokens);
             foreach (var token in tokens)
                 WriteLine($"{token.Type}: {token.Text} ({token.Position})");
 
-            var prop = FormatParser.PropertyListParser.Parse(tokens) as PropertyList;
-            WriteLine(prop?.SerializeToJson());
+            var prop = new FormatParserBuilder().AddPropertyListParsers().Build().Parse<PropertyList>(tokens);
+            WriteLine(prop?.SerializeToJson(new System.Text.Json.JsonSerializerOptions()
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+            }));
         }
     }
 }

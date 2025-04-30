@@ -1,4 +1,4 @@
-# comment
+# comment 123
 #<
 multiline comment
 dasdasdas
@@ -8,11 +8,11 @@ asdad
 #set myVariable 1488
 #int32 value ($myVariable+1 + (12 / 2) * 3)
 float pi 3.14
-#string16 str "Hello world!"
+string8 str "Hello world!"
 #string16s strArray
 #    "щавель"
 #    "ракушка"
 #    "персик"
 #end
-#string16 #< гойда наш слон #> test "фимоз"
-#string16 test2 "фимоз" # comment
+string16 #< гойда наш слон #> test "фимоз"
+string16 test2 "фимоз" # comment

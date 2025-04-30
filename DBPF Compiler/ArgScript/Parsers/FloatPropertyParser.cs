@@ -1,24 +1,11 @@
-﻿using DBPF_Compiler.FileTypes.Prop;
-
-namespace DBPF_Compiler.ArgScript.Parsers
+﻿namespace DBPF_Compiler.ArgScript.Parsers
 {
-    class FloatPropertyParser : ArgScriptCommand
+    class FloatPropertyParser : PropertyParser
     {
-        public override void ParseLine(Line line)
-        {
-            PropertyList prop;
-            if (Data == null)
-                Data = prop = new PropertyList();
-            else
-                prop = Data as PropertyList ?? throw new Exception();
+        public FloatPropertyParser() =>
+            Description = "Represents a floating-point real number.";
 
-            prop.Add(new Property(line[1])
-            {
-                PropertyType = PropertyType.@float,
-                Value = FormatParser.ParseFloat(line[2])
-            });
-        }
-
-        public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic) => null;
+        public override void ParseLine(Line line) =>
+            PropList.Add(ParseProperty(line, arg => FormatParser.ParseFloat(arg)));
     }
 }

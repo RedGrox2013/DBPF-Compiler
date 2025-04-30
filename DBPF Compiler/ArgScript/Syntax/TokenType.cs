@@ -1,6 +1,6 @@
 ﻿namespace DBPF_Compiler.ArgScript.Syntax
 {
-    internal readonly struct TokenType(string name, string regex)
+    public readonly struct TokenType(string name, string regex)
     {
         public readonly string Name = name;
         public readonly string Regex = regex;
@@ -17,17 +17,19 @@
 
         #region Token types
         public static readonly TokenType NUMBER = new(nameof(NUMBER), @"\d*\.?\d+");
-        public static readonly TokenType SET = new(nameof(SET), @"\bset\w?\b");
+        public static readonly TokenType HASH = new(nameof(HASH), @"0x([0-9A-Fa-f]{1,8})");
+        //public static readonly TokenType SET = new(nameof(SET), @"\bset\w?\b");
         public static readonly TokenType ARGUMENT = new(nameof(ARGUMENT), @"\w+");
+        public static readonly TokenType FLAG = new(nameof(FLAG), @"\-+\w+");
         public static readonly TokenType SPACE = new(nameof(SPACE), @"[ \t\x0B\f\r]+");
         public static readonly TokenType ENDL = new(nameof(ENDL), @"\n");
-        //public static readonly TokenType QUOT = new(nameof(QUOT), "\"\"");
+        ////public static readonly TokenType QUOT = new(nameof(QUOT), "\"\"");
         public static readonly TokenType STR = new(nameof(STR), @"\"".*\""");
-        public static readonly TokenType BRACEEXPR = new(nameof(BRACEEXPR), @"\(.*\)");
-        public static readonly TokenType LPAR = new(nameof(LPAR), @"\(");
-        public static readonly TokenType RPAR = new(nameof(RPAR), @"\)");
-        public static readonly TokenType LBRACE = new(nameof(LBRACE), @"\{");
-        public static readonly TokenType RBRACE = new(nameof(RBRACE), @"\}");
+        public static readonly TokenType BRACEEXPR = new(nameof(BRACEEXPR), @"[\(\{].*[\)\}]");
+        public static readonly TokenType LPAR = new(nameof(LPAR), @"[\(\{]");
+        public static readonly TokenType RPAR = new(nameof(RPAR), @"[\)\}]");
+        //public static readonly TokenType LBRACE = new(nameof(LBRACE), @"\{");
+        //public static readonly TokenType RBRACE = new(nameof(RBRACE), @"\}");
         public static readonly TokenType PLUS = new(nameof(PLUS), @"\+");
         public static readonly TokenType MINUS = new(nameof(MINUS), @"\-");
         public static readonly TokenType MULTIPLY = new(nameof(MULTIPLY), @"\*");
@@ -43,17 +45,24 @@
         public static readonly TokenType AND = new(nameof(AND), @"\band\b");
         public static readonly TokenType OR = new(nameof(OR), @"\bor\b");
         public static readonly TokenType NOT = new(nameof(NOT), @"\bnot\b");
-        public static readonly TokenType VARIABLE = new(nameof(VARIABLE), @"\$\w+");
-        public static readonly TokenType END = new(nameof(END), @"\bend\b");
+        //public static readonly TokenType VARIABLE = new(nameof(VARIABLE), @"\$\w+");
+        //public static readonly TokenType END = new(nameof(END), @"\bend\b");
+        public static readonly TokenType DOLLAR = new(nameof(DOLLAR), @"\$");
 
-        public static readonly TokenType[] AllTypes = [NUMBER, SET, AND, OR, NOT, END, ARGUMENT,
-            ENDL, SPACE, STR, BRACEEXPR, LPAR, RPAR, LBRACE, RBRACE, PLUS, MINUS, MULTIPLY, DEVIDE,
-            MOD, POWER, VARIABLE, MULTILCOMMENT, GREAT, SMALL, EQUAL, NOTEQUAL, COMMENT];
+        //public static readonly TokenType[] MainTokens = [NUMBER, SET, AND, OR, NOT, END, ARGUMENT,
+        //    ENDL, SPACE, STR, BRACEEXPR, LPAR, RPAR, LBRACE, RBRACE, PLUS, MINUS, MULTIPLY, DEVIDE,
+        //    MOD, POWER, VARIABLE, MULTILCOMMENT, GREAT, SMALL, EQUAL, NOTEQUAL, COMMENT];
 
-        public static readonly TokenType[] Keywords = [SET, END, ARGUMENT];
-        public static readonly TokenType[] BinOperators = [PLUS, MINUS, MULTIPLY, DEVIDE, MOD,
-            POWER, GREAT, SMALL, EQUAL, NOTEQUAL, AND, OR];
-        //public static readonly TokenType[] UnarOperators = [NOT];
+        //public static readonly TokenType[] Keywords = [SET, END, ARGUMENT];
+        //public static readonly TokenType[] BinOperators = [PLUS, MINUS, MULTIPLY, DEVIDE, MOD,
+        //    POWER, GREAT, SMALL, EQUAL, NOTEQUAL, AND, OR];
+        ////public static readonly TokenType[] UnarOperators = [NOT];
+        //public static readonly TokenType[] ExpressionsTokens = [PLUS, MINUS, MULTIPLY, DEVIDE, MOD,
+        //    POWER, GREAT, SMALL, EQUAL, NOTEQUAL, AND, OR, LPAR, RPAR, NUMBER, VARIABLE, ARGUMENT];
+
+        public static readonly TokenType[] MainTokens = [HASH, NUMBER, ARGUMENT, FLAG, ENDL, SPACE, STR, BRACEEXPR, MULTILCOMMENT, COMMENT];
+        public static readonly TokenType[] ExpressionsTokens = [AND, OR, NOT, .. MainTokens, LPAR, RPAR, /*LBRACE, RBRACE, */PLUS, MINUS, MULTIPLY,
+            DEVIDE, MOD, POWER, GREAT, SMALL, EQUAL, NOTEQUAL];
         #endregion
     }
 }

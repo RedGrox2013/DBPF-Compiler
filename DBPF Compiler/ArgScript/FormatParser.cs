@@ -1,29 +1,12 @@
 ﻿using DBPF_Compiler.ArgScript.Parsers;
 using DBPF_Compiler.ArgScript.Syntax;
+using DBPF_Compiler.FNV;
 
 namespace DBPF_Compiler.ArgScript
 {
-    public class FormatParser(Lexer lexer)
+    public class FormatParser
     {
-        private static FormatParser? _propListParser = null;
-        public static FormatParser PropertyListParser
-        {
-            get
-            {
-                if (_propListParser == null)
-                {
-                    _propListParser = new();
-                    _propListParser.AddParser("float", new FloatPropertyParser());
-                }
-
-                return _propListParser;
-            }
-        }
-
-        private readonly Lexer _lexer = lexer;
-
-        private List<Token>? _tokens;
-        private int _position;
+        //private readonly Lexer _lexer = lexer;
 
         private readonly Dictionary<string, IParser> _parsers = [];
 
@@ -33,7 +16,9 @@ namespace DBPF_Compiler.ArgScript
             {string.Empty, []} // global
         };
 
-        public FormatParser() : this(new Lexer()) { }
+        public TextWriter? TraceWriter { get; set; }
+
+        //public FormatParser() : this(new Lexer()) { }
 
         public void SetGlobalVariable(string name, object value)
             => _scopes[string.Empty][name.ToLower()] = value;
@@ -60,55 +45,58 @@ namespace DBPF_Compiler.ArgScript
 
         public void AddParser(string keyword, IParser parser)
         {
-            parser.SetData(this, _tokens);
+            parser.SetData(this, null);
             _parsers.Add(keyword.ToLower(), parser);
             
-            _lexer.AddKeyword(keyword);
+            //_lexer.AddKeyword(keyword);
         }
 
-        public IParser GetParser(string keyword) => _parsers[keyword.ToLower()];
+        public IParser? GetParser(string keyword) => _parsers.GetValueOrDefault(keyword.ToLower());
 
-        public object? Parse(string argScript) => Parse(_lexer.Tokenize(argScript));
+        public T Parse<T>(string argScript) where T : new() => Parse<T>(Lexer.Tokenize(argScript));
 
-        internal object? Parse(List<Token> tokenizedArgScript)
+        public T Parse<T>(List<Token> tokenizedArgScript) where T : new()
         {
-            _tokens = tokenizedArgScript;
+            var tokens = tokenizedArgScript;
             ClearScopes();
 
-            _position = 0;
-            object? result = null;
-            while (_position < _tokens.Count)
+            int position = 0;
+            T result = new();
+            while (position < tokens.Count)
             {
-                if (Match(TokenType.ENDL) != null)
+                if (Match(tokens, ref position, TokenType.ENDL) != null)
                     continue;
 
-                var keyword = Require(TokenType.ARGUMENT);
-                IParser parser;
-                try
-                {
-                    parser = GetParser(keyword.Text);
-                }
-                catch
-                {
-                    throw new ArgScriptException("Unknown token: " + keyword.Text, _position);
-                }
+                var keyword = Require(tokens, ref position, TokenType.ARGUMENT, TokenType.HASH);
+                IParser parser = GetParser(keyword.Text) ?? throw new ArgScriptException("Unknown token: " + keyword.Text, position);
 
                 List<Token> args = [keyword];
-                while (Match(TokenType.ENDL) == null)
-                    args.Add(_tokens[_position++]);
+                while (Match(tokens, ref position, TokenType.ENDL) == null)
+                    args.Add(tokens[position++]);
                 
                 parser.SetData(this, result);
                 parser.ParseLine(new Line(args));
-                result = parser.Data;
             }
 
             return result;
         }
 
-        public float ParseFloat(string s)
+        private /*ArgScriptTree*/ ArgScriptNode ParseExpression(string expression)
         {
-            return float.Parse(s, System.Globalization.CultureInfo.InvariantCulture);
+            var tokens = Lexer.Tokenize(expression, TokenType.ExpressionsTokens);
+
+            throw new NotImplementedException();
         }
+
+        public string ParseString(string arg) => arg;
+
+        public float ParseFloat(string expression)
+        {
+            return float.Parse(expression, System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        public int ParseInteger(string expression) => (int)ParseFloat(expression);
+        public uint ParseUInteger(string expression) => FNVHash.Parse(expression);
 
         //public ArgScriptTree Parse(string argScript)
         //{
@@ -139,7 +127,7 @@ namespace DBPF_Compiler.ArgScript
         //    {
         //        var keyword = Match(TokenType.ARGUMENT);
         //        if (keyword != null)
-        //            command.AddNode(new KeywordNode(keyword));
+        //            command.AddNode(new ArgumentNode(keyword));
         //        else
         //            command.AddNode(ParseFormula());
         //    }
@@ -170,16 +158,16 @@ namespace DBPF_Compiler.ArgScript
         //    throw new NotImplementedException();
         //}
 
-        private Token? Match(params IEnumerable<TokenType> expected)
+        private static Token? Match(List<Token> tokens, ref int position, params IEnumerable<TokenType> expected)
         {
-            if (_tokens != null && _position < _tokens.Count && expected.Contains(_tokens[_position].Type))
-                return _tokens[_position++];
+            if (tokens != null && position < tokens.Count && expected.Contains(tokens[position].Type))
+                return tokens[position++];
 
             return null;
         }
 
-        private Token Require(params IEnumerable<TokenType> expected)
-            => Match(expected) ??
-            throw new ArgScriptException($"Token expected: {string.Join(" or ", expected)}", _position);
+        private static Token Require(List<Token> tokens, ref int position, params IEnumerable<TokenType> expected) =>
+            Match(tokens, ref position, expected) ??
+            throw new ArgScriptException($"Token expected: {string.Join(" or ", expected)}", position);
     }
 }

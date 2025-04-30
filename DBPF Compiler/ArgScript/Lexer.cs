@@ -3,16 +3,16 @@ using System.Text.RegularExpressions;
 
 namespace DBPF_Compiler.ArgScript
 {
-    public class Lexer
+    public static class Lexer
     {
-        private List<TokenType> _tokenTypes = [.. TokenType.AllTypes];
+        //private List<TokenType> _tokenTypes = [.. TokenType.MainTokens];
 
         public static Line LineToArgs(string? line)
         {
             if (string.IsNullOrWhiteSpace(line))
                 return Line.Empty;
 
-            return new Line(Tokenize(line, TokenType.AllTypes));
+            return new Line(Tokenize(line, TokenType.MainTokens));
         }
 
         internal static List<Token> Tokenize(string argScript, IEnumerable<TokenType> tokenTypes)
@@ -54,11 +54,12 @@ namespace DBPF_Compiler.ArgScript
             return tokens;
         }
 
-        internal List<Token> Tokenize(string argScript) => Tokenize(argScript, _tokenTypes);
+        //internal List<Token> Tokenize(string argScript) => Tokenize(argScript, _tokenTypes);
+        internal static List<Token> Tokenize(string argScript) => Tokenize(argScript, TokenType.MainTokens);
 
-        public void AddKeyword(string keyword) =>
-            _tokenTypes.Add(new TokenType(keyword, string.Format(@"\b{0}\b", keyword)));
+        //public void AddKeyword(string keyword) =>
+        //    _tokenTypes.Add(new TokenType(keyword, string.Format(@"\b{0}\b", keyword)));
 
-        public void Clear() => _tokenTypes = [.. TokenType.AllTypes];
+        //public void Clear() => _tokenTypes = [.. TokenType.MainTokens];
     }
 }
