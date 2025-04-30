@@ -37,30 +37,34 @@ static async Task<Line> Initialize(string[] args)
 
     if (!await NameRegistryManager.LoadAsync(new DirectoryInfo(configs.RegistriesPath)))
         PrintError("No registers found. Translating hashes is not possible.");
-    if (string.IsNullOrWhiteSpace(configs.EALayer3Path) || !File.Exists(configs.EALayer3Path))
-    {
-        PrintError("EALayer3 not found. MP3 files will not be converted to SNR.");
-        Console.Write("To resolve this issue, do the following:\n\t1. Download EALayer3: ");
-        var oldColor = Console.ForegroundColor;
-        Console.ForegroundColor = ConsoleColor.Blue;
-        Console.WriteLine("https://github.com/driftyz700/ealayer3-nfsw/releases");
-        Console.ForegroundColor = oldColor;
-        Console.Write("\t2. Use the command ");
-        Console.ForegroundColor = ConsoleColor.DarkYellow;
-        Console.Write("configs set ");
-        Console.ForegroundColor = ConsoleColor.Magenta;
-        Console.Write(nameof(configs.EALayer3Path));
-        Console.ForegroundColor = ConsoleColor.DarkGray;
-        Console.WriteLine(" <path>");
-        Console.ForegroundColor = oldColor;
-    }
+
+    //if (string.IsNullOrWhiteSpace(configs.EALayer3Path) || !File.Exists(configs.EALayer3Path))
+    //{
+    //    PrintError("EALayer3 not found. MP3 files will not be converted to SNR.");
+    //    Console.Write("To resolve this issue, do the following:\n\t1. Download EALayer3: ");
+    //    var oldColor = Console.ForegroundColor;
+    //    Console.ForegroundColor = ConsoleColor.Blue;
+    //    Console.WriteLine("https://github.com/driftyz700/ealayer3-nfsw/releases");
+    //    Console.ForegroundColor = oldColor;
+    //    Console.Write("\t2. Use the command ");
+    //    Console.ForegroundColor = ConsoleColor.DarkYellow;
+    //    Console.Write("configs set ");
+    //    Console.ForegroundColor = ConsoleColor.Magenta;
+    //    Console.Write(nameof(configs.EALayer3Path));
+    //    Console.ForegroundColor = ConsoleColor.DarkGray;
+    //    Console.WriteLine(" <path>");
+    //    Console.ForegroundColor = oldColor;
+    //}
 
     CommandManager cmd = CommandManager.Instance;
     cmd.Out = Console.Out;
     cmd.PrintErrorAction = PrintError;
     cmd.ClearAction = Console.Clear;
     cmd.AddCommand("interactive", new InteractiveCommand(Console.In));
+
+#if DEBUG
     cmd.AddCommand("test", new TestCommand() { NotDisplayDescription = true });
+#endif
 
     if (args.Length > 0 &&
         (args[0].Equals("-h", StringComparison.OrdinalIgnoreCase) ||
