@@ -94,6 +94,9 @@ namespace DBPF_Compiler.FNV
 
         public uint GetHash(string name, string? regName = "all")
         {
+            if (regName == "fnv")
+                return FNVHash.Compute(name);
+
             if (regName != "all")
             {
                 var reg = GetRegistry(regName);
