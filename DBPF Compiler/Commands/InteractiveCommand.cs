@@ -2,10 +2,9 @@
 
 namespace DBPF_Compiler.Commands
 {
-    internal class InteractiveCommand(TextReader input) : ConsoleCommand
+    internal class InteractiveCommand() : ConsoleCommand
     {
         public static bool IsRunning { get; private set; } = false;
-        public TextReader In { get; set; } = input;
 
         public override void ParseLine(Line line)
         {
@@ -27,7 +26,7 @@ namespace DBPF_Compiler.Commands
                     CommandManager.Instance.ParseLine(line);
 
                     Write("dbpfc>");
-                    cmdLine = In.ReadLine();
+                    cmdLine = Console?.ReadLine();
                     line = Lexer.LineToArgs(cmdLine);
                 }
                 catch (Exception e)
@@ -47,7 +46,7 @@ namespace DBPF_Compiler.Commands
             if (mode != DescriptionMode.HTML)
                 return "enter interactive mode.";
 
-            return null;
+            return base.GetDescription(mode);
         }
     }
 }

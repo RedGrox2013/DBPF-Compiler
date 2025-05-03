@@ -15,7 +15,7 @@ namespace DBPF_Compiler.Commands
 
             using FileStream stream = File.OpenRead(line[1]);
             string json = PropertyListJsonSerializer.DecodePropertyListToJson(stream);
-            Out?.WriteLine(json);
+            WriteLine(json);
             using StreamWriter writer = File.CreateText(line.ArgumentCount > 3 ? line[3] : (line[1] + ".json"));
             writer.Write(json);
         }

@@ -46,7 +46,7 @@ namespace DBPF_Compiler.Commands
                 }
             }
 
-            Out?.WriteLine($"{strHash} ----[{regName ?? "all"}]----> {name}");
+            WriteLine($"{strHash} ----[{regName ?? "all"}]----> {name}");
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
@@ -55,7 +55,7 @@ namespace DBPF_Compiler.Commands
                 return "get name by hash.";
             if (mode == DescriptionMode.Complete)
                 return @"get name by hash.
-Usage:     hash-to-name --hash <hash> [--registry <registry>]
+Usage:     hashToName --hash <hash> [--registry <registry>]
 <hash>     hash by which the name will be searched
 <registry> The registry from which the name will be searched.
            This parameter accepts the following values (default is all):

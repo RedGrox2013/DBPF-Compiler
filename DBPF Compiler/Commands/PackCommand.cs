@@ -25,15 +25,15 @@ namespace DBPF_Compiler.Commands
         
             using FileStream fs = File.Create(line[2]);
             using DatabasePackedFile dbpf = new(fs);
-            dbpf.OnHeaderWriting += msg => Out?.WriteLine("Writing header . . .");
+            dbpf.OnHeaderWriting += msg => WriteLine("Writing header . . .");
             dbpf.OnDataWriting += DisplayDataWritingMessage;
-            dbpf.OnIndexWriting += msg => Out?.WriteLine("Writing index . . .");
+            dbpf.OnIndexWriting += msg => WriteLine("Writing index . . .");
 
             packer.Pack(dbpf, line.ArgumentCount > 3 ? line[3] : null);
 
             stopwatch.Stop();
             var ts = stopwatch.Elapsed;
-            Out?.WriteLine($"The file was packed in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
+            WriteLine($"The file was packed in {ts.Seconds}:{ts.Milliseconds}:{ts.Nanoseconds} sec.");
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
@@ -54,7 +54,7 @@ Usage:  pack <input> <output> [<secret>]
         private void DisplayDataWritingMessage(object? message)
         {
             if (message is ResourceKey key)
-                Out?.WriteLine($"Writing data: {key} . . .");
+                WriteLine($"Writing data: {key} . . .");
         }
     }
 }

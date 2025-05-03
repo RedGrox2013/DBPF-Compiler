@@ -23,6 +23,10 @@
     "interactive": {
       "commandName": "Project",
       "commandLineArgs": "interactive"
+    },
+    "lua": {
+      "commandName": "Project",
+      "commandLineArgs": "lua"
     }
   }
 }

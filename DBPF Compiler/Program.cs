@@ -57,10 +57,11 @@ static async Task<Line> Initialize(string[] args)
     //}
 
     CommandManager cmd = CommandManager.Instance;
-    cmd.Out = Console.Out;
+    cmd.Console = new TraceConsole(Console.Out, Console.In);
     cmd.PrintErrorAction = PrintError;
     cmd.ClearAction = Console.Clear;
-    cmd.AddCommand("interactive", new InteractiveCommand(Console.In));
+    cmd.AddCommand("interactive", new InteractiveCommand());
+    cmd.AddCommand("lua", new LuaCommand());
 
 #if DEBUG
     cmd.AddCommand("test", new TestCommand() { NotDisplayDescription = true });

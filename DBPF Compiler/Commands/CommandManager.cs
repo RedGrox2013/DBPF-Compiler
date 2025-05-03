@@ -57,15 +57,15 @@ namespace DBPF_Compiler.Commands
                     command.Value.ClearAction = value;
             }
         }
-        private TextWriter? _out;
-        public TextWriter? Out
+        private TraceConsole? _console;
+        public TraceConsole? Console
         {
-            get => _out;
+            get => _console;
             set
             {
-                _out = value;
+                _console = value;
                 foreach (var command in _commands)
-                    command.Value.Out = value;
+                    command.Value.Console = value;
             }
         }
 
@@ -76,7 +76,7 @@ namespace DBPF_Compiler.Commands
         public void AddCommand(string keyword, ConsoleCommand command)
         {
             command.SetData(FormatParser, Data);
-            command.Out = _out;
+            command.Console = _console;
             command.ClearAction = _clearAction;
             command.PrintErrorAction = _printErrorAction;
             _commands.Add(keyword.ToLower(), command);
@@ -112,7 +112,7 @@ namespace DBPF_Compiler.Commands
 
         public void PrintHelp(string? commandName = null)
         {
-            if (Out == null)
+            if (_console == null)
                 return;
 
             if (string.IsNullOrWhiteSpace(commandName))
@@ -120,7 +120,7 @@ namespace DBPF_Compiler.Commands
                 foreach (var command in _commands)
                 {
                     if (!command.Value.NotDisplayDescription)
-                        Out.WriteLine(command.Key + "\t\t\t" + (command.Value.GetDescription() ?? "no description"));
+                        _console.WriteLine(command.Key + "\t\t\t" + (command.Value.GetDescription() ?? "no description"));
                 }
                 return;
             }
@@ -128,7 +128,7 @@ namespace DBPF_Compiler.Commands
             if (!_commands.TryGetValue(commandName.ToLower(), out var cmd))
                 PrintErrorAction?.Invoke(commandName + " is not found");
             else
-                Out.WriteLine(commandName + "\t" +
+                _console.WriteLine(commandName + "\t" +
                     (cmd.GetDescription(DescriptionMode.Complete) ?? cmd.GetDescription() ?? "no description"));
         }
     }

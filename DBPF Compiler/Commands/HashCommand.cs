@@ -22,7 +22,7 @@ namespace DBPF_Compiler.Commands
             else
                 hash = FNVHash.ToString(NameRegistryManager.Instance.GetHash(name, regName));
 
-            Out?.WriteLine($"{name} ----[{regName ?? "all"}]----> {hash}");
+            WriteLine($"{name} ----[{regName ?? "all"}]----> {hash}");
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
