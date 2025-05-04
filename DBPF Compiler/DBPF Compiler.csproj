@@ -43,7 +43,10 @@
     <None Update="Registries\reg_type.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="scripts\examples\example.lua">
+    <None Update="scripts\examples\dbpfcfunctions.lua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\examples\ioexample.lua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="scripts\examples\hashexample.lua">

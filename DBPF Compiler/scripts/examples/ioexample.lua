@@ -1,15 +1,3 @@
--- функция для конвартации строки в хеш в формате 0x00000000
-local hexhash = require("./hexhash")
-
--- пример функции (возвращает факториал числа)
-local function factorial(n)
-	if n == 1 then
-		return n
-	end
-
-	return n * factorial(n - 1)
-end
-
 -- print выводит что-нибудь
 print("Hello world!")
 print(factorial(5))
@@ -28,19 +16,4 @@ print(num .. "! = " .. factorial(num))
 io.write("Введи своё имя: ")
 -- вводить можно ещё так (тоже всегда возвращает строку)
 local name = io.read()
-print(name .. " -> " .. hash(name) .. " -> " .. hexhash(name))
-
--- табличка
-local cat = {
-	name = "Arsik",
-	age = 4
-}
-print(cat.name .. " (" .. cat.age .. ")")
-
--- массив случайных чисел
-local arr = {}
-for i = 1, 20 do
-	arr[i] = math.random(-1488, 1488)
-end
-trace "Случайные числа:"
-print(table.concat(arr, ", "))
+print(name)
