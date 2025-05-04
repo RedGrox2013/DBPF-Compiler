@@ -3,33 +3,33 @@
     All functions, classes and enumerations that DBPFC adds
     For input/output see ioexample.lua
 
-    Все функции, классы и перечисления, которые добавляет DBPFC
-    Ввод/вывод см. в ioexample.lua
+    Р’СЃРµ С„СѓРЅРєС†РёРё, РєР»Р°СЃСЃС‹ Рё РїРµСЂРµС‡РёСЃР»РµРЅРёСЏ, РєРѕС‚РѕСЂС‹Рµ РґРѕР±Р°РІР»СЏРµС‚ DBPFC
+    Р’РІРѕРґ/РІС‹РІРѕРґ СЃРј. РІ ioexample.lua
 
 ]]
 
 local hexhash = require("./hexhash")
 
--- вычисляет FNV-хеш из строки 
+-- РІС‹С‡РёСЃР»СЏРµС‚ FNV-С…РµС€ РёР· СЃС‚СЂРѕРєРё 
 local h = hash("Hello world!")
 print(string.format("%u (%s)", h, type(h)))
--- тоже самое, но возвращает строку в формате 0xXXXXXXXX
+-- С‚РѕР¶Рµ СЃР°РјРѕРµ, РЅРѕ РІРѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ РІ С„РѕСЂРјР°С‚Рµ 0xXXXXXXXX
 local sh = hexhash("Hello world!")
 print(string.format("%s (%s)", sh, type(sh)))
 
--- Поиск имени по хешу
+-- РџРѕРёСЃРє РёРјРµРЅРё РїРѕ С…РµС€Сѓ
 print(hashtoname(0x00000000, "file")) -- animations~
-print(hashtoname(0x00000000))         -- GrobEncounter (первое что нашёл)
-print(hashtoname(123456789))          -- если хеш не известен, вернёт его в формате 0xXXXXXXXX
+print(hashtoname(0x00000000))         -- GrobEncounter (РїРµСЂРІРѕРµ С‡С‚Рѕ РЅР°С€С‘Р»)
+print(hashtoname(123456789))          -- РµСЃР»Рё С…РµС€ РЅРµ РёР·РІРµСЃС‚РµРЅ, РІРµСЂРЅС‘С‚ РµРіРѕ РІ С„РѕСЂРјР°С‚Рµ 0xXXXXXXXX
 
--- функция для вывода перечислений
+-- С„СѓРЅРєС†РёСЏ РґР»СЏ РІС‹РІРѕРґР° РїРµСЂРµС‡РёСЃР»РµРЅРёР№
 local function printenum(enum)
     for k, v in pairs(TypeIDs) do
         print(string.format("\t %s:\t0x%08X", k, v))
     end
 end
 
--- Все перечисления
+-- Р’СЃРµ РїРµСЂРµС‡РёСЃР»РµРЅРёСЏ
 print("TypeIDs:")
 printenum(TypeIDs)
 print("GroupIDs:")
