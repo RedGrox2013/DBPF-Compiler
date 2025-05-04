@@ -22,8 +22,17 @@ namespace DBPF_Compiler.Commands
                 return;
             }
 
+            LuaInterpreter.DoString(@"
+__isLuaCommandRunning__ = true
+
+function exit()
+    exit = nil
+    __isLuaCommandRunning__ = false
+end
+");
+
             WriteLine(LuaInterpreter["_VERSION"] +
-                ".7  Copyright © 1994–2024 Lua.org, PUC-Rio\nTo exit, enter a blank line");
+                ".7  Copyright © 1994–2024 Lua.org, PUC-Rio\nTo exit, call exit()");
             string? l;
             do
             {
@@ -45,7 +54,7 @@ namespace DBPF_Compiler.Commands
                 {
                     PrintError(e.Message);
                 }
-            } while (!string.IsNullOrWhiteSpace(l));
+            } while ((bool)LuaInterpreter["__isLuaCommandRunning__"]);
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
