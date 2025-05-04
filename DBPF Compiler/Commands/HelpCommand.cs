@@ -2,15 +2,17 @@
 
 namespace DBPF_Compiler.Commands
 {
-    internal class HelpCommand : ConsoleCommand
+    internal class HelpCommand(CommandManager cmd) : ConsoleCommand
     {
+        public CommandManager CommandManager { get; set; } = cmd;
+
         public override void ParseLine(Line line)
         {
             if (line.ArgumentCount > 1)
                 for (int i = 1; i < line.ArgumentCount; i++)
-                    CommandManager.Instance.PrintHelp(line[i]);
+                    CommandManager.PrintHelp(line[i]);
             else
-                CommandManager.Instance.PrintHelp();
+                CommandManager.PrintHelp();
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)

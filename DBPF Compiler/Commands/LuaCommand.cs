@@ -1,45 +1,29 @@
 ﻿using DBPF_Compiler.ArgScript;
-using DBPF_Compiler.Lua;
 using NLua;
 
 namespace DBPF_Compiler.Commands
 {
-    internal class LuaCommand : ConsoleCommand
+    internal class LuaCommand(Lua luaInterpreter) : ConsoleCommand
     {
-        public override TraceConsole? Console
-        {
-            get => base.Console;
-            set
-            {
-                base.Console = value;
-                _luaBuilder.Console = value;
-            }
-        }
-
-        private readonly LuaBuilder _luaBuilder;
-
-        public LuaCommand()
-        {
-            _luaBuilder = new LuaBuilder() { Console = Console };
-        }
+        public Lua LuaInterpreter { get; set; } = luaInterpreter;
 
         public override void ParseLine(Line line)
         {
-            using var lua = _luaBuilder.Build();
             if (line.ArgumentCount > 1)
             {
-                //string path = Path.Combine(new FileInfo(line[1]).DirectoryName ?? string.Empty, "?.lua");
-                //lua.DoString($"package.path = package.path .. \";{path.Replace("\\", "\\\\")}\"");
+                //string path = Path.Combine(new FileInfo(line[1]).DirectoryName ?? string.Empty, "?.LuaInterpreter");
+                //LuaInterpreter.DoString($"package.path = package.path .. \";{path.Replace("\\", "\\\\")}\"");
 
-                lua.NewTable("arg");
+                LuaInterpreter.NewTable("arg");
                 for (int i = 0; i < line.ArgumentCount; i++)
-                    ((LuaTable)lua["arg"])[i - 1] = line[i];
-                lua.DoFile(line[1]);
+                    ((LuaTable)LuaInterpreter["arg"])[i - 1] = line[i];
+                LuaInterpreter.DoFile(line[1]);
 
                 return;
             }
 
-            WriteLine("To exit, enter a blank line");
+            WriteLine(LuaInterpreter["_VERSION"] +
+                ".7  Copyright © 1994–2024 Lua.org, PUC-Rio\nTo exit, enter a blank line");
             string? l;
             do
             {
@@ -48,7 +32,7 @@ namespace DBPF_Compiler.Commands
 
                 try
                 {
-                    var results = lua.DoString(l);
+                    var results = LuaInterpreter.DoString(l);
 
                     if (results != null && results.Length > 0)
                     {

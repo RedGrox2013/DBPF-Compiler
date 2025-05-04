@@ -2,9 +2,11 @@
 
 namespace DBPF_Compiler.Commands
 {
-    internal class InteractiveCommand() : ConsoleCommand
+    internal class InteractiveCommand(CommandManager cmd) : ConsoleCommand
     {
         public static bool IsRunning { get; private set; } = false;
+
+        public CommandManager CommandManager { get; set; } = cmd;
 
         public override void ParseLine(Line line)
         {
@@ -23,7 +25,7 @@ namespace DBPF_Compiler.Commands
             {
                 try
                 {
-                    CommandManager.Instance.ParseLine(line);
+                    CommandManager.ParseLine(line);
 
                     Write("dbpfc>");
                     cmdLine = Console?.ReadLine();

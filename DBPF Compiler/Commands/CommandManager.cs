@@ -4,33 +4,33 @@ namespace DBPF_Compiler.Commands
 {
     public class CommandManager : IParser
     {
-        private static CommandManager? _instance;
-        public static CommandManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new CommandManager();
+        //private static CommandManager? _instance;
+        //public static CommandManager Instance
+        //{
+        //    get
+        //    {
+        //        if (_instance == null)
+        //        {
+        //            _instance = new CommandManager();
 
-                    _instance.AddCommand("help", new HelpCommand());
-                    _instance.AddCommand("pack", new PackCommand());
-                    _instance.AddCommand("unpack", new UnpackCommand());
-                    _instance.AddCommand("encode", new EncodeCommand());
-                    _instance.AddCommand("decode", new DecodeCommand());
-                    _instance.AddCommand("hash", new HashCommand());
-                    _instance.AddCommand("hashToName", new HashToNameCommand());
-                    _instance.AddCommand("keys", new KeysListCommand());
-                    _instance.AddCommand("extract", new ExtractCommand());
-                    _instance.AddCommand("configs", new ConfigsCommand());
-                    _instance.AddCommand("createProject", new CreateProjectCommand());
-                    //_instance.AddCommand("create-template", new CreateTemplateCommand());
-                    _instance.AddCommand("clear", new ClearCommand());
-                }
+        //            _instance.AddCommand("help", new HelpCommand());
+        //            _instance.AddCommand("pack", new PackCommand());
+        //            _instance.AddCommand("unpack", new UnpackCommand());
+        //            _instance.AddCommand("encode", new EncodeCommand());
+        //            _instance.AddCommand("decode", new DecodeCommand());
+        //            _instance.AddCommand("hash", new HashCommand());
+        //            _instance.AddCommand("hashToName", new HashToNameCommand());
+        //            _instance.AddCommand("keys", new KeysListCommand());
+        //            _instance.AddCommand("extract", new ExtractCommand());
+        //            _instance.AddCommand("configs", new ConfigsCommand());
+        //            _instance.AddCommand("createProject", new CreateProjectCommand());
+        //            //CommandManager.AddCommand("create-template", new CreateTemplateCommand());
+        //            _instance.AddCommand("clear", new ClearCommand());
+        //        }
 
-                return _instance;
-            }
-        }
+        //        return _instance;
+        //    }
+        //}
 
         public FormatParser FormatParser { get; private set; } = new();
         public object? Data { get; private set; }
@@ -70,8 +70,6 @@ namespace DBPF_Compiler.Commands
         }
 
         private readonly Dictionary<string, ConsoleCommand> _commands = [];
-
-        private CommandManager() { }
 
         public void AddCommand(string keyword, ConsoleCommand command)
         {
