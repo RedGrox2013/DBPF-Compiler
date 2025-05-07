@@ -34,3 +34,6 @@ print("TypeIDs:")
 printenum(TypeIDs)
 print("GroupIDs:")
 printenum(GroupIDs)
+
+-- Получить путь к директории программы:
+print(getProgramDirectory())

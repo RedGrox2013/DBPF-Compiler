@@ -135,6 +135,7 @@ lua.RegisterFunction("write", console, typeof(TraceConsole).GetMethod("Write"));
 lua.RegisterFunction("readline", console, typeof(TraceConsole).GetMethod("ReadLine"));
 lua.RegisterFunction("hash", NameRegistryManager.Instance, typeof(NameRegistryManager).GetMethod("GetHash"));
 lua.RegisterFunction("hashtoname", NameRegistryManager.Instance, typeof(NameRegistryManager).GetMethod("GetName"));
+lua.RegisterFunction("getProgramDirectory", typeof(Directory).GetMethod("GetCurrentDirectory"));
 
 lua.DoString(@$"package.path = package.path ..
     "";{Path.Combine(Directory.GetCurrentDirectory(), "scripts", "?.lua").Replace("\\", "\\\\")}""
