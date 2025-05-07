@@ -17,10 +17,14 @@ print(string.format("%u (%s)", h, type(h)))
 local sh = hexhash("Hello world!")
 print(string.format("%s (%s)", sh, type(sh)))
 
+print "----------------------------------------------------------------------------"
+
 -- Поиск имени по хешу
 print(hashtoname(0x00000000, "file")) -- animations~
-print(hashtoname(0x00000000))         -- GrobEncounter (первое что нашёл)
+print(hashtoname(0x00000000))         -- GrobEncounter (первое, что нашёл)
 print(hashtoname(123456789))          -- если хеш не известен, вернёт его в формате 0xXXXXXXXX
+
+print "----------------------------------------------------------------------------"
 
 -- функция для вывода перечислений
 local function printenum(enum)
@@ -35,5 +39,16 @@ printenum(TypeIDs)
 print("GroupIDs:")
 printenum(GroupIDs)
 
+print "----------------------------------------------------------------------------"
+
 -- Получить путь к директории программы:
 print(getProgramDirectory())
+
+print "----------------------------------------------------------------------------"
+
+-- Выполнить команду (по типу pack, unpack и т. д.)
+executeCommand("help")     -- выведет список команд
+-- вызов с аргументом
+executeCommand("help lua") -- выведет помощь по команде lua
+
+print "----------------------------------------------------------------------------"

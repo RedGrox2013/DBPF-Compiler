@@ -96,7 +96,8 @@ using DBPF_Compiler.FNV;
 
 //");
 
-Console.WriteLine("Spore Database Packed File Compiler\n");
+Console.Write("Spore Database Packed File Compiler ");
+
 //Console.ForegroundColor = oldColor;
 //Console.Write("Spore ");
 //Console.ForegroundColor = ART_COLOR;
@@ -118,12 +119,24 @@ Console.WriteLine("Spore Database Packed File Compiler\n");
 //Console.ForegroundColor = ART_COLOR;
 //Console.Write('C');
 //Console.ForegroundColor = oldColor;
-//Console.WriteLine("ompiler\n");
+//Console.WriteLine("ompiler");
+
+var version = typeof(Program).Assembly.GetName().Version;
+Console.WriteLine(version);
+Console.WriteLine();
 #endregion
 
 Line line = await Initialize(args);
 
 var console = new TraceConsole(Console.Out, Console.In);
+CommandManager cmd = new()
+{
+    Console = console,
+    PrintErrorAction = PrintError,
+    ClearAction = Console.Clear
+};
+DBPFCServices.AddService(cmd);
+
 using var lua = new NLua.Lua();
 lua.State.Encoding = System.Text.Encoding.UTF8;
 
@@ -136,6 +149,9 @@ lua.RegisterFunction("readline", console, typeof(TraceConsole).GetMethod("ReadLi
 lua.RegisterFunction("hash", NameRegistryManager.Instance, typeof(NameRegistryManager).GetMethod("GetHash"));
 lua.RegisterFunction("hashtoname", NameRegistryManager.Instance, typeof(NameRegistryManager).GetMethod("GetName"));
 lua.RegisterFunction("getProgramDirectory", typeof(Directory).GetMethod("GetCurrentDirectory"));
+lua.RegisterFunction("executeCommand", typeof(LuaFunctions).GetMethod("ExecuteCommand"));
+
+lua.RegisterStaticClass(typeof(FNVHash));
 
 lua.DoString(@$"package.path = package.path ..
     "";{Path.Combine(Directory.GetCurrentDirectory(), "scripts", "?.lua").Replace("\\", "\\\\")}""
@@ -144,14 +160,13 @@ lua.DoString(@$"package.path = package.path ..
 print    = trace
 io.write = write
 io.read  = readline
+os.exit  = nil -- добавить потом норм метод
+
+-- чтобы не было путаницы с регистром имён функций
+readLine   = readline
+hashToName = hashtoname
 ", "configuration");
 
-CommandManager cmd = new()
-{
-    Console = console,
-    PrintErrorAction = PrintError,
-    ClearAction = Console.Clear
-};
 using var app = new ConsoleApp(lua, cmd);
 
 cmd.AddCommand("interactive", new InteractiveCommand(cmd));

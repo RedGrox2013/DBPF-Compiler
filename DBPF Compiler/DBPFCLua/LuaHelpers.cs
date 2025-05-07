@@ -1,4 +1,5 @@
 ﻿using NLua;
+using System.Reflection;
 
 namespace DBPF_Compiler.DBPFCLua
 {
@@ -22,6 +23,44 @@ namespace DBPF_Compiler.DBPFCLua
             var table = lua.GetTable(path);
             foreach (var i in dict)
                 table[i.Key.ToString()] = i.Value;
+        }
+
+        // public static void RegisterClass<T>(this Lua lua) => RegisterClass(lua, typeof(T));
+        // public static void RegisterClass(this Lua lua, Type classType)
+        // {
+        //     RegisterClass(lua, classType, BindingFlags.Public | BindingFlags.Instance);
+
+        //     lua.DoString($"function {classType.Name}.new() return setmetatable({{}}, {classType.Name}) end",
+        //         $"{classType.Name} constructor");
+        // }
+
+        public static void RegisterStaticClass(this Lua lua, Type classType) =>
+            RegisterClass(lua, classType, BindingFlags.Public | BindingFlags.Static);
+
+        private static void RegisterClass(Lua lua, Type classType, BindingFlags bindingFlags)
+        {
+            lua.DoString($"{classType.Name} = {{}} {classType.Name}.__index = {classType.Name}");
+            foreach (var member in classType.GetMembers(bindingFlags))
+            {
+                string path = $"{classType.Name}.{member.Name}";
+                switch (member.MemberType)
+                {
+                    case MemberTypes.Method:
+                        if (bindingFlags.HasFlag(BindingFlags.Static))
+                            lua.RegisterFunction(path, (MethodBase)member);
+                        else
+                            lua.RegisterFunction($"{classType.Name}:{member.Name}", (MethodBase)member);
+                        break;
+                    case MemberTypes.Property:
+                        lua[path] = ((PropertyInfo)member).GetValue(null);
+                        break;
+                    case MemberTypes.Field:
+                        lua[path] = ((FieldInfo)member).GetValue(null);
+                        break;
+                    default:
+                        continue;
+                }
+            }
         }
     }
 }
