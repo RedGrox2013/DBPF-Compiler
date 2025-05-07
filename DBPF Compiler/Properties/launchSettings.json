@@ -4,6 +4,10 @@
       "commandName": "WSL2",
       "distributionName": ""
     },
+    "interactive": {
+      "commandName": "Project",
+      "commandLineArgs": "interactive"
+    },
     "pack": {
       "commandName": "Project",
       "commandLineArgs": "pack \"..\\..\\..\\..\\Mods Projects\\TestData\" test.package"
@@ -19,10 +23,6 @@
     "decode": {
       "commandName": "Project",
       "commandLineArgs": "decode \"D:\\Program Files\\SporeModder FX\\Projects\\proptest\\test\\test.prop\" test.prop.json"
-    },
-    "interactive": {
-      "commandName": "Project",
-      "commandLineArgs": "interactive"
     },
     "lua": {
       "commandName": "Project",
