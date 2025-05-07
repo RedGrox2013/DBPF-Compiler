@@ -24,7 +24,7 @@ print(hashtoname(123456789))          -- если хеш не известен, 
 
 -- функция для вывода перечислений
 local function printenum(enum)
-    for k, v in pairs(TypeIDs) do
+    for k, v in pairs(enum) do
         print(string.format("\t %s:\t0x%08X", k, v))
     end
 end
