@@ -4,10 +4,10 @@ namespace DBPF_Compiler.DBPFCLua
 {
     public static class LuaHelpers
     {
-        public static void RegisterEnum<T>(this Lua lua, string? path = null) where T : Enum
+        public static void RegisterEnum<T>(this Lua lua) where T : Enum =>
+            RegisterEnum<T>(lua, typeof(T).Name);
+        public static void RegisterEnum<T>(this Lua lua, string path) where T : Enum
         {
-            if (string.IsNullOrEmpty(path))
-                path = typeof(T).Name;
             var type = Enum.GetUnderlyingType(typeof(T));
             var dict = Enum.GetValues(typeof(T)).Cast<T>().ToDictionary(k => k.ToString(), v => Convert.ChangeType(v, type));
             RegisterDictionary(lua, dict, path);
