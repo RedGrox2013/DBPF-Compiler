@@ -1,6 +1,7 @@
 ﻿using DBPF_Compiler;
 using DBPF_Compiler.ArgScript;
 using DBPF_Compiler.Commands;
+using DBPF_Compiler.DBPFCLua;
 using DBPF_Compiler.FNV;
 
 #region ASCII art

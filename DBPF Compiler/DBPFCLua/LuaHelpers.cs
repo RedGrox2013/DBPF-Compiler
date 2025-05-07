@@ -1,6 +1,6 @@
 ﻿using NLua;
 
-namespace DBPF_Compiler
+namespace DBPF_Compiler.DBPFCLua
 {
     public static class LuaHelpers
     {
