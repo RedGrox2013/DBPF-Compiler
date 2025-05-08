@@ -5,9 +5,9 @@ using DBPF_Compiler.DBPFCLua;
 using DBPF_Compiler.FNV;
 
 #region ASCII art
-//const ConsoleColor ART_COLOR = ConsoleColor.Green;
-//var oldColor = Console.ForegroundColor;
-//Console.ForegroundColor = ART_COLOR;
+const ConsoleColor ART_COLOR = ConsoleColor.Green;
+var oldColor = Console.ForegroundColor;
+Console.ForegroundColor = ART_COLOR;
 
 //Console.Write(@"
 
@@ -22,21 +22,21 @@ using DBPF_Compiler.FNV;
 
 
 //");
-//Console.Write(@"
+Console.Write(@"
 
-//$$$$$$$\  $$$$$$$\  $$$$$$$\  $$$$$$$$\  $$$$$$\  
-//$$  __$$\ $$  __$$\ $$  __$$\ $$  _____|$$  __$$\ 
-//$$ |  $$ |$$ |  $$ |$$ |  $$ |$$ |      $$ /  \__|
-//$$ |  $$ |$$$$$$$\ |$$$$$$$  |$$$$$\    $$ |      
-//$$ |  $$ |$$  __$$\ $$  ____/ $$  __|   $$ |      
-//$$ |  $$ |$$ |  $$ |$$ |      $$ |      $$ |  $$\ 
-//$$$$$$$  |$$$$$$$  |$$ |      $$ |      \$$$$$$  |
-//\_______/ \_______/ \__|      \__|       \______/ 
-
-
+$$$$$$$\  $$$$$$$\  $$$$$$$\  $$$$$$$$\  $$$$$$\  
+$$  __$$\ $$  __$$\ $$  __$$\ $$  _____|$$  __$$\ 
+$$ |  $$ |$$ |  $$ |$$ |  $$ |$$ |      $$ /  \__|
+$$ |  $$ |$$$$$$$\ |$$$$$$$  |$$$$$\    $$ |      
+$$ |  $$ |$$  __$$\ $$  ____/ $$  __|   $$ |      
+$$ |  $$ |$$ |  $$ |$$ |      $$ |      $$ |  $$\ 
+$$$$$$$  |$$$$$$$  |$$ |      $$ |      \$$$$$$  |
+\_______/ \_______/ \__|      \__|       \______/ 
 
 
-//");
+
+
+");
 //Console.Write(@"
 
 //  ____    ____    ____     _____    ____  
@@ -96,33 +96,32 @@ using DBPF_Compiler.FNV;
 
 //");
 
-Console.Write("Spore Database Packed File Compiler ");
+//Console.Write("Spore Database Packed File Compiler ");
 
-//Console.ForegroundColor = oldColor;
-//Console.Write("Spore ");
-//Console.ForegroundColor = ART_COLOR;
-//Console.Write('D');
-//Console.ForegroundColor = oldColor;
-//Console.Write("ata");
-//Console.ForegroundColor = ART_COLOR;
-//Console.Write('b');
-//Console.ForegroundColor = oldColor;
-//Console.Write("ase ");
-//Console.ForegroundColor = ART_COLOR;
-//Console.Write('P');
-//Console.ForegroundColor = oldColor;
-//Console.Write("acked ");
-//Console.ForegroundColor = ART_COLOR;
-//Console.Write('F');
-//Console.ForegroundColor = oldColor;
-//Console.Write("ile ");
-//Console.ForegroundColor = ART_COLOR;
-//Console.Write('C');
-//Console.ForegroundColor = oldColor;
-//Console.WriteLine("ompiler");
+Console.ForegroundColor = oldColor;
+Console.Write("Spore ");
+Console.ForegroundColor = ART_COLOR;
+Console.Write('D');
+Console.ForegroundColor = oldColor;
+Console.Write("ata");
+Console.ForegroundColor = ART_COLOR;
+Console.Write('b');
+Console.ForegroundColor = oldColor;
+Console.Write("ase ");
+Console.ForegroundColor = ART_COLOR;
+Console.Write('P');
+Console.ForegroundColor = oldColor;
+Console.Write("acked ");
+Console.ForegroundColor = ART_COLOR;
+Console.Write('F');
+Console.ForegroundColor = oldColor;
+Console.Write("ile ");
+Console.ForegroundColor = ART_COLOR;
+Console.Write('C');
+Console.ForegroundColor = oldColor;
+Console.Write("ompiler ");
 
-var version = typeof(Program).Assembly.GetName().Version;
-Console.WriteLine(version);
+Console.WriteLine(typeof(Program).Assembly.GetName().Version);
 Console.WriteLine();
 #endregion
 
@@ -137,36 +136,8 @@ CommandManager cmd = new()
 };
 DBPFCServices.AddService(cmd);
 
-using var lua = new NLua.Lua();
-lua.State.Encoding = System.Text.Encoding.UTF8;
-
-lua.RegisterEnum<TypeIDs>();
-lua.RegisterEnum<GroupIDs>();
-
-lua.RegisterFunction("trace", console, typeof(TraceConsole).GetMethod("WriteLine", [typeof(object)]));
-lua.RegisterFunction("write", console, typeof(TraceConsole).GetMethod("Write"));
-lua.RegisterFunction("readline", console, typeof(TraceConsole).GetMethod("ReadLine"));
-lua.RegisterFunction("hash", NameRegistryManager.Instance, typeof(NameRegistryManager).GetMethod("GetHash"));
-lua.RegisterFunction("hashtoname", NameRegistryManager.Instance, typeof(NameRegistryManager).GetMethod("GetName"));
-lua.RegisterFunction("getProgramDirectory", typeof(Directory).GetMethod("GetCurrentDirectory"));
-lua.RegisterFunction("executeCommand", typeof(LuaFunctions).GetMethod("ExecuteCommand"));
-
-lua.RegisterStaticClass(typeof(FNVHash));
-
-lua.DoString(@$"package.path = package.path ..
-    "";{Path.Combine(Directory.GetCurrentDirectory(), "scripts", "?.lua").Replace("\\", "\\\\")}""
-
--- для лучшей совместимости с DBPFC некоторые функции будут переопределены
-print    = trace
-io.write = write
-io.read  = readline
-os.exit  = nil -- добавить потом норм метод
-
--- чтобы не было путаницы с регистром имён функций
-readLine   = readline
-hashToName = hashtoname
-", "configuration");
-
+var luaCreator = new LuaCreator(console);
+using var lua = luaCreator.CreateLua();
 using var app = new ConsoleApp(lua, cmd);
 
 cmd.AddCommand("interactive", new InteractiveCommand(cmd));
@@ -192,9 +163,12 @@ static async Task<Line> Initialize(string[] args)
 {
     await ConfigManager.LoadAsync();
     var configs = ConfigManager.Instance;
+    DBPFCServices.AddService(configs);
 
     if (!await NameRegistryManager.LoadAsync(new DirectoryInfo(configs.RegistriesPath)))
         PrintError("No registers found. Translating hashes is not possible.");
+    else
+        DBPFCServices.AddService(NameRegistryManager.Instance);
 
     /*if (string.IsNullOrWhiteSpace(configs.EALayer3Path) || !File.Exists(configs.EALayer3Path))
     {
