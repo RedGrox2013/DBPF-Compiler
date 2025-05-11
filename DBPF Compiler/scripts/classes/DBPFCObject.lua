@@ -10,3 +10,7 @@ end
 function DBPFCObject:__tostring()
     return self.className
 end
+
+function DBPFCObject:hash(regName)
+	return hash(self.className)
+end
