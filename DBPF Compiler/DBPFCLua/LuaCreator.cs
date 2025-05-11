@@ -32,6 +32,14 @@ public class LuaCreator
 
         var assembly = Assembly.GetExecutingAssembly();
         lua.DoEmbeddedScript("DBPF_Compiler.scripts.initLua.lua", assembly);
+        lua.DoEmbeddedScript("DBPF_Compiler.scripts.classes.DBPFCObject.lua", assembly);
+        lua.DoEmbeddedScript("DBPF_Compiler.scripts.classes.Key.lua", assembly);
+        lua.DoEmbeddedScript("DBPF_Compiler.scripts.classes.Property.lua", assembly);
+        lua.DoEmbeddedScript("DBPF_Compiler.scripts.classes.PropertyList.lua", assembly);
+
+        //foreach (var resource in assembly.GetManifestResourceNames())
+        //    if (resource.StartsWith("DBPF_Compiler.scripts.classes"))
+        //        lua.DoEmbeddedScript(resource, assembly);
         
         var version = assembly.GetName().Version;
         lua["DBPFC_VERSION.major"]    = version?.Major;

@@ -1,4 +1,3 @@
-PropertyList = DBPFCObject.new()
+PropertyList = DBPFCObject.new("PropertyList")
 PropertyList.__index = PropertyList
 
--- потом доделаю
