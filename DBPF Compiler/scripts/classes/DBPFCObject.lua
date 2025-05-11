@@ -1,16 +1,16 @@
 DBPFCObject = {
-    className = "DBPFCObject"
+	className = "DBPFCObject"
 }
 DBPFCObject.__index = DBPFCObject
 
 function DBPFCObject.new(className)
-    return setmetatable({className = className or DBPFCObject.className}, DBPFCObject)
+	return setmetatable({className = className or DBPFCObject.className}, DBPFCObject)
 end
 
 function DBPFCObject:__tostring()
-    return self.className
+	return self.className
 end
 
 function DBPFCObject:hash(regName)
-	return hash(self.className)
+	return hash(tostring(self), regName)
 end
