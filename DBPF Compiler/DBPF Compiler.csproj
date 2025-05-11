@@ -12,6 +12,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="scripts\initLua.lua" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="scripts\initLua.lua" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="NLua" Version="1.7.5" />
   </ItemGroup>
 
