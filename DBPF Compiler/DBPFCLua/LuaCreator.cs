@@ -29,16 +29,9 @@ public class LuaCreator(TraceConsole console)
         lua.DoString(@$"package.path = package.path ..
     "";{Path.Combine(Directory.GetCurrentDirectory(), "scripts", "?.lua").Replace("\\", "\\\\")}""
 ", "configuration");
-
-        var assembly = Assembly.GetExecutingAssembly();
-        using var stream = assembly.GetManifestResourceStream("DBPF_Compiler.scripts.initLua.lua");
-        if (stream != null)
-        {
-            using var reader = new StreamReader(stream);
-            lua.DoString(reader.ReadToEnd());
-        }
-
-        var version = assembly.GetName().Version;
+        lua.DoEmbeddedScript("DBPF_Compiler.scripts.initLua.lua");
+        
+        var version = Assembly.GetExecutingAssembly().GetName().Version;
         lua["DBPFC_VERSION.major"]    = version?.Major;
         lua["DBPFC_VERSION.minor"]    = version?.Minor;
         lua["DBPFC_VERSION.build"]    = version?.Build;

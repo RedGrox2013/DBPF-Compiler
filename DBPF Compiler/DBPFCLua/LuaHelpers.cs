@@ -62,5 +62,17 @@ namespace DBPF_Compiler.DBPFCLua
                 }
             }
         }
+
+        public static object[] DoEmbeddedScript(this Lua lua, string resourcePath) =>
+            DoEmbeddedScript(lua, resourcePath, Assembly.GetExecutingAssembly());
+
+        public static object[] DoEmbeddedScript(this Lua lua, string resourcePath, Assembly assembly)
+        {
+            using var stream = assembly.GetManifestResourceStream(resourcePath) ??
+                throw new NullReferenceException("Embedded script not found.");
+
+            using var reader = new StreamReader(stream);
+            return lua.DoString(reader.ReadToEnd());
+        }
     }
 }
