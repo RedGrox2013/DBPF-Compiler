@@ -4,9 +4,9 @@ using System.Reflection;
 
 namespace DBPF_Compiler.DBPFCLua;
 
-public class LuaCreator(TraceConsole console)
+public class LuaCreator
 {
-    public TraceConsole Console { get; set; } = console;
+    public TraceConsole? Console { get; set; }
 
     public Lua CreateLua()
     {

@@ -135,10 +135,8 @@ CommandManager cmd = new()
     ClearAction = Console.Clear
 };
 DBPFCServices.AddService(cmd);
-
-var luaCreator = new LuaCreator(console);
-using var lua = luaCreator.CreateLua();
-using var app = new ConsoleApp(lua, cmd);
+DBPFCServices.AddService(console);
+using var app = new ConsoleApp(cmd);
 
 cmd.AddCommand("interactive", new InteractiveCommand(cmd));
 #if DEBUG

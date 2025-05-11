@@ -1,28 +1,37 @@
 ﻿using DBPF_Compiler.ArgScript;
+using DBPF_Compiler.DBPFCLua;
 using NLua;
 
 namespace DBPF_Compiler.Commands
 {
-    internal class LuaCommand(Lua luaInterpreter) : ConsoleCommand
+    internal class LuaCommand : ConsoleCommand
     {
-        public Lua LuaInterpreter { get; set; } = luaInterpreter;
+        private readonly LuaCreator _luaCreator = new();
+
+        public override TraceConsole? Console
+        {
+            get => base.Console;
+            set => base.Console = _luaCreator.Console = value;
+        }
 
         public override void ParseLine(Line line)
         {
+            using var lua = _luaCreator.CreateLua();
+
             if (line.ArgumentCount > 1)
             {
-                //string path = Path.Combine(new FileInfo(line[1]).DirectoryName ?? string.Empty, "?.LuaInterpreter");
-                //LuaInterpreter.DoString($"package.path = package.path .. \";{path.Replace("\\", "\\\\")}\"");
+                //string path = Path.Combine(new FileInfo(line[1]).DirectoryName ?? string.Empty, "?.lua");
+                //lua.DoString($"package.path = package.path .. \";{path.Replace("\\", "\\\\")}\"");
 
-                LuaInterpreter.NewTable("arg");
+                lua.NewTable("arg");
                 for (int i = 0; i < line.ArgumentCount; i++)
-                    ((LuaTable)LuaInterpreter["arg"])[i - 1] = line[i];
-                LuaInterpreter.DoFile(line[1]);
+                    ((LuaTable)lua["arg"])[i - 1] = line[i];
+                lua.DoFile(line[1]);
 
                 return;
             }
 
-            LuaInterpreter.DoString(@"
+            lua.DoString(@"
 __isLuaCommandRunning__ = true
 
 function exit()
@@ -31,7 +40,7 @@ function exit()
 end
 ");
 
-            WriteLine(LuaInterpreter["_VERSION"] +
+            WriteLine(lua["_VERSION"] +
                 ".7  Copyright © 1994–2024 Lua.org, PUC-Rio\nTo exit, call exit()");
             string? l;
             do
@@ -41,7 +50,7 @@ end
 
                 try
                 {
-                    var results = LuaInterpreter.DoString(l);
+                    var results = lua.DoString(l);
 
                     if (results != null && results.Length > 0)
                     {
@@ -54,7 +63,7 @@ end
                 {
                     PrintError(e.Message);
                 }
-            } while ((bool)LuaInterpreter["__isLuaCommandRunning__"]);
+            } while ((bool)lua["__isLuaCommandRunning__"]);
         }
 
         public override string? GetDescription(DescriptionMode mode = DescriptionMode.Basic)
