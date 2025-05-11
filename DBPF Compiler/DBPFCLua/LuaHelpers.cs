@@ -72,7 +72,7 @@ namespace DBPF_Compiler.DBPFCLua
                 throw new NullReferenceException("Embedded script not found.");
 
             using var reader = new StreamReader(stream);
-            return lua.DoString(reader.ReadToEnd());
+            return lua.DoString(reader.ReadToEnd(), resourcePath);
         }
     }
 }
