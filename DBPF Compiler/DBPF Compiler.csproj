@@ -18,14 +18,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="scripts\classes\Key.lua" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="scripts\classes\DBPFCObject.lua" />
     <EmbeddedResource Include="scripts\classes\Property.lua" />
     <EmbeddedResource Include="scripts\classes\PropertyList.lua" />
     <EmbeddedResource Include="scripts\initLua.lua" />
+    <EmbeddedResource Include="scripts\classes\Key.lua" />
+    <EmbeddedResource Include="scripts\classes\Vector2.lua" />
   </ItemGroup>
 
   <ItemGroup>

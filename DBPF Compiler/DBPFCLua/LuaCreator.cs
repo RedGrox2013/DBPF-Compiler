@@ -34,6 +34,7 @@ public class LuaCreator
         lua.DoEmbeddedScript("DBPF_Compiler.scripts.initLua.lua", assembly);
         lua.DoEmbeddedScript("DBPF_Compiler.scripts.classes.DBPFCObject.lua", assembly);
         lua.DoEmbeddedScript("DBPF_Compiler.scripts.classes.Key.lua", assembly);
+        lua.DoEmbeddedScript("DBPF_Compiler.scripts.classes.Vector2.lua", assembly);
         lua.DoEmbeddedScript("DBPF_Compiler.scripts.classes.Property.lua", assembly);
         lua.DoEmbeddedScript("DBPF_Compiler.scripts.classes.PropertyList.lua", assembly);
 
