@@ -1,12 +1,9 @@
-﻿Key = DBPFCObject.new("Key")
-Key.__index = Key
+﻿Key = class("Key")
 
-function Key.new(instanceId, typeId, groupId)
-    return setmetatable({
-        instanceID = instanceId or 0,
-        typeID = typeId,
-        groupID = groupId
-    }, Key)
+function Key:ctor(instanceId, typeId, groupId)
+    self.instanceID = instanceId or 0
+    self.typeID     = typeId
+    self.groupID    = groupId
 end
 
 function Key:__tostring()
@@ -41,8 +38,8 @@ end
 function Key:hash()
 	local key = Key.new(self.instanceID, self.typeID, self.groupID)
 
-    if type(self.instanceID) ~= "number" then
-        key.instanceID = hash(self.instanceID, "file")
+    if type(key.instanceID) ~= "number" then
+        key.instanceID = hash(key.instanceID, "file")
     end
     if key.typeID and type(key.typeID) ~= "number" then
         key.typeID = hash(key.typeID, "type")

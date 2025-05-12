@@ -1,11 +1,8 @@
-Property = DBPFCObject.new("Property")
-Property.__index = Property
+Property = class("Property")
 
-function Property.new(propType, value)
-	return setmetatable({
-		propertyType = string.lower(tostring(propType)),
-		value = value
-	}, Property)
+function Property:ctor(propType, value)
+	self.propertyType = string.lower(tostring(propType))
+	self.value = value
 end
 
 function Property.newInt32(value)

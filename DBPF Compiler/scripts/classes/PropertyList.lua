@@ -1,8 +1,13 @@
-PropertyList = DBPFCObject.new("PropertyList")
-PropertyList.__index = PropertyList
+PropertyList = class("PropertyList")
 
-function PropertyList.new(list)
-    return setmetatable(list or {}, PropertyList)
+function PropertyList:ctor(list)
+    if not list then return end
+
+    for k, v in pairs(list) do
+        if v.className == "Property" then
+            self[k] = v
+        end
+    end
 end
 
 function PropertyList:add(name, property, value)
