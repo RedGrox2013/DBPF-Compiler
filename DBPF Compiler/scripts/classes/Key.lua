@@ -3,7 +3,7 @@ Key.__index = Key
 
 function Key.new(instanceId, typeId, groupId)
     return setmetatable({
-        instanceID = instanceId,
+        instanceID = instanceId or 0,
         typeID = typeId,
         groupID = groupId
     }, Key)
