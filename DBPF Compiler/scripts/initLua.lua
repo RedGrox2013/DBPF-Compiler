@@ -10,6 +10,16 @@ DBPFC_VERSION = setmetatable({}, versionmt)
 
 local _trace, _write, _hash = __trace__, __write__, __hash__
 __trace__, __write__, __hash__ = nil, nil, nil
+
+local _tostring = tostring;
+tostring = function(v)
+    if type(v) == "userdata" and v.ToString then
+        return v:ToString()
+    end
+
+    return _tostring(v)
+end
+
 function write(v) _write(tostring(v)) end
 
 function trace(...)
@@ -34,7 +44,7 @@ function hash(v, regName)
 		return v:hash(regName)
 	end
 	if type(v) == "number" then
-		return v
+		return v >= 0 and v or 0xFFFFFFFF + v + 1
 	end
 
 	return _hash(tostring(v), regName)
