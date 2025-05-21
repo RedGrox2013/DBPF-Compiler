@@ -31,14 +31,16 @@ namespace DBPF_Compiler.Commands
                 return;
             }
 
-            lua.DoString(@"
-__isLuaCommandRunning__ = true
+            lua.DoString("""
 
-function exit()
-    exit = nil
-    __isLuaCommandRunning__ = false
-end
-");
+                         __isLuaCommandRunning__ = true
+
+                         function exit()
+                             exit = nil
+                             __isLuaCommandRunning__ = false
+                         end
+
+                         """);
 
             WriteLine(lua["_VERSION"] +
                 ".7  Copyright © 1994–2024 Lua.org, PUC-Rio\nTo exit, call exit()");
@@ -50,7 +52,7 @@ end
 
                 try
                 {
-                    var results = lua.DoString(l);
+                    var results = lua.DoString(l, nameof(LuaCommand));
 
                     if (results != null && results.Length > 0)
                     {

@@ -23,12 +23,16 @@ public class LuaCreator
         lua.RegisterFunction("hashtoname", NameRegistryManager.Instance, typeof(NameRegistryManager).GetMethod("GetName"));
         lua.RegisterFunction("getProgramDirectory", typeof(Directory).GetMethod("GetCurrentDirectory"));
         lua.RegisterFunction("executeCommand", typeof(LuaFunctions).GetMethod("ExecuteCommand"));
+        lua.RegisterFunction("typeof", typeof(LuaFunctions).GetMethod("TypeOf"));
+        lua.RegisterFunction("new", typeof(LuaFunctions).GetMethod("New"));
 
         lua.RegisterStaticClass(typeof(FNVHash));
 
-        lua.DoString(@$"package.path = package.path ..
-    "";{Path.Combine(Directory.GetCurrentDirectory(), "scripts", "?.lua").Replace("\\", "\\\\")}""
-", "package.path configuration");
+        lua.DoString($"""
+                      package.path = package.path ..
+                          ";{Path.Combine(Directory.GetCurrentDirectory(), "scripts", "?.lua").Replace("\\", @"\\")}"
+
+                      """, "package.path configuration");
 
         var assembly = Assembly.GetExecutingAssembly();
         lua.DoEmbeddedScript("DBPF_Compiler.scripts.initLua.lua", assembly);
