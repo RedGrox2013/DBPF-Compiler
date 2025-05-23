@@ -43,15 +43,43 @@ internal static class LuaFunctions
         if (type == typeof(LuaThread))
             return "thread";
 
-        return type == typeof(LuaUserData) ? "userdata" : type.FullName ?? type.Name;
+        return type == typeof(LuaUserData) ? "userdata" : type.Name;
     }
 
     public static object? New(string className, params object?[]? args)
     {
         var type = Type.GetType(className);
-        if (type == null)
-            return null;
+        return type == null ? null : New(type, args);
+    }
 
+    public static object? NewGeneric(string genericClassName, LuaTable types, params object?[]? args)
+    {
+        var genericType = Type.GetType(genericClassName);
+        if (genericType == null) return null;
+
+        var convertedTypes = new Type[types.Values.Count];
+        int i = 0;
+        foreach (var type in types.Values)
+        {
+            if (type is Type t)
+                convertedTypes[i] = t;
+            else
+            {
+                string? stype = type.ToString();
+                if (stype == null)
+                    throw new NullReferenceException("Type not found");
+                
+                convertedTypes[i] = Type.GetType(stype) ?? throw new NullReferenceException("Type not found");
+            }
+        
+            ++i;
+        }
+        
+        return New(genericType.MakeGenericType(convertedTypes), args);
+    }
+
+    private static object? New(Type type, params object?[]? args)
+    {
         if (args == null || args.Length == 0)
             return Activator.CreateInstance(type);
         

@@ -15,15 +15,13 @@
     <None Remove="scripts\classes\Property.lua" />
     <None Remove="scripts\classes\PropertyList.lua" />
     <None Remove="scripts\initLua.lua" />
+    <None Update="scripts\list.lua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="scripts\classes\DBPFCObject.lua" />
-    <EmbeddedResource Include="scripts\classes\Property.lua" />
-    <EmbeddedResource Include="scripts\classes\PropertyList.lua" />
     <EmbeddedResource Include="scripts\initLua.lua" />
-    <EmbeddedResource Include="scripts\classes\Key.lua" />
-    <EmbeddedResource Include="scripts\classes\Vector2.lua" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,13 +1,5 @@
 -- Настройка Lua для DBPFC
 
-local versionmt = {
-	__tostring = function(self)
-		return self.major .. '.' .. self.minor .. '.' .. self.build .. '.' .. self.revision
-	end
-}
-versionmt.__index = versionmt
-DBPFC_VERSION = setmetatable({}, versionmt)
-
 local _trace, _write, _hash = __trace__, __write__, __hash__
 __trace__, __write__, __hash__ = nil, nil, nil
 
