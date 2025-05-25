@@ -2,7 +2,7 @@ local list = {}
 list.__index = list
 
 function list.new(type)
-    return newGeneric("System.Collections.Generic.List`1", {type})
+    return new("System.Collections.Generic.List`1[" .. type .. "]")
 end
 
 function list.totable(list)

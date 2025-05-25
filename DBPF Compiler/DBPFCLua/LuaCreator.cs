@@ -30,7 +30,7 @@ public class LuaCreator
         lua.RegisterFunction("getProgramDirectory", typeof(Directory).GetMethod("GetCurrentDirectory"));
         lua.RegisterFunction("executeCommand", typeof(LuaFunctions).GetMethod("ExecuteCommand"));
         lua.RegisterFunction("typeof", typeof(LuaFunctions).GetMethod("TypeOf"));
-        // lua.RegisterFunction("new", typeof(LuaFunctions).GetMethod("New"));
+        lua.RegisterFunction("new", typeof(LuaFunctions).GetMethod("New"));
         // lua.RegisterFunction("newGeneric", typeof(LuaFunctions).GetMethod("NewGeneric"));
         // lua.RegisterFunction("getType", typeof(Type).GetMethod("GetType", [typeof(string)]));
 

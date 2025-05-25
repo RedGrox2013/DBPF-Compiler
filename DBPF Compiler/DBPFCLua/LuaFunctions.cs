@@ -53,31 +53,31 @@ internal static class LuaFunctions
         return type == null ? null : New(type, args);
     }
 
-    public static object? NewGeneric(string genericClassName, LuaTable types, params object?[]? args)
-    {
-        var genericType = Type.GetType(genericClassName);
-        if (genericType == null) return null;
-
-        var convertedTypes = new Type[types.Values.Count];
-        int i = 0;
-        foreach (var type in types.Values)
-        {
-            if (type is Type t)
-                convertedTypes[i] = t;
-            else
-            {
-                string? stype = type.ToString();
-                if (stype == null)
-                    throw new NullReferenceException("Type not found");
-                
-                convertedTypes[i] = Type.GetType(stype) ?? throw new NullReferenceException("Type not found");
-            }
-        
-            ++i;
-        }
-        
-        return New(genericType.MakeGenericType(convertedTypes), args);
-    }
+    // public static object? NewGeneric(string genericClassName, LuaTable types, params object?[]? args)
+    // {
+    //     var genericType = Type.GetType(genericClassName);
+    //     if (genericType == null) return null;
+    //
+    //     var convertedTypes = new Type[types.Values.Count];
+    //     int i = 0;
+    //     foreach (var type in types.Values)
+    //     {
+    //         if (type is Type t)
+    //             convertedTypes[i] = t;
+    //         else
+    //         {
+    //             string? stype = type.ToString();
+    //             if (stype == null)
+    //                 throw new NullReferenceException("Type not found");
+    //             
+    //             convertedTypes[i] = Type.GetType(stype) ?? throw new NullReferenceException("Type not found");
+    //         }
+    //     
+    //         ++i;
+    //     }
+    //     
+    //     return New(genericType.MakeGenericType(convertedTypes), args);
+    // }
 
     private static object? New(Type type, params object?[]? args)
     {
