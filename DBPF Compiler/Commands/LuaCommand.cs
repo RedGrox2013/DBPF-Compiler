@@ -54,12 +54,8 @@ namespace DBPF_Compiler.Commands
                 {
                     var results = lua.DoString(l, nameof(LuaCommand));
 
-                    if (results != null && results.Length > 0)
-                    {
-                        foreach (var res in results)
-                            Write((res ?? "nil") + "\t");
-                        WriteLine();
-                    }
+                    if (results is { Length: > 0 })
+                        WriteLine(string.Join('\t', results.Select(x => x ?? "nil")));
                 }
                 catch (Exception e)
                 {

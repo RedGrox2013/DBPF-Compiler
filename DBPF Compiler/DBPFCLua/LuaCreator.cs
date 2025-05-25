@@ -8,13 +8,19 @@ public class LuaCreator
 {
     public TraceConsole? Console { get; set; }
 
-    public Lua CreateLua()
+    public Lua CreateLua(bool loadCLR = true)
     {
         var lua = new Lua();
         lua.State.Encoding = System.Text.Encoding.UTF8;
 
         lua.RegisterEnum<TypeIDs>();
         lua.RegisterEnum<GroupIDs>();
+
+        if (loadCLR)
+        {
+            lua.LoadCLRPackage();
+            lua.DoString("import('dbpfc', 'DBPF_Compiler.FNV')", "imports");
+        }
 
         lua.RegisterFunction("__trace__", Console, typeof(TraceConsole).GetMethod("WriteLine", [typeof(object)]));
         lua.RegisterFunction("__write__", Console, typeof(TraceConsole).GetMethod("Write"));
@@ -24,11 +30,11 @@ public class LuaCreator
         lua.RegisterFunction("getProgramDirectory", typeof(Directory).GetMethod("GetCurrentDirectory"));
         lua.RegisterFunction("executeCommand", typeof(LuaFunctions).GetMethod("ExecuteCommand"));
         lua.RegisterFunction("typeof", typeof(LuaFunctions).GetMethod("TypeOf"));
-        lua.RegisterFunction("new", typeof(LuaFunctions).GetMethod("New"));
-        lua.RegisterFunction("newGeneric", typeof(LuaFunctions).GetMethod("NewGeneric"));
-        lua.RegisterFunction("getType", typeof(Type).GetMethod("GetType", [typeof(string)]));
+        // lua.RegisterFunction("new", typeof(LuaFunctions).GetMethod("New"));
+        // lua.RegisterFunction("newGeneric", typeof(LuaFunctions).GetMethod("NewGeneric"));
+        // lua.RegisterFunction("getType", typeof(Type).GetMethod("GetType", [typeof(string)]));
 
-        lua.RegisterStaticClass(typeof(FNVHash));
+        //lua.RegisterStaticClass(typeof(FNVHash));
 
         lua.DoString($"""
                       package.path = package.path ..

@@ -42,8 +42,9 @@ internal static class LuaFunctions
             return "table";
         if (type == typeof(LuaThread))
             return "thread";
-
-        return type == typeof(LuaUserData) ? "userdata" : type.Name;
+        if (type == typeof(LuaUserData))
+            return "userdata";
+        return type == typeof(ProxyType) ? ((ProxyType)value).UnderlyingSystemType.Name : type.Name;
     }
 
     public static object? New(string className, params object?[]? args)
