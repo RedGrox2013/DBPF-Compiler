@@ -19,7 +19,10 @@ public class LuaCreator
         if (loadCLR)
         {
             lua.LoadCLRPackage();
-            lua.DoString("import('dbpfc', 'DBPF_Compiler.FNV')", "imports");
+            lua.DoString($"""
+                            import('dbpfc', 'DBPF_Compiler.FNV')
+                            import('dbpfc', 'DBPF_Compiler.FileTypes.Prop')
+                         """, "imports");
         }
 
         lua.RegisterFunction("__trace__", Console, typeof(TraceConsole).GetMethod("WriteLine", [typeof(object)]));
@@ -46,6 +49,9 @@ public class LuaCreator
         lua.DoEmbeddedScript("DBPF_Compiler.scripts.initLua.lua", assembly);
 
         lua["DBPFC_VERSION"] = assembly.GetName().Version;
+
+        lua.DoEmbeddedScript("DBPF_Compiler.scripts.Prop.lua", assembly);
+        lua.RegisterFunction("Prop.toPropList", typeof(LuaFunctions).GetMethod("TableToPropertyList"));
         
         // lua.DoEmbeddedScript("DBPF_Compiler.scripts.classes.DBPFCObject.lua", assembly);
         // lua.DoEmbeddedScript("DBPF_Compiler.scripts.classes.Key.lua", assembly);

@@ -1,5 +1,6 @@
 using DBPF_Compiler.ArgScript;
 using DBPF_Compiler.Commands;
+using DBPF_Compiler.FileTypes.Prop;
 using NLua;
 
 namespace DBPF_Compiler.DBPFCLua;
@@ -117,4 +118,7 @@ internal static class LuaFunctions
         
         return Activator.CreateInstance(type, convertedArgs);
     }
+
+    public static PropertyList TableToPropertyList(LuaTable table) =>
+        new(table.Values.OfType<Property>());
 }
