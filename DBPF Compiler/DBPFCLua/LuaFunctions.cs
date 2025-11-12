@@ -86,10 +86,8 @@ internal static class LuaFunctions
             return Activator.CreateInstance(type);
         
         var constructors = type.GetConstructors();
-        var ctor = constructors.FirstOrDefault(c => c.GetParameters().Length == args.Length);
-        if (ctor == null)
+        var ctor = constructors.FirstOrDefault(c => c.GetParameters().Length == args.Length) ??
             throw new MissingMethodException($"No constructor with {args.Length} parameters found.");
-        
         var parameters = ctor.GetParameters();
         var convertedArgs = new object?[args.Length];
         

@@ -23,6 +23,39 @@ namespace DBPF_Compiler.FileTypes.Prop
             => _id ??= NameRegistryManager.Instance.GetHash(_name, "property");
         public object? Value { get; set; }
 
+        [JsonIgnore]
+        public bool IsArray
+        {
+            get
+            {
+                return PropertyType switch
+                {
+                    PropertyType.int8s or
+                    PropertyType.bools or
+                    PropertyType.uint8s or
+                    PropertyType.int16s or
+                    PropertyType.uint16s or
+                    PropertyType.int32s or
+                    PropertyType.uint32s or
+                    PropertyType.int64s or
+                    PropertyType.uint64s or
+                    PropertyType.floats or
+                    PropertyType.string8s or
+                    PropertyType.string16s or
+                    PropertyType.keys or
+                    PropertyType.vector2s or
+                    PropertyType.vector3s or
+                    PropertyType.colorRGBs or
+                    PropertyType.vector4s or
+                    PropertyType.colorRGBAs or
+                    PropertyType.texts or
+                    PropertyType.bbox or
+                    PropertyType.transforms => true,
+                    _ => false,
+                };
+            }
+        }
+
         public Property() : this("0x00000000") { }
 
         public override string ToString()

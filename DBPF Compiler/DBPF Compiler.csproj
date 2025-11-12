@@ -15,6 +15,9 @@
     <None Remove="scripts\classes\Property.lua" />
     <None Remove="scripts\classes\PropertyList.lua" />
     <None Remove="scripts\initLua.lua" />
+    <None Update="scripts\examples\propertylist.lua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="scripts\list.lua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

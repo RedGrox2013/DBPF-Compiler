@@ -24,6 +24,7 @@ function Prop.newProperty(propType, propName, value)
     local p = Property(propName);
     p.PropertyType = propType
     p.Value = value
+    -- TODO: Arrays
 
     return p
 end
