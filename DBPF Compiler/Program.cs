@@ -1,7 +1,6 @@
 ﻿using DBPF_Compiler;
 using DBPF_Compiler.ArgScript;
 using DBPF_Compiler.Commands;
-using DBPF_Compiler.DBPFCLua;
 using DBPF_Compiler.FNV;
 
 #region ASCII art
@@ -142,6 +141,10 @@ cmd.AddCommand("interactive", new InteractiveCommand(cmd));
 #if DEBUG
 cmd.AddCommand("test", new TestCommand() { NotDisplayDescription = true });
 #endif
+
+var packer = DBPFCServices.AddService<FilesPacker>();
+// тут будет добавление конвертеров
+// packer.AddConverter(...);
 
 if (!app.Run(line))
     Environment.ExitCode = -1;

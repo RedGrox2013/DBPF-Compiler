@@ -2,7 +2,7 @@ namespace DBPF_Compiler;
 
 public static class DBPFCServices
 {
-    private static readonly Dictionary<string, object> _services = [];
+    private static readonly List<object> _services = [];
 
     public static T AddService<T>() where T : notnull, new()
     {
@@ -12,13 +12,14 @@ public static class DBPFCServices
         return service;
     }
     public static void AddService<T>(T service) where T : notnull =>
-        _services.Add(typeof(T).Name, service);
+        _services.Add(service);
 
     public static T? GetService<T>()
     {
-        object? service = GetService(typeof(T).Name);
-        return service == null ? default : (T)service;
+        foreach (var service in _services)
+            if (service is T res)
+                return res;
+
+        return default;
     }
-    public static object? GetService(string serviceName) =>
-        _services.TryGetValue(serviceName, out object? service) ? service : null;
 }

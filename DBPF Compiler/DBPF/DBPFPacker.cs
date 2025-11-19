@@ -4,6 +4,7 @@ using DBPF_Compiler.Types;
 
 namespace DBPF_Compiler.DBPF
 {
+    [Obsolete("Этот класс устарел, т. к. содержит говнокод. Используй FilesPacker")]
     public class DBPFPacker
     {
         public delegate void DBPFPackerEventHandler(object? sender, StringResourceKey key);
