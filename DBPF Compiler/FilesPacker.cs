@@ -69,17 +69,15 @@ namespace DBPF_Compiler
 
                 foreach (var file in group.GetFiles())
                 {
-                    StringResourceKey strKey = new(
-                        Path.GetFileNameWithoutExtension(file.Name),
-                        Path.GetExtension(file.Name).TrimStart('.'),
-                        group.Name
-                        );
+                    string[] splitFileName = file.Name.Split('.');
+                    string fileName = splitFileName[0];
+                    string extension = splitFileName.Length > 1 ? splitFileName[1] : string.Empty;
+                    StringResourceKey strKey = new(fileName, extension, group.Name);
                     ResourceKey key = _regManager.GetResourceKey(strKey);
 
                     using FileStream f = file.OpenRead();
-                    int firstDotIndex = file.Name.IndexOf('.');
                     ISporeFile? sporeFile = ConvertToSporeFile(f,
-                        firstDotIndex >= 0 ? file.Name[(firstDotIndex + 1)..] : string.Empty);
+                        splitFileName.Length > 1 ? extension + "." + splitFileName[^1] : string.Empty);
 
                     if (sporeFile != null)
                         output.WriteSporeFile(sporeFile, key);
