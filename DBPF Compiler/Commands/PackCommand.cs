@@ -20,7 +20,7 @@ namespace DBPF_Compiler.Commands
                 return;
             }
 
-            DBPFPacker packer = new(line[1]);
+            FilesPacker packer = DBPFCServices.GetService<FilesPacker>() ?? new();
             Stopwatch stopwatch = Stopwatch.StartNew();
         
             using FileStream fs = File.Create(line[2]);
@@ -29,7 +29,7 @@ namespace DBPF_Compiler.Commands
             dbpf.OnDataWriting += DisplayDataWritingMessage;
             dbpf.OnIndexWriting += msg => WriteLine("Writing index . . .");
 
-            packer.Pack(dbpf, line.ArgumentCount > 3 ? line[3] : null);
+            packer.Pack(line[1], dbpf, line.ArgumentCount > 3 ? line[3] : null);
 
             stopwatch.Stop();
             var ts = stopwatch.Elapsed;

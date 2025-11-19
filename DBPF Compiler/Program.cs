@@ -2,6 +2,7 @@
 using DBPF_Compiler.ArgScript;
 using DBPF_Compiler.Commands;
 using DBPF_Compiler.FNV;
+using DBPF_Compiler.FileTypes.Converters;
 
 #region ASCII art
 const ConsoleColor ART_COLOR = ConsoleColor.Green;
@@ -143,8 +144,7 @@ cmd.AddCommand("test", new TestCommand() { NotDisplayDescription = true });
 #endif
 
 var packer = DBPFCServices.AddService<FilesPacker>();
-// тут будет добавление конвертеров
-// packer.AddConverter(...);
+packer.AddConverter("prop.json", new JsonPropConverter());
 
 if (!app.Run(line))
     Environment.ExitCode = -1;

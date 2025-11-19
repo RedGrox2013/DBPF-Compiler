@@ -4,6 +4,7 @@ using System.Text.Unicode;
 
 namespace DBPF_Compiler.FileTypes.Prop
 {
+    [Obsolete("Этот класс устарел, используй JsonPropConverter")]
     public static class PropertyListJsonSerializer
     {
         private readonly static JsonSerializerOptions _jsonSerializerOptions = new()
