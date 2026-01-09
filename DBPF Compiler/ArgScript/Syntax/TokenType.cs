@@ -24,7 +24,7 @@
         public static readonly TokenType SPACE = new(nameof(SPACE), @"[ \t\x0B\f\r]+");
         public static readonly TokenType ENDL = new(nameof(ENDL), @"\n");
         ////public static readonly TokenType QUOT = new(nameof(QUOT), "\"\"");
-        public static readonly TokenType STR = new(nameof(STR), @"\"".*\""");
+        public static readonly TokenType STR = new(nameof(STR), @"\""[^\""\r\n]*\""");
         public static readonly TokenType BRACEEXPR = new(nameof(BRACEEXPR), @"[\(\{].*[\)\}]");
         public static readonly TokenType LPAR = new(nameof(LPAR), @"[\(\{]");
         public static readonly TokenType RPAR = new(nameof(RPAR), @"[\)\}]");
