@@ -1,5 +1,6 @@
 ﻿using DBPF_Compiler.ArgScript;
 using DBPF_Compiler.DBPF;
+using DBPF_Compiler.FileTypes.Converters;
 using DBPF_Compiler.Types;
 using System.Diagnostics;
 
@@ -20,7 +21,8 @@ namespace DBPF_Compiler.Commands
                 return;
             }
 
-            FilesPacker packer = DBPFCServices.GetService<FilesPacker>() ?? new();
+            FilesPacker packer = new();
+            packer.AddConverter<JsonPropConverter>("prop.json");
             Stopwatch stopwatch = Stopwatch.StartNew();
         
             using FileStream fs = File.Create(line[2]);

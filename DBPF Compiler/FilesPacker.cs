@@ -12,13 +12,18 @@ namespace DBPF_Compiler
 
         private readonly Dictionary<string, IConverter> _converters = [];
 
-        public const string IGNORE_FOLDERS_EXTENSION = ".dbpfc_ignore";
-
         public event FilesPackerEventHandler? OnFilePacked;
 
         private static readonly NameRegistryManager _regManager = NameRegistryManager.Instance;
 
         public void AddConverter(string type, IConverter encoder) => _converters.Add(type, encoder);
+        public IConverter AddConverter<T>(string type) where T : IConverter, new()
+        {
+            T converter = new();
+            AddConverter(type, converter);
+
+            return converter;
+        }
 
         public void Pack(string inputPath, DatabasePackedFile output, string? secretFolder = null) =>
             Pack(new DirectoryInfo(inputPath), output, secretFolder);
@@ -31,9 +36,6 @@ namespace DBPF_Compiler
 
             foreach (var group in inputDirectory.GetDirectories())
             {
-                if (group.Name.EndsWith(IGNORE_FOLDERS_EXTENSION))
-                    continue;
-
                 if (group.Name == secretFolder)
                 {
                     output.SecretGroupName = secretFolder;

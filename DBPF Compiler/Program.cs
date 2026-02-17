@@ -143,9 +143,6 @@ cmd.AddCommand("interactive", new InteractiveCommand(cmd));
 cmd.AddCommand("test", new TestCommand() { NotDisplayDescription = true });
 #endif
 
-var packer = DBPFCServices.AddService<FilesPacker>();
-packer.AddConverter("prop.json", new JsonPropConverter());
-
 if (!app.Run(line))
     Environment.ExitCode = -1;
 
